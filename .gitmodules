@@ -1,7 +1,7 @@
-[submodule "dependencies/rplidar_ros"]
-	path = dependencies/rplidar_ros
+[submodule "quac/dependencies/rplidar_ros"]
+	path = quac/dependencies/rplidar_ros
 	url = https://github.com/Slamtec/rplidar_ros.git
 	branch = ros2
-[submodule "dependencies/DeepStream-Yolo"]
-	path = dependencies/DeepStream-Yolo
+[submodule "quac_video/dependencies/DeepStream-Yolo"]
+	path = quac_video/dependencies/DeepStream-Yolo
 	url = https://github.com/marcoslucianops/DeepStream-Yolo.git

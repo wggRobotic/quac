@@ -40,3 +40,12 @@ sudo apt install ros-jazzy-ros-gz ros-jazzy-gz-ros2-control
 sudo apt install ros-jazzy-slam-toolbox
 sudo apt install ros-jazzy-navigation2 ros-jazzy-nav2-bringup
 ```
+
+# Quac_vide
+
+convert to onnc
+
+```
+python3 export_yolo26.py -w hazmat_yolo26.pt --opset 18
+mv labels.txt hazmat_labels.txt
+```

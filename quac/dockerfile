@@ -10,20 +10,24 @@ RUN sudo apt install -y \
 
 RUN rm -rf /var/lib/apt/lists/*
 
-WORKDIR /ros2_ws/src
-
-RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
-
 WORKDIR /ros2_ws
 SHELL ["/bin/bash", "-c"]
 
+COPY ./dependencies/rplidar_ros /ros2_ws/src/rplidar_ros
+
 RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select rplidar_ros
 
-COPY ./quac_control /ros2_ws/src/quac/quac_control
-RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select quac_control
+COPY ./quac_control /ros2_ws/src/quac_control
+RUN . /opt/ros/jazzy/setup.bash && colcon build
 
-COPY ./quac /ros2_ws/src/quac/quac
+COPY ./quac /ros2_ws/src/quac
 RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select quac
 
-COPY entrypoint.quac.sh /entrypoint.quac.sh
-RUN chmod +x /entrypoint.quac.sh
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENV DISABLE_WHEELS=false
+ENV DISABLE_LIDAR=false
+ENV DISABLE_ARM=false
+
+CMD /entrypoint.sh

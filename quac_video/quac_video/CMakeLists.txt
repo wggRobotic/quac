@@ -18,6 +18,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-app-1.0)
 find_package(realsense2 REQUIRED)
 find_package(CUDA REQUIRED)
+find_package(sensor_msgs)
 
 #----------------- Deepstream-Yolo-------------
 
@@ -72,6 +73,7 @@ include_directories(
     ${CUDA_INCLUDE_DIRS}
     /opt/nvidia/deepstream/deepstream-7.1/includes
     /opt/nvidia/deepstream/deepstream-7.1/sources/includes
+    include/
 )
 
 link_directories(
@@ -79,11 +81,12 @@ link_directories(
     /opt/nvidia/deepstream/deepstream-7.1/lib
 )
 
-add_executable(stream_app
-  application/main_test.cpp
+add_executable(video_app
+  src/video_app.cpp
+  src/gst_app.cpp
 )
 
-target_link_libraries(stream_app
+target_link_libraries(video_app
     ${GST_LIBRARIES}
     ${realsense2_LIBRARY}
     ${CUDA_LIBRARIES}
@@ -92,18 +95,19 @@ target_link_libraries(stream_app
     nvds_infer
 )
 
-ament_target_dependencies(stream_app
+ament_target_dependencies(video_app
   rclcpp
+  sensor_msgs
   ament_index_cpp
 )
 
 install(
-  DIRECTORY config
+  DIRECTORY config models
   DESTINATION share/${PROJECT_NAME}  
 )
 
 install(
-  TARGETS stream_app
+  TARGETS video_app
   DESTINATION lib/${PROJECT_NAME}
 )
 

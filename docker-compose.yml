@@ -1,12 +1,12 @@
 services:
   quac:
     image: quac:dev
-    entrypoint: ["/entrypoint.quac.sh"]
+    entrypoint: ["/entrypoint.sh"]
     stop_signal: SIGINT
 
     build:
       context: .
-      dockerfile: dockerfile.quac    
+      dockerfile: quac/dockerfile
     
     network_mode: "host"
     stdin_open: true

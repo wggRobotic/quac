@@ -1,4 +1,6 @@
 {
+    "clangd.path": "/usr/bin/clangd",
+
     "python.autoComplete.extraPaths": [
         "/home/christopher/ros2_ws/install/theora_image_transport/lib/python3.10/site-packages",
         "/home/christopher/ros2_ws/install/camera_info_manager_py/lib/python3.10/site-packages",

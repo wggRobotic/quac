@@ -14,11 +14,16 @@
 #include <gst/app/gstappsrc.h>
 #include <gst/app/gstappsink.h>
 #include <glib.h>
+#include <rclcpp/node.hpp>
 #include <stdio.h>
 #include <string.h>
-#include <cuda_runtime_api.h>
 #include "gstnvdsmeta.h"
 #include <librealsense2/rs.hpp>
+
+#include <rclcpp/rclcpp.hpp>
+
+
+#include "ament_index_cpp/get_package_share_directory.hpp"
 
 #define MAX_DISPLAY_LEN 64
 
@@ -45,7 +50,7 @@ gchar* class_names[] = {
 #define CUSTOM_PTS 1
 
 #define NVINFER_PLUGIN "nvinfer"
-#define PGIE_CONFIG_FILE  "../../infer/config/hazmat_config.txt"
+#define PGIE_CONFIG_FILE  "src/quac/quac_video/infer/config/hazmat_config.txt"
 
 /* Muxer batch formation timeout, for e.g. 40 millisec. Should ideally be set
  * based on the fastest source's framerate. */
@@ -57,13 +62,16 @@ gint frame_number = 0;
  * so we can pass it to callbacks */
 typedef struct _AppSrcData
 {
-  GstElement *app_source;
-  long frame_size;                  /* Pointer to the raw video file */
-  gint appsrc_frame_num;
-  guint fps;                    /* To set the FPS value */
-  guint sourceid;               /* To control the GSource */
+  GstElement *app_source = NULL;
+  long frame_size = 0;                  /* Pointer to the raw video file */
+  gint appsrc_frame_num = 0;
+  guint fps = 0;                    /* To set the FPS value */
+  guint sourceid = 0;               /* To control the GSource */
   rs2::pipeline pipe;
   rs2::config cfg;
+
+  //rclcpp::Node node;
+  //rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr point_cloud_publisher;
 } AppSrcData;
 
 /* new_sample is an appsink callback that will extract metadata received
@@ -212,56 +220,27 @@ stop_feed (GstElement * source, AppSrcData * data)
   }
 }
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
+  rclcpp::init(argc, argv);
+
   GMainLoop *loop = NULL;
   GstElement *pipeline = NULL, *nvvidconv1 = NULL, *caps_filter = NULL,
-      *streammux = NULL, *sink = NULL, *pgie = NULL, *nvvidconv2 = NULL,
-      *nvosd = NULL, *tee = NULL, *appsink = NULL;
+      *streammux = NULL, *pgie = NULL, *nvvidconv2 = NULL,
+      *nvosd = NULL, *tee = NULL, *appsink = NULL, *nvvidconv3 = NULL, *encoder = NULL, *payloader = NULL, *udp_sink = NULL;
   GstBus *bus = NULL;
   guint bus_watch_id;
   AppSrcData data;
   GstCaps *caps = NULL;
   GstCapsFeatures *feature = NULL;
-  gchar *endptr1 = NULL, *endptr2 = NULL, *endptr3 = NULL;
   GstPad *tee_source_pad1, *tee_source_pad2;
   GstPad *osd_sink_pad, *appsink_sink_pad;
-  const gchar* new_mux_str = g_getenv("USE_NEW_NVSTREAMMUX");
-  gboolean use_new_mux = !g_strcmp0(new_mux_str, "yes");
 
-  int current_device = -1;
-  cudaGetDevice(&current_device);
-  struct cudaDeviceProp prop;
-  cudaGetDeviceProperties(&prop, current_device);
+  //data.node = rclcpp::Node("camera_app");
 
-  /* Check input arguments */
-  if (argc < 4) {
-    g_printerr ("Usage: %s <width> <height> <fps>\n", argv[0]);
-    return -1;
-  }
-
-  long fps = 0, width = 0, height = 0;
-
-  width = g_ascii_strtoll (argv[1], &endptr1, 10);
-  height = g_ascii_strtoll (argv[2], &endptr2, 10);
-  fps = g_ascii_strtoll (argv[3], &endptr3, 10);
-
-  if ((width == 0 && endptr1 == argv[1]) || (height == 0
-    && endptr2 == argv[2]) || (fps == 0 && endptr3 == argv[3])) {
-    g_printerr ("Incorrect width, height or FPS\n");
-    return -1;
-  }
-
-  if (width == 0 || height == 0 || fps == 0) {
-    g_printerr ("Width, height or FPS cannot be 0\n");
-    return -1;
-  }
-
-  /* Initialize custom data structure */
-  memset (&data, 0, sizeof (data));
+  long width = 640, height = 480;
+  data.fps = 30;
   data.frame_size = width * height * 4;
-  data.fps = fps;
 
   /* Standard GStreamer initialization */
   gst_init (&argc, &argv);
@@ -269,41 +248,48 @@ main (int argc, char *argv[])
 
   #define GST_CHECK(cmd) if (!(cmd)) {g_printerr ("'%s' in line %d failed. Exiting.\n", #cmd, __LINE__); return -1;}
 
-  /* Create gstreamer elements */
-  /* Create Pipeline element that will form a connection of other elements */
   GST_CHECK(pipeline = gst_pipeline_new ("dstest-appsrc-pipeline"));
-
-  /* App Source element for reading from raw video file */
   GST_CHECK(data.app_source = gst_element_factory_make ("appsrc", "app-source"));
-  /* Use convertor to convert from software buffer to GPU buffer */
   GST_CHECK(nvvidconv1 = gst_element_factory_make ("nvvideoconvert", "nvvideo-converter1"));
   GST_CHECK(caps_filter = gst_element_factory_make ("capsfilter", "capsfilter"));
-  /* Create nvstreammux instance to form batches from one or more sources. */
   GST_CHECK(streammux = gst_element_factory_make ("nvstreammux", "stream-muxer"));
-  /* Use nvinfer to run inferencing on streammux's output,
-   * behaviour of inferencing is set through config file */
   GST_CHECK(pgie = gst_element_factory_make ( NVINFER_PLUGIN, "primary-nvinference-engine"));
-  /* Use convertor to convert from NV12 to RGBA as required by nvdsosd */
   GST_CHECK(nvvidconv2 = gst_element_factory_make ("nvvideoconvert", "nvvideo-converter2"));
-  /* Create OSD to draw on the converted RGBA buffer */
   GST_CHECK(nvosd = gst_element_factory_make ("nvdsosd", "nv-onscreendisplay"));
-  /* Finally render the osd output. We will use a tee to render video
-   * playback on nveglglessink, and we use appsink to extract metadata
-   * from buffer and print object, person and vehicle count. */
   GST_CHECK(tee = gst_element_factory_make ("tee", "tee"));
 
-  if(prop.integrated) {
-    GST_CHECK(sink = gst_element_factory_make ("nv3dsink", "nvvideo-renderer"));
+  /* After nvosd */
+  GST_CHECK(nvvidconv3 = gst_element_factory_make("nvvideoconvert", "nvvideo-converter3"));
+  GST_CHECK(encoder = gst_element_factory_make("x264enc", "h264-encoder"));
+  g_object_set(encoder,
+             "tune", 4,             // zerolatency
+             "speed-preset", 1,     // ultrafast
+             "key-int-max", 30,
+             NULL);
+  g_object_set(encoder,
+             "preset-level", 1,         // 1 = ultrafast
+             "iframeinterval", 30,      // keyframe every second
+             "bitrate", 2000,           // kbps, tune as needed
+             "bufapi-version", TRUE,    // newer buffer API
+             "profile", 1,              // baseline profile
+             NULL);
+
+  GST_CHECK(payloader = gst_element_factory_make("rtph264pay", "rtp-pay"));
+  g_object_set(payloader, "config-interval", 1, NULL);
+
+  GST_CHECK(udp_sink = gst_element_factory_make("udpsink", "udp-sink"));
+  g_object_set(udp_sink,
+             "host", "192.168.137.26",
+             "port", 5000,
+             "sync", FALSE,     // don’t wait for pipeline clock
+             "async", FALSE,    // start immediately
+             "buffer-size", 2000000,  // optional, reduce buffering
+             NULL);
+
+
     /* For Jetson, with copy-hw=1 and memory-type=nvbuf-mem-surface-array,
      cudaMemcopy fail is observed. This is a WAR till root cause is fixed */
-    g_object_set(nvvidconv1, "copy-hw", 2, NULL);
-  } else {
-#ifdef __aarch64__
-    GST_CHECK(sink = gst_element_factory_make ("nv3dsink", "nvvideo-renderer"));
-#else
-    GST_CHECK(sink = gst_element_factory_make ("nveglglessink", "nvvideo-renderer"));
-#endif
-  }
+  g_object_set(nvvidconv1, "copy-hw", 2, NULL);
 
   GST_CHECK(appsink = gst_element_factory_make ("appsink", "app-sink"));
 
@@ -326,18 +312,17 @@ main (int argc, char *argv[])
   g_object_set (G_OBJECT (caps_filter), "caps", caps, NULL);
 
   /* Set streammux properties */
-  if (!use_new_mux) {
-    g_object_set (G_OBJECT (streammux), "width", width, "height",
-      height, "batch-size", 1, "live-source", TRUE,
-      "batched-push-timeout", MUXER_BATCH_TIMEOUT_USEC, NULL);
-  }
-  else {
-    g_object_set (G_OBJECT (streammux), "batch-size", 1,
-      "batched-push-timeout", MUXER_BATCH_TIMEOUT_USEC, NULL);
-  }
+  g_object_set (G_OBJECT (streammux), "width", width, "height",
+    height, "batch-size", 1, "live-source", TRUE,
+    "batched-push-timeout", MUXER_BATCH_TIMEOUT_USEC, NULL);
+
   /* Set all the necessary properties of the nvinfer element,
    * the necessary ones are : */
-  g_object_set (G_OBJECT (pgie), "config-file-path", PGIE_CONFIG_FILE, NULL);
+
+  std::string pkg_share_dir = ament_index_cpp::get_package_share_directory("quac_video");
+  std::string model_path = pkg_share_dir + "/config/hazmat_config.txt";
+
+  g_object_set (G_OBJECT (pgie), "config-file-path", model_path.c_str(), NULL);
 
   /* we add a message handler */
   bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
@@ -346,17 +331,14 @@ main (int argc, char *argv[])
 
   /* Set up the pipeline */
   /* we add all elements into the pipeline */
-  gst_bin_add_many (GST_BIN (pipeline), data.app_source, nvvidconv1, caps_filter, streammux, pgie, nvvidconv2, nvosd, tee, sink, appsink, NULL);
+  gst_bin_add_many (GST_BIN (pipeline), data.app_source, nvvidconv1, caps_filter, streammux, pgie, nvvidconv2, nvosd, tee, nvvidconv3, encoder, payloader, udp_sink, appsink, NULL);
 
   GstPad *sinkpad, *srcpad;
 
   GST_CHECK(sinkpad = gst_element_request_pad_simple (streammux, "sink_0"));
   GST_CHECK(srcpad = gst_element_get_static_pad (caps_filter, "src"));
 
-  if (gst_pad_link (srcpad, sinkpad) != GST_PAD_LINK_OK) {
-    g_printerr ("Failed to link caps filter to stream muxer. Exiting.\n");
-    return -1;
-  }
+  GST_CHECK(gst_pad_link (srcpad, sinkpad) == GST_PAD_LINK_OK);
 
   gst_object_unref (sinkpad);
   gst_object_unref (srcpad);
@@ -366,7 +348,7 @@ main (int argc, char *argv[])
    * pgie -> nvvidconv -> nvosd -> video-renderer */
 
   if (!gst_element_link_many (data.app_source, nvvidconv1, caps_filter, NULL) ||
-      !gst_element_link_many (nvosd, sink, NULL) ||
+      !gst_element_link_many(nvosd, nvvidconv3, encoder, payloader, udp_sink, NULL) ||
       !gst_element_link_many (streammux, pgie, nvvidconv2, tee, NULL)) {
     g_printerr ("Elements could not be linked: Exiting.\n");
     return -1;
@@ -393,7 +375,6 @@ main (int argc, char *argv[])
 
   /* Configure appsink to extract data from DeepStream pipeline */
   g_object_set (appsink, "emit-signals", TRUE, "async", FALSE, NULL);
-  g_object_set (sink, "sync", FALSE, NULL);
 
   /* Callback to access buffer and object info. */
   g_signal_connect (appsink, "new-sample", G_CALLBACK (new_sample), NULL);
@@ -419,5 +400,7 @@ main (int argc, char *argv[])
   gst_object_unref (GST_OBJECT (pipeline));
   g_source_remove (bus_watch_id);
   g_main_loop_unref (loop);
+
+  rclcpp::shutdown();
   return 0;
 }

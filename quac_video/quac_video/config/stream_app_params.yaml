@@ -1,0 +1,10 @@
+quac:
+  stream_app:
+    ros__parameters:
+      multicast: true
+      ip: "192.168.137.26"
+      #ip: "192.168.1.136"
+      camera_count: 2
+      ports: [5000, 5001]
+      nvinfer_config: ""
+      
