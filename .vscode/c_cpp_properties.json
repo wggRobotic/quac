@@ -1,0 +1,35 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/christopher/ros2_ws/install/theora_image_transport/include/**",
+        "/home/christopher/ros2_ws/install/compressed_image_transport/include/**",
+        "/home/christopher/ros2_ws/install/compressed_depth_image_transport/include/**",
+        "/home/christopher/ros2_ws/install/image_transport/include/**",
+        "/home/christopher/ros2_ws/install/guiniverse/include/**",
+        "/home/christopher/ros2_ws/install/camera_info_manager/include/**",
+        "/home/christopher/ros2_ws/install/camera_calibration_parsers/include/**",
+        "/opt/ros/iron/include/**",
+        "/home/christopher/ros2_ws/src/guiniverse/include/**",
+        "/home/christopher/ros2_ws/src/image_common/camera_calibration_parsers/include/**",
+        "/home/christopher/ros2_ws/src/image_common/camera_info_manager/include/**",
+        "/home/christopher/ros2_ws/src/image_common/image_transport/include/**",
+        "/home/christopher/ros2_ws/src/image_transport_plugins/compressed_depth_image_transport/include/**",
+        "/home/christopher/ros2_ws/src/image_transport_plugins/compressed_image_transport/include/**",
+        "/home/christopher/ros2_ws/src/image_transport_plugins/theora_image_transport/include/**",
+        "/home/christopher/ros2_ws/src/rplidar_ros/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
