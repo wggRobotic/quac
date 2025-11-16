@@ -10,6 +10,8 @@
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 
+#define M_PI 3.14159265358979323846
+
 namespace quac_hardware
 {
 
@@ -20,7 +22,7 @@ struct diffdrive_wheel
   double state_position;
   double state_velocity;
   int id;
-  int encoder_resolution;
+  int invert;
 };
 
 class DiffDriveDDSM115 : public hardware_interface::SystemInterface
@@ -51,6 +53,11 @@ private:
   rclcpp::Logger m_Logger;
   std::chrono::time_point<std::chrono::system_clock> m_Time;
   std::vector<diffdrive_wheel> m_Wheels;
+
+  int m_SerialFD;
+  std::string m_Port;
+  int m_EncoderResolution;
+  int m_Act;
 };
 
 }

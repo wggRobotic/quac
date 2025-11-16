@@ -4,6 +4,9 @@
     <ros2_control name="quac_hardware" type="system">
     <hardware>
         <plugin>quac_hardware/DiffDriveDDSM115</plugin>
+        <param name="port">/dev/ttyAMA0</param>
+        <param name="encoder_resolution">4096</param>
+        <param name="act">6</param>
     </hardware>
 
     <joint name="wheel_front_left_joint">
@@ -11,6 +14,7 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
         <param name="id">1</param>
+        <param name="invert">1</param>
     </joint>
 
     <joint name="wheel_front_right_joint">
@@ -18,6 +22,7 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
         <param name="id">2</param>
+        <param name="invert">-1</param>
     </joint>
 
     <joint name="wheel_rear_left_joint">
@@ -25,6 +30,7 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
         <param name="id">3</param>
+        <param name="invert">1</param>
     </joint>
 
     <joint name="wheel_rear_right_joint">
@@ -32,6 +38,7 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
         <param name="id">4</param>
+        <param name="invert">-1</param>
     </joint>
 </ros2_control>
     

@@ -60,18 +60,9 @@ def generate_launch_description():
         )
     )
 
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen",
-        arguments=["-d", os.path.join(get_package_share_directory(package_name),'config','default.rviz')]
-    )
-
     return LaunchDescription([
         rsp,
         delayed_controller_manager,
         delayed_diff_drive_controller,
         delayed_joint_state_broadcaster,
-        rviz_node
-    ])
+        ])
