@@ -5,8 +5,9 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-from launch.substitutions import Command, PathJoinSubstitution, FindExecutable
-
+from launch.substitutions import Command
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessStart
 
 def generate_launch_description():
     package_name = 'quac'
@@ -15,11 +16,22 @@ def generate_launch_description():
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory(package_name),'launch','rsp.launch.py'
-        )]),
-        launch_arguments={'use_sim_time': 'false', 'use_ros2_control': 'true'}.items()
+        )]), launch_arguments={'use_sim_time': 'false'}.items()
     )
 
-    # Controller spawners
+    robot_description = Command(['ros2 param get --hide-type /robot_state_publisher robot_description'])
+
+    controller_params_file = os.path.join(get_package_share_directory(package_name),'config','controllers.yaml')
+
+    controller_manager = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[{'robot_description': robot_description},
+                    controller_params_file]
+    )
+
+    delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
+
     joint_state_broadcaster = Node(
         package='controller_manager',
         executable='spawner',
@@ -34,17 +46,32 @@ def generate_launch_description():
         output='screen',
     )
 
+    delayed_diff_drive_controller = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=controller_manager,
+            on_start=[diff_drive_controller],
+        )
+    )
+
+    delayed_joint_state_broadcaster = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=controller_manager,
+            on_start=[joint_state_broadcaster],
+        )
+    )
+
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="screen",
-        arguments=["-d", os.path.join(get_package_share_directory(package_name),'config','view.rviz')]
+        arguments=["-d", os.path.join(get_package_share_directory(package_name),'config','default.rviz')]
     )
 
     return LaunchDescription([
         rsp,
-        joint_state_broadcaster,
-        diff_drive_controller,
+        delayed_controller_manager,
+        delayed_diff_drive_controller,
+        delayed_joint_state_broadcaster,
         rviz_node
     ])

@@ -1,0 +1,6 @@
+<library path="quac_hardware">
+  <class name="quac_hardware/DiffDriveDDSM115"
+         type="quac_hardware::DiffDriveDDSM115"
+         base_class_type="hardware_interface::SystemInterface">
+  </class>
+</library>

@@ -1,37 +1,37 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     
-    <ros2_control name="MyRobotHW" type="system">
+    <ros2_control name="quac_hardware" type="system">
     <hardware>
-        <plugin>quac_hardware/DDSMHardware</plugin>
+        <plugin>quac_hardware/DiffDriveDDSM115</plugin>
     </hardware>
 
     <joint name="wheel_front_left_joint">
         <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
-        <state_interface name="effort"/>
+        <param name="id">1</param>
     </joint>
 
     <joint name="wheel_front_right_joint">
         <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
-        <state_interface name="effort"/>
+        <param name="id">2</param>
     </joint>
 
     <joint name="wheel_rear_left_joint">
         <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
-        <state_interface name="effort"/>
+        <param name="id">3</param>
     </joint>
 
     <joint name="wheel_rear_right_joint">
         <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
-        <state_interface name="effort"/>
+        <param name="id">4</param>
     </joint>
 </ros2_control>
     

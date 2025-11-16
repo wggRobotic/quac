@@ -14,6 +14,7 @@
         "/home/christopher/ros2_ws/install/camera_info_manager/include/**",
         "/home/christopher/ros2_ws/install/camera_calibration_parsers/include/**",
         "/opt/ros/iron/include/**",
+        "/opt/ros/jazzy/include/**",
         "/home/christopher/ros2_ws/src/guiniverse/include/**",
         "/home/christopher/ros2_ws/src/image_common/camera_calibration_parsers/include/**",
         "/home/christopher/ros2_ws/src/image_common/camera_info_manager/include/**",
@@ -22,7 +23,8 @@
         "/home/christopher/ros2_ws/src/image_transport_plugins/compressed_image_transport/include/**",
         "/home/christopher/ros2_ws/src/image_transport_plugins/theora_image_transport/include/**",
         "/home/christopher/ros2_ws/src/rplidar_ros/include/**",
-        "/usr/include/**"
+        "/usr/include/**",
+        "/home/christopher/quac_ws/ros2_ws/src/quac/hardware/include"
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",
