@@ -9,6 +9,7 @@
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
+#include "stdbool.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -22,7 +23,7 @@ struct diffdrive_wheel
   double state_position;
   double state_velocity;
   int id;
-  int invert;
+  int scalar;
 };
 
 class DiffDriveDDSM115 : public hardware_interface::SystemInterface
@@ -58,6 +59,7 @@ private:
   std::string m_Port;
   int m_EncoderResolution;
   int m_Act;
+  bool m_UseEsp32;
 };
 
 }

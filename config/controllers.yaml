@@ -1,14 +1,14 @@
 controller_manager:
   ros__parameters:
-    update_rate: 20
+    update_rate: 10
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
-      publish_rate: 20
+      publish_rate: 10
 
     diff_drive_controller:
       type: diff_drive_controller/DiffDriveController
-      publish_rate: 20
+      publish_rate: 10
 
 diff_drive_controller:
   ros__parameters:

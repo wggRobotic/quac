@@ -70,7 +70,7 @@
       <self_collide>false</self_collide>
     </model>
     <model name='box'>
-      <pose>1.8029219467110664 -4.9402323017846799 0.49999999990199806 6.2287739151293738e-22 9.3279666454713669e-22 -3.6315533669320137e-22</pose>
+      <pose>0.18029219467110664 -0.49402323017846799 0.049999999990199806 6.2287739151293738e-22 9.3279666454713669e-22 -3.6315533669320137e-22</pose>
       <link name='box_link'>
         <inertial>
           <inertia>
@@ -87,7 +87,7 @@
         <collision name='box_collision'>
           <geometry>
             <box>
-              <size>1 1 1</size>
+              <size>0.2 0.2 0.2</size>
             </box>
           </geometry>
           <surface>
@@ -101,7 +101,7 @@
         <visual name='box_visual'>
           <geometry>
             <box>
-              <size>1 1 1</size>
+              <size>0.2 0.2 0.2</size>
             </box>
           </geometry>
           <material>
@@ -117,7 +117,7 @@
       <self_collide>false</self_collide>
     </model>
     <model name='cylinder'>
-      <pose>2.1278173043812618 3.7029515542140965 0.49999942638036005 2.4289046005190011e-20 1.5754678275059134e-20 -9.0169543863959e-21</pose>
+      <pose>0.21278173043812618 0.37029515542140965 0.049999942638036005 2.4289046005190011e-20 1.5754678275059134e-20 -9.0169543863959e-21</pose>
       <link name='cylinder_link'>
         <inertial>
           <inertia>
@@ -134,8 +134,8 @@
         <collision name='cylinder_collision'>
           <geometry>
             <cylinder>
-              <radius>0.5</radius>
-              <length>1</length>
+              <radius>0.1</radius>
+              <length>0.2</length>
             </cylinder>
           </geometry>
           <surface>
@@ -149,8 +149,8 @@
         <visual name='cylinder_visual'>
           <geometry>
             <cylinder>
-              <radius>0.5</radius>
-              <length>1</length>
+              <radius>0.1</radius>
+              <length>0.2</length>
             </cylinder>
           </geometry>
           <material>
