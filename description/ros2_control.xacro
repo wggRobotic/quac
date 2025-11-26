@@ -4,7 +4,7 @@
     <ros2_control name="quac_hardware" type="system">
     <hardware>
         <plugin>quac_hardware/DiffDriveDDSM115</plugin>
-        <param name="port">/dev/ttyAMA0</param>
+        <param name="port">/dev/ttyACM0</param>
         <param name="encoder_resolution">4096</param>
         <param name="act">6</param>
         <param name="use_esp32">false</param>

@@ -143,7 +143,7 @@ hardware_interface::CallbackReturn DiffDriveDDSM115::on_configure(const rclcpp_l
     tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
     tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes
     tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-    tty.c_cc[VTIME] = 1;  // Read timeout
+    tty.c_cc[VTIME] = 0;  // Read timeout
     tty.c_cc[VMIN] = 0;
   }
 
@@ -239,6 +239,8 @@ hardware_interface::return_type DiffDriveDDSM115::write(const rclcpp::Time & tim
 
     if (m_UseEsp32 == false)
     {
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
       uint8_t drive_response[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
       int total_num_bytes = 0;
       int num_bytes = 0;
@@ -278,7 +280,6 @@ hardware_interface::return_type DiffDriveDDSM115::write(const rclcpp::Time & tim
       
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
   }
 
   return hardware_interface::return_type::OK;
