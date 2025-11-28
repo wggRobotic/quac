@@ -239,7 +239,7 @@ hardware_interface::return_type DiffDriveDDSM115::write(const rclcpp::Time & tim
 
     if (m_UseEsp32 == false)
     {
-      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
       uint8_t drive_response[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
       int total_num_bytes = 0;
