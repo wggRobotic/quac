@@ -3,7 +3,7 @@
 sudo apt update
 sudo apt install ros-jazzy-ros2-control ros-jazzy-ros2-controlllers
 ```
-## On the pilots machine
+## On the pilot's machine
 ```
 sudo apt update
 sudo apt install ros-jazzy-twist-mux

@@ -9,59 +9,36 @@ from launch.substitutions import Command
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
 
-import time
-
 def generate_launch_description():
-    package_name = 'quac'
+    package_dir = get_package_share_directory('quac')
 
-    # Robot State Publisher
     rsp = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory(package_name),'launch','rsp.launch.py'
-        )]), launch_arguments={'use_sim_time': 'false'}.items()
-    )
-
-    time.sleep(5)    
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch','rsp.launch.py')]),
+        launch_arguments={'use_sim_time': 'false'}.items()
+    )  
 
     robot_description = Command(['ros2 param get --hide-type /quac/robot_state_publisher robot_description'])
 
     controller_manager = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[{'robot_description': robot_description},
-                    os.path.join(get_package_share_directory(package_name),'config','controllers.yaml')
+        parameters=[
+            os.path.join(package_dir,'config','controllers.yaml'),
+            {'robot_description': robot_description},           
         ]
     )
 
     delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
 
-    delayed_diff_drive_controller = RegisterEventHandler(
+    delayed_controllers = RegisterEventHandler(
         event_handler=OnProcessStart(
             target_action=controller_manager,
             on_start=[
-                Node(
-                    package='controller_manager',
-                    executable='spawner',
-                    arguments=['diff_drive_controller'],
-                    output='screen',
-                    remappings=[
-                        ('diff_cont/cmd_vel', 'cmd_vel')
-                    ]
-                )
-            ],
-        )
-    )
-
-    delayed_joint_state_broadcaster = RegisterEventHandler(
-        event_handler=OnProcessStart(
-            target_action=controller_manager,
-            on_start=[
-                Node(
-                    package='controller_manager',
-                    executable='spawner',
-                    arguments=['joint_state_broadcaster'],
-                    output='screen',
-                )
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource(
+                        [os.path.join(package_dir,'launch','controllers.launch.py')]
+                    )
+                )  
             ],
         )
     )
@@ -79,7 +56,6 @@ def generate_launch_description():
         PushRosNamespace('quac'),
         rsp,
         delayed_controller_manager,
-        delayed_diff_drive_controller,
-        delayed_joint_state_broadcaster,
+        delayed_controllers,
         lidar
     ])

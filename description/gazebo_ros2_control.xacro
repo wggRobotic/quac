@@ -35,6 +35,14 @@
     
     <gazebo>
         <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system.so">
+            <ros>
+                <namespace>quac</namespace>
+                <remapping>/robot_description:=robot_description</remapping>
+                <remapping>/tf:=tf</remapping>
+                <remapping>/clock:=clock</remapping>
+                <remapping>diff_drive_controller/cmd_vel:=cmd_vel</remapping>
+                <remapping>diff_drive_controller/odom:=odom</remapping>
+            </ros>
             <parameters>$(find quac)/config/controllers.yaml</parameters>
             <parameters>$(find quac)/config/gz_sim_time.yaml</parameters>
         </plugin>

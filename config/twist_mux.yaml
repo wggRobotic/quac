@@ -1,12 +1,15 @@
-twist_mux:
-  topics:
-    navigation:
-      topic: cmd_vel_nav
-      timeout: 0.5
-      priority: 10
-      type: "TwistStamped"
-    pilot:
-      topic: cmd_vel_pilot
-      timeout: 0.5
-      priority: 100
-      type: "TwistStamped"
+quac:
+  twist_mux:
+    ros__parameters:
+      use_stamped: true 
+      topics:
+        navigation:
+          topic: cmd_vel_nav
+          timeout: 0.5
+          priority: 10
+          type: "TwistStamped"
+        pilot:
+          topic: cmd_vel_pilot
+          timeout: 0.5
+          priority: 100
+          type: "TwistStamped"

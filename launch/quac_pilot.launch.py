@@ -9,52 +9,66 @@ from launch_ros.actions import Node, PushRosNamespace
 
 def generate_launch_description():
 
-    nav_flag = '-nav' in sys.argv
+    package_dir = get_package_share_directory('quac')
 
-    rviz_node = Node(
+    nav_flag = 'nav:=true' in sys.argv
+    sim_flag = 'sim:=true' in sys.argv
+
+    simulation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(package_dir,'launch','sim.launch.py')])
+    )
+
+    rviz = Node(
         package="rviz2",
         executable="rviz2",
-        name="rviz2",
         output="screen",
-        arguments=["-d", os.path.join(get_package_share_directory('quac'),'config','map.rviz' if nav_flag else 'default.rviz')]
+        arguments=["-d", os.path.join(package_dir,'config','map.rviz' if nav_flag else 'default.rviz')],
+        remappings=[
+            ('/robot_description', 'robot_description'),
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static'),
+            ('/clicked_point', 'clicked_point'),
+            ('/goal_pose', 'goal_pose'),
+            ('/initialpose', 'initialpose'),
+        ],
     )
-
-    # Full path to the params file
-    params_file_path = os.path.join(
-        os.getcwd(), 'src', 'quac', 'config', 'mapper_params_online_async.yaml'
-    )
-
-    map_server = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
-        ),
-        launch_arguments={
-            'params_file': params_file_path
-        }.items()
-    )
-
-    
 
     twist_mux = Node(
         package='twist_mux',
         executable='twist_mux',
-        name='twist_mux',
         output='screen',
         parameters=[
             os.path.join(
-                get_package_share_directory('quac'),
+                package_dir,
                 'config',
                 'twist_mux.yaml'
             )
         ],
         remappings=[
-            ('cmd_vel_out', 'diff_drive_controller/cmd_vel')
-        ]
+            ('cmd_vel_out', 'cmd_vel')
+        ],
     )
 
-    return LaunchDescription([
+    map_server = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(package_dir, 'launch', 'online_async_launch.py')
+        ),
+        launch_arguments={
+            'use_sim_time': 'true' if sim_flag else 'false',
+            'params_file': os.path.join(package_dir, 'config', 'mapper_params_online_async.yaml'),
+        }.items()
+    )
+
+    ld = [
         PushRosNamespace('quac'),
-        rviz_node,
-        map_server,
+        rviz,
         twist_mux
-    ])
+    ]
+
+    if sim_flag:
+        ld.append(simulation)
+        
+    if nav_flag:
+        ld.append(map_server)
+
+    return LaunchDescription(ld)
