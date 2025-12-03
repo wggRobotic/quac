@@ -18,9 +18,6 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
-
-
-
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -60,21 +57,6 @@ install(TARGETS quac_hardware
   DESTINATION lib
 )
 
-#add_library(twist_joint_plugin SHARED src/gazebo_plugin.cpp)
-#ament_target_dependencies(
-#  twist_joint_plugin
-#  rclcpp
-#  geometry_msgs
-#  sensor_msgs
-#  nav_msgs
-#  tf2
-#  tf2_ros  
-#)
-#target_link_libraries(twist_joint_plugin ${GAZEBO_LIBRARIES})
-
-
-
-
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -86,12 +68,5 @@ install(
   DIRECTORY config description launch worlds meshes
   DESTINATION share/${PROJECT_NAME}  
 )
-
-#install(
-#  TARGETS twist_joint_plugin
-#  DESTINATION lib
-#)
-
-#install(DIRECTORY include/ DESTINATION include/)
 
 ament_package()
