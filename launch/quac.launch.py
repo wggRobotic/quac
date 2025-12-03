@@ -25,7 +25,12 @@ def generate_launch_description():
         parameters=[
             os.path.join(package_dir,'config','controllers.yaml'),
             {'robot_description': robot_description},           
-        ]
+        ],
+        remappings=[
+            ('/tf', 'tf'),
+            ('diff_drive_controller/cmd_vel', 'cmd_vel'),
+            ('diff_drive_controller/odom', 'odom')
+        ],
     )
 
     delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
