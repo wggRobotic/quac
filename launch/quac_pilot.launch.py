@@ -59,6 +59,17 @@ def generate_launch_description():
         }.items()
     )
 
+    nav_server = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(package_dir, 'launch', 'navigation_launch.py')
+        ),
+        launch_arguments={
+            'use_sim_time': 'true' if sim_flag else 'false',
+            'namespace': 'quac',
+            'params_file': os.path.join(package_dir, 'config', 'nav2_params.yaml')
+        }.items()
+    )
+
     ld = [
         PushRosNamespace('quac'),
         rviz,
@@ -69,6 +80,7 @@ def generate_launch_description():
         ld.append(simulation)
         
     if nav_flag:
+        #ld.append(nav_server)
         ld.append(map_server)
 
     return LaunchDescription(ld)

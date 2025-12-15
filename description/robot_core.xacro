@@ -92,6 +92,16 @@
                     <mesh filename="${mesh}" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
                 </geometry>
             </collision>
+
+            <gazebo>
+                <mu1>0.2</mu1>       <!-- lateral friction -->
+                <mu2>0.8</mu2>       <!-- longitudinal friction -->
+                <fdir1>1 0 0</fdir1> <!-- wheel forward direction -->
+                <slip1>0.1</slip1>  <!-- longitudinal slip tolerance -->
+                <slip2>0.5</slip2>  <!-- lateral slip tolerance -->
+                <turning_surface>false</turning_surface> <!-- optional -->
+            </gazebo>
+
         </link>
 
         <transmission name="${name}_trans">

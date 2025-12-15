@@ -5,6 +5,9 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.actions import ExecuteProcess
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessStart
 
 
 def generate_launch_description():
@@ -14,18 +17,24 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([os.path.join(package_dir,'launch','rsp.launch.py')]),
         launch_arguments={'use_sim_time': 'true'}.items()
     )
-
-    default_world = os.path.join(
-        package_dir,
-        'worlds',
-        'obstacles.world'
-        )    
     
-    gazebo = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')]),
-                    launch_arguments={'gz_args': f'-r -v4 {default_world}', 'on_exit_shutdown': 'true'}.items()
-             )
+    generate_sdf = ExecuteProcess(
+        cmd=['xacro', 'src/quac/worlds/obstacles.sdf.xacro','-o', '/tmp/world.sdf'],
+        output='screen'
+    )
+    
+    gazebo = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=generate_sdf,
+            on_start=[
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([os.path.join(
+                        get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')]),
+                        launch_arguments={'gz_args': f'-r -v4 /tmp/world.sdf', 'on_exit_shutdown': 'true'}.items()
+                )
+            ],
+        )
+    )
 
     bridge_params = os.path.join(package_dir,'config','gz_bridge.yaml')
     
@@ -56,6 +65,7 @@ def generate_launch_description():
     )  
 
     return LaunchDescription([
+        generate_sdf,
         rsp,
         gazebo,
         ros_gz_bridge,
