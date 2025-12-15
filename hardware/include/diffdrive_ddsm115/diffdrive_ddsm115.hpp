@@ -19,11 +19,13 @@ namespace quac_hardware
 struct diffdrive_wheel
 {
   std::string name;
+  uint16_t last_position;
   double command_velocity;
   double state_position;
   double state_velocity;
   int id;
   int scalar;
+  bool read;
 };
 
 class DiffDriveDDSM115 : public hardware_interface::SystemInterface
@@ -57,9 +59,8 @@ private:
 
   int m_SerialFD;
   std::string m_Port;
-  int m_EncoderResolution;
   int m_Act;
-  bool m_UseEsp32;
+  int m_Counter;
 };
 
 }
