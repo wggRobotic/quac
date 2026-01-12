@@ -4,7 +4,7 @@ quac:
       use_stamped: true 
       topics:
         navigation:
-          topic: cmd_vel_nav
+          topic: cmd_vel_nav2
           timeout: 0.5
           priority: 10
           type: "TwistStamped"

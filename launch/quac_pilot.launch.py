@@ -80,7 +80,7 @@ def generate_launch_description():
         ld.append(simulation)
         
     if nav_flag:
-        #ld.append(nav_server)
+        ld.append(nav_server)
         ld.append(map_server)
 
     return LaunchDescription(ld)
