@@ -60,6 +60,7 @@ private:
   int m_SerialFD;
   std::string m_Port;
   int m_Act;
+  bool m_Feedback;
   int m_Counter;
 };
 
