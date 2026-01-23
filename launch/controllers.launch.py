@@ -17,8 +17,14 @@ def generate_launch_description():
         output='screen',
     )
 
+    position_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["arm_position_controller"],
+    )
 
     return LaunchDescription([
         diff_drive,
         joint_state,
+        position_controller,
     ])

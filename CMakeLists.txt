@@ -32,7 +32,7 @@ find_package(controller_interface REQUIRED)
 include_directories(${GAZEBO_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/hardware/include)
 
 add_library(quac_hardware SHARED
-  hardware/diffdrive_ddsm115.cpp
+  hardware/ddsm115.cpp
 )
 
 ament_target_dependencies(quac_hardware

@@ -1,4 +1,4 @@
-#include "diffdrive_ddsm115/diffdrive_ddsm115.hpp"
+#include "ddsm115/ddsm115.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -16,12 +16,12 @@
 namespace quac_hardware
 {
 
-DiffDriveDDSM115::DiffDriveDDSM115() : m_Logger(rclcpp::get_logger("DiffDriveDDSM115"))
+DDSM115::DDSM115() : m_Logger(rclcpp::get_logger("DDSM115"))
 {
 
 }
 
-hardware_interface::CallbackReturn DiffDriveDDSM115::on_init(const hardware_interface::HardwareInfo &info)
+hardware_interface::CallbackReturn DDSM115::on_init(const hardware_interface::HardwareInfo &info)
 {
   if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS) return hardware_interface::CallbackReturn::ERROR;
 
@@ -42,7 +42,7 @@ hardware_interface::CallbackReturn DiffDriveDDSM115::on_init(const hardware_inte
   {
     const auto &joint = info_.joints[i];
 
-    diffdrive_wheel w;
+    ddsm115_motor w;
     w.name = joint.name;
     w.command_velocity = 0.0;
     w.state_position = 0.0;
@@ -64,7 +64,7 @@ hardware_interface::CallbackReturn DiffDriveDDSM115::on_init(const hardware_inte
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-std::vector<hardware_interface::StateInterface> DiffDriveDDSM115::export_state_interfaces()
+std::vector<hardware_interface::StateInterface> DDSM115::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
@@ -77,7 +77,7 @@ std::vector<hardware_interface::StateInterface> DiffDriveDDSM115::export_state_i
   return state_interfaces;
 }
 
-std::vector<hardware_interface::CommandInterface> DiffDriveDDSM115::export_command_interfaces()
+std::vector<hardware_interface::CommandInterface> DDSM115::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
 
@@ -89,7 +89,7 @@ std::vector<hardware_interface::CommandInterface> DiffDriveDDSM115::export_comma
   return command_interfaces;
 }
 
-hardware_interface::CallbackReturn DiffDriveDDSM115::on_configure(const rclcpp_lifecycle::State & previous_state)
+hardware_interface::CallbackReturn DDSM115::on_configure(const rclcpp_lifecycle::State & previous_state)
 {
   RCLCPP_INFO(m_Logger, "Configuring ...please wait...");
 
@@ -136,7 +136,7 @@ hardware_interface::CallbackReturn DiffDriveDDSM115::on_configure(const rclcpp_l
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn DiffDriveDDSM115::on_cleanup(const rclcpp_lifecycle::State & previous_state)
+hardware_interface::CallbackReturn DDSM115::on_cleanup(const rclcpp_lifecycle::State & previous_state)
 {
   RCLCPP_INFO(m_Logger, "Cleaning up ...please wait...");
   
@@ -165,7 +165,7 @@ uint8_t maximCrc8(uint8_t* data, const unsigned int size)
   return crc;
 }
 
-hardware_interface::return_type DiffDriveDDSM115::read(const rclcpp::Time & time, const rclcpp::Duration & period)
+hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
   double dt = period.seconds();
 
@@ -232,7 +232,7 @@ hardware_interface::return_type DiffDriveDDSM115::read(const rclcpp::Time & time
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type DiffDriveDDSM115::write(const rclcpp::Time & time, const rclcpp::Duration & period)
+hardware_interface::return_type DDSM115::write(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
   for (size_t i = 0; i < m_Wheels.size(); i++)
   {
@@ -266,4 +266,4 @@ hardware_interface::return_type DiffDriveDDSM115::write(const rclcpp::Time & tim
 }
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(quac_hardware::DiffDriveDDSM115, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(quac_hardware::DDSM115, hardware_interface::SystemInterface)

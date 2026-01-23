@@ -67,7 +67,7 @@ Visualization Manager:
           Value: true
         chassis:
           Value: true
-        laser_frame:
+        lidar:
           Value: true
         quac/base_link:
           Value: true
@@ -81,7 +81,7 @@ Visualization Manager:
           Value: true
         wheel_rear_right:
           Value: true
-      Marker Scale: 1
+      Marker Scale: 0.2
       Name: TF
       Show Arrows: true
       Show Axes: true
@@ -121,7 +121,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        laser_frame:
+        lidar:
           Alpha: 1
           Show Axes: false
           Show Trail: false

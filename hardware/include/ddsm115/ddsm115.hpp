@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef DIFFDRIVE_DDSM115_H
-#define DIFFDRIVE_DDSM115_H
+#ifndef DDSM115_HPP
+#define DDSM115_HPP
 
 #include <cstring>
 #include "rclcpp/rclcpp.hpp"
@@ -16,7 +16,7 @@
 namespace quac_hardware
 {
 
-struct diffdrive_wheel
+struct ddsm115_motor
 {
   std::string name;
   uint16_t last_position;
@@ -28,14 +28,12 @@ struct diffdrive_wheel
   bool read;
 };
 
-class DiffDriveDDSM115 : public hardware_interface::SystemInterface
+class DDSM115 : public hardware_interface::SystemInterface
 {
 
 public:
 
-  //RCLCPP_SHARED_PTR_DEFINITIONS(DiffDriveDDSM115)
-
-  DiffDriveDDSM115();
+  DDSM115();
 
   hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override;
 
@@ -55,7 +53,7 @@ private:
 
   rclcpp::Logger m_Logger;
   std::chrono::time_point<std::chrono::system_clock> m_Time;
-  std::vector<diffdrive_wheel> m_Wheels;
+  std::vector<ddsm115_motor> m_Wheels;
 
   int m_SerialFD;
   std::string m_Port;

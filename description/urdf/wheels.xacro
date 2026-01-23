@@ -1,69 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:macro name="inertial_cylinder" params="mass length radius *origin">
-        <inertial>
-            <xacro:insert_block name="origin"/>
-            <mass value="${mass}" />
-            <inertia ixx="${(1/12) * mass * (3*radius*radius + length*length)}" ixy="0.0" ixz="0.0"
-                    iyy="${(1/12) * mass * (3*radius*radius + length*length)}" iyz="0.0"
-                    izz="${(1/2) * mass * (radius*radius)}" />
-        </inertial>
-    </xacro:macro>
-
     <xacro:property name="mesh_scale" value="0.001"/>
-
-    <material name="chassis_material">
-        <color rgba="1.0 1.0 1.0 1.0" />
-    </material>
-
-    <material name="wheel_material">
-        <color rgba="0.6 0.6 0.6 1.0" />
-    </material>
-
-    <link name="base_link"/>
-
-    <joint name="base_footprint_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="base_footprint"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-    </joint>
-
-    <link name="base_footprint"/>
-
-    <joint name="chassis_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="chassis"/>
-        <origin xyz="0 0 0.0" rpy="0 0 ${-pi/2}"/>
-    </joint>
-
-    <link name="chassis">
-        <inertial>
-            <origin xyz="-7.066717348492194e-05 3.485618129802738e-05 0.00889428874586655" rpy="0 0 0"/>
-            <mass value="2.985747783671821"/>
-            <inertia ixx="0.025172" iyy="0.005971" izz="0.030362" ixy="-6e-06" iyz="2e-06" ixz="-2e-06"/>
-        </inertial>
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-            <mesh filename="package://quac/meshes/base_link.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
-            </geometry>
-            <material name="chassis_material"/>
-        </visual>
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-            <mesh filename="package://quac/meshes/base_link.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
-            </geometry>
-        </collision>
-    </link>
-
-    <gazebo reference="chassis">
-        <material>Gazebo/White</material>
-        <mu1>0.2</mu1>
-        <mu2>0.2</mu2>
-        <gravity>true</gravity>
-    </gazebo>
 
     <xacro:macro name="wheel" params="name joint_origin_xyz link_xyz mesh">
         <joint name="${name}_joint" type="continuous">
@@ -104,24 +42,12 @@
 
         </link>
 
-        <transmission name="${name}_trans">
-            <type>transmission_interface/SimpleTransmission</type>
-            <joint name="${name}_joint">
-                <hardware_interface>velocity</hardware_interface>
-            </joint>
-            <actuator name="${name}_motor">
-                <hardware_interface>velocity</hardware_interface>
-                <mechanicalReduction>1</mechanicalReduction>
-            </actuator>
-        </transmission>
-
         <gazebo reference="${name}">
             <material>Gazebo/Black</material>
         </gazebo>
     </xacro:macro>
 
     <!-- Four wheels -->
-
     
     <xacro:wheel 
         name="wheel_rear_right"  
@@ -148,5 +74,5 @@
         link_xyz="0.105 0.104 0.0183" 
         mesh="package://quac/meshes/wheel_4.stl"
         />
-    
+
 </robot>

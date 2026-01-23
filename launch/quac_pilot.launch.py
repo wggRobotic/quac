@@ -11,7 +11,6 @@ def generate_launch_description():
 
     package_dir = get_package_share_directory('quac')
 
-    nav_flag = 'nav:=true' in sys.argv
     sim_flag = 'sim:=true' in sys.argv
 
     simulation = IncludeLaunchDescription(
@@ -22,7 +21,7 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         output="screen",
-        arguments=["-d", os.path.join(package_dir,'config','map.rviz' if nav_flag else 'default.rviz')],
+        arguments=["-d", os.path.join(package_dir,'config','nav.rviz')],
         remappings=[
             ('/robot_description', 'robot_description'),
             ('/tf', 'tf'),
@@ -78,9 +77,9 @@ def generate_launch_description():
 
     if sim_flag:
         ld.append(simulation)
+
+    #ld.append(nav_server)
+    ld.append(map_server)
         
-    if nav_flag:
-        ld.append(nav_server)
-        ld.append(map_server)
 
     return LaunchDescription(ld)

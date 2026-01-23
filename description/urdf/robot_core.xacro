@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="lidar.xacro" />
+    <xacro:include filename="wheels.xacro" /> 
+    <xacro:include filename="arm.xacro" /> 
+
+    <material name="chassis_material">
+        <color rgba="1.0 1.0 1.0 1.0" />
+    </material>
+
+    <material name="wheel_material">
+        <color rgba="0.6 0.6 0.6 1.0" />
+    </material>
+
+    <link name="base_link"/>
+
+    <joint name="base_footprint_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_footprint"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="base_footprint"/>
+
+    <joint name="chassis_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis"/>
+        <origin xyz="0 0 0.0" rpy="0 0 ${-pi/2}"/>
+    </joint>
+
+    <link name="chassis">
+        <inertial>
+            <origin xyz="-7.066717348492194e-05 3.485618129802738e-05 0.00889428874586655" rpy="0 0 0"/>
+            <mass value="2.985747783671821"/>
+            <inertia ixx="0.025172" iyy="0.005971" izz="0.030362" ixy="-6e-06" iyz="2e-06" ixz="-2e-06"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://quac/meshes/base_link.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
+            </geometry>
+            <material name="chassis_material"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://quac/meshes/base_link.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="chassis">
+        <material>Gazebo/White</material>
+        <mu1>0.2</mu1>
+        <mu2>0.2</mu2>
+        <gravity>true</gravity>
+    </gazebo>
+    
+</robot>
