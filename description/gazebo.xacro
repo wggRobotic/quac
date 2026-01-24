@@ -39,7 +39,7 @@
             <plugin>gz_ros2_control/GazeboSimSystem</plugin>
         </hardware>
 
-        <joint name="joint1">
+        <joint name="arm_servo_0_joint">
             <param name="id">5</param>
             <param name="type">pos</param>
             <param name="offset">1.570796</param>
@@ -58,7 +58,7 @@
             <state_interface name="temperature"/>
         </joint>
 
-        <joint name="joint2">
+        <joint name="arm_servo_1_joint">
             <param name="id">6</param>
             <param name="type">pos</param>
             <param name="inverted">true</param>
@@ -77,7 +77,7 @@
             <state_interface name="temperature"/>
         </joint>
 
-        <joint name="joint3">
+        <joint name="gripper_servo_joint">
             <param name="id">1</param>
             <param name="type">pos</param>
             <param name="inverted">true</param> 

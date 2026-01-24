@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:include filename="lidar.xacro" />
-    <xacro:include filename="wheels.xacro" /> 
-    <xacro:include filename="arm.xacro" /> 
 
     <material name="chassis_material">
         <color rgba="1.0 1.0 1.0 1.0" />
@@ -13,20 +10,10 @@
         <color rgba="0.6 0.6 0.6 1.0" />
     </material>
 
-    <link name="base_link"/>
-
-    <joint name="base_footprint_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="base_footprint"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-    </joint>
-
-    <link name="base_footprint"/>
-
     <joint name="chassis_joint" type="fixed">
         <parent link="base_link"/>
         <child link="chassis"/>
-        <origin xyz="0 0 0.0" rpy="0 0 ${-pi/2}"/>
+        <origin xyz="0 0 0.07" rpy="0 0 ${-pi/2}"/>
     </joint>
 
     <link name="chassis">

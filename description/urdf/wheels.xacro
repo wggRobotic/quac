@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:property name="mesh_scale" value="0.001"/>
-
     <xacro:macro name="wheel" params="name joint_origin_xyz link_xyz mesh">
         <joint name="${name}_joint" type="continuous">
             <origin xyz="${joint_origin_xyz}" rpy="0 0 0"/>

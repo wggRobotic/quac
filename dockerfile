@@ -5,7 +5,8 @@ RUN sudo apt update && apt install git
 RUN sudo apt install -y \
     ros-jazzy-ros2-control \
     ros-jazzy-ros2-controllers \
-    ros-jazzy-xacro
+    ros-jazzy-xacro \
+    ros-jazzy-rmw-cyclonedds-cpp
 
 RUN rm -rf /var/lib/apt/lists/*
 

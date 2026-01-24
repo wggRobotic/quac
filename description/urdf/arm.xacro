@@ -1,36 +1,10 @@
 <?xml version="1.0"?>
-<!-- Minimal 2-servo arm, all joints rotate around X axis -->
+
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:include filename="inertial_macros.xacro" />
-
-    <xacro:property name="servo_x" value="0.025"/>
-    <xacro:property name="servo_y" value="0.035"/>
-    <xacro:property name="servo_z" value="0.0455"/>
-
-    <xacro:property name="plate_x" value="0.03" />
-    <xacro:property name="plate_y" value="0.002" />
-    <xacro:property name="plate_z" value="0.110" />
-
-
-    <xacro:macro name="servo" params="servo_name">
-        <link name="${servo_name}">
-            <visual>
-                <geometry>
-                    <box size="${servo_x} ${servo_y} ${servo_z}" />
-                </geometry>
-                <material name="black" />
-            </visual>
-            <collision>
-                <geometry>
-                    <box size="${servo_x} ${servo_y} ${servo_z}" />
-                </geometry>
-            </collision>
-            <xacro:inertial_box mass="0.1" x="${servo_x}" y="${servo_y}" z="${servo_z}">
-                <origin xyz="0 0 0" rpy="0 0 0"/>
-            </xacro:inertial_box>
-        </link>
-    </xacro:macro>
+    <xacro:property name="plate_x" value="0.110" />
+    <xacro:property name="plate_y" value="0.03" />
+    <xacro:property name="plate_z" value="0.002" />    
 
     <xacro:macro name="plate" params="plate_name">
         <link name="${plate_name}">
@@ -51,190 +25,87 @@
         </link>
     </xacro:macro>
 
-    <xacro:macro name="axis" params="axis_name">
-        <link name="${axis_name}">
-            <visual>
-                <geometry>
-                    <cylinder radius="0.002" length="0.08" />
-                </geometry>
-                <material name="red" />
-            </visual>
-            <xacro:inertial_cylinder mass="0.1" length="0.08" radius="0.002">
-                <origin xyz="0 0 0" rpy="0 0 0"/>
-            </xacro:inertial_cylinder>
-        </link>
-    </xacro:macro>
-
     <!-- Materials -->
-    <material name="black">
-        <color rgba="0.05 0.05 0.05 1.0" />
-    </material>
     <material name="black_tr">
         <color rgba="0.05 0.05 0.05 0.5" />
-    </material>
-    <material name="red">
-        <color rgba="0.5 0.00 0.00 1.0" />
     </material>
     <material name="orange">
         <color rgba="1.0 0.4 0.0 1.0" />
     </material>
 
-    <!-- ===================== -->
-    <!-- Base axis (dummy) -->
-    <!-- ===================== -->
-    <xacro:axis axis_name="base_axis"/>
+    <material name="black">
+        <color rgba="0.05 0.05 0.05 1.0" />
+    </material>
+    <material name="red">
+        <color rgba="0.5 0.00 0.00 1.0" />
+    </material>
 
-    <joint name="base_axis_to_base_link" type="fixed">
-        <parent link="base_link" />
-        <child link="base_axis" />
-        <!-- offset so rotation is not through servo center -->
-        <origin xyz="0.1 0.00 0.04" rpy="${-pi/2} 0 0" />
-    </joint>
-    <!-- ===================== -->
-    <!-- Servo 1 axis (dummy) -->
-    <!-- ===================== -->
-    <xacro:axis axis_name="servo_1_axis"/>
+    <!-- Model -->
 
-
-    <joint name="joint1" type="revolute">
-        <parent link="base_axis" />
-        <child link="servo_1_axis" />
-        <!-- offset so rotation is not through servo center -->
-        <origin xyz="0. 0 0" rpy="0 0 0" />
-        <axis xyz="0 0 1" />
-        <limit lower="-1.57" upper="1.57" effort="1" velocity="1" />
+    <joint name="arm_base_joint" type="fixed">
+        <parent link="chassis" />
+        <child link="arm_servo_0_axis" />
+        <origin xyz="0.0 0.135 0.04" rpy="0 ${pi/2} 0" />
     </joint>
 
-    <xacro:servo servo_name="servo_1"/>
+    <xacro:servo_flipped name="arm_servo_0"/>
 
-    <!-- ===================== -->
-    <!-- Servo 1               -->
-    <!-- ===================== -->
-
-    <joint name="base_to_servo_1" type="fixed">
-        <parent link="servo_1_axis" />
-        <child link="servo_1" />
-        <!-- mounted on the side of the base -->
-        <origin xyz="0.00 -0.011375 0.0" rpy="1.570796327 0 0" />
-        <axis xyz="0 1 0" />
-        <limit lower="-1.57" upper="1.57" effort="1" velocity="1" />
+    <joint name="plate_0_joint" type="fixed">
+        <parent link="arm_servo_0" />
+        <child link="plate_0" />
+        <origin xyz="-0.058875 0.0 0.0185" rpy="0 0 0" />
     </joint>
 
-    <!-- ===================== -->
-    <!-- Plate 1 (side-mounted) -->
-    <!-- ===================== -->
+    <joint name="plate_1_joint" type="fixed">
+        <parent link="arm_servo_0" />
+        <child link="plate_1" />
+        <origin xyz="-0.058875 0.0 -0.0185" rpy="0 0 0" />
+    </joint>
+
+    <xacro:plate plate_name="plate_0"/>
     <xacro:plate plate_name="plate_1"/>
 
-    <joint name="servo_1_to_plate_1" type="fixed">
-        <parent link="servo_1" />
-        <child link="plate_1" />
-        <!-- plate flush with servo side (sandwich-style) -->
-        <origin xyz="0.0 0.0185 0.0475" rpy="0 0 0" />
+    <joint name="arm_seg_0_joint" type="fixed">
+        <parent link="arm_servo_0" />
+        <child link="arm_servo_1" />
+        <origin xyz="-0.101375 0.03 0.0" rpy="0 0 ${pi/2}" />
     </joint>
 
-    <!-- ===================== -->
-    <!-- Plate 2 (side-mounted) -->
-    <!-- ===================== -->
-    <xacro:plate plate_name="plate_2"/>
+    <xacro:servo name="arm_servo_1"/>
 
-    <joint name="servo_1_to_plate_2" type="fixed">
-        <parent link="servo_1" />
+    <joint name="plate_2_joint" type="fixed">
+        <parent link="arm_servo_1_axis" />
         <child link="plate_2" />
-        <!-- plate flush with servo side (sandwich-style) -->
-        <origin xyz="0 -0.0185 0.0475" rpy="0 0 0" />
+        <origin xyz="0.0425 0 0.0185" rpy="0 0 0" />
     </joint>
 
-    <!-- ===================== -->
-    <!-- Servo 2               -->
-    <!-- ===================== -->
-    <xacro:servo servo_name="servo_2"/>
-
-    <joint name="plate_1_to_servo_2" type="fixed">
-        <parent link="plate_1" />
-        <child link="servo_2" />
-        <origin xyz="0.0175 -0.0185 0.0425" rpy="0 -1.570796327 0" />
+    <joint name="plate_3_joint" type="fixed">
+        <parent link="arm_servo_1_axis" />
+        <child link="plate_3" />
+        <origin xyz="0.0425 0 -0.0185" rpy="0 0 0" />
     </joint>
 
-    <!-- ===================== -->
-    <!-- Servo 2 axis (dummy) -->
-    <!-- ===================== -->
-    <xacro:axis axis_name="servo_2_axis"/>
-
-
-    <joint name="servo_2_axis_to_servo_2" type="fixed">
-        <parent link="servo_2" />
-        <child link="servo_2_axis" />
-        <!-- offset so rotation is not through servo center -->
-        <origin xyz="0 0 -0.011375" rpy="-1.570796327 0 0" />
-    </joint>
-
-    
-    <!-- ===================== -->
-    <!-- Plate 3 (side-mounted) -->
-    <!-- ===================== -->
+    <xacro:plate plate_name="plate_2"/>
     <xacro:plate plate_name="plate_3"/>
 
-    <joint name="plate_3_axis_to_plate_3" type="fixed">
-        <parent link="plate_3_axis" />
-        <child link="plate_3" />
-        <origin xyz="-0.0425 0 0.0185" rpy="-1.570796327 0 -1.570796327" />
-    </joint>
-    <!-- ===================== -->
-    <!-- Servo 3               -->
-    <!-- ===================== -->
-    <xacro:servo servo_name="servo_3"/>
-
-    <joint name="plate_3_to_servo_3" type="fixed">
-        <parent link="plate_3" />
-        <child link="servo_3" />
-        <origin xyz="0 0.0185 -0.0425" rpy="0 0 0" />
-    </joint>
-    <!-- ===================== -->
-    <!-- Plate 4 (side-mounted) -->
-    <!-- ===================== -->
-    <xacro:plate plate_name="plate_4"/>
-
-    <joint name="servo_3_axis_to_plate_4" type="fixed">
-        <parent link="servo_3" />
-        <child link="plate_4" />
-        <origin xyz="0 0.0185 0.0425" rpy="0 0 0" />
+    <joint name="arm_segment_1_joint" type="fixed">
+        <parent link="arm_servo_1_axis" />
+        <child link="gripper_servo" />
+        <origin xyz="0.1 0.0 0.0" rpy="${-pi/2} 0 0" />
     </joint>
 
-    <!-- ===================== -->
-    <!-- Servo 3 axis (dummy) -->
-    <!-- ===================== -->
-    <xacro:axis axis_name="servo_3_axis"/>
+    <xacro:servo name="gripper_servo"/>
 
-
-    <joint name="servo_3_to_servo_3_axis" type="fixed">
-        <parent link="servo_3" />
-        <child link="servo_3_axis" />
-        <!-- offset so rotation is not through servo center -->
-        <origin xyz="0.00 0 -0.01137" rpy="0 -1.570796327 0" />
+    <joint name="gripper_gear_joint" type="fixed">
+        <parent link="gripper_servo_axis" />
+        <child link="gripper_gear" />
+        <origin xyz="0.0 0.0 0.03" rpy="0 0 0" />
     </joint>
 
-    <!-- ===================== -->
-    <!-- Plate 3 axis (dummy) -->
-    <!-- ===================== -->
-    <xacro:axis axis_name="plate_3_axis"/>
-
-
-    <joint name="joint2" type="revolute">
-        <parent link="servo_2_axis" />
-        <child link="plate_3_axis" />
-        <!-- offset so rotation is not through servo center -->
-        <origin xyz="0.00 0 0.00" rpy="0 0 -1.570796327" />
-        <axis xyz="0 0 1" />
-        <limit lower="-1.57" upper="1.57" effort="1" velocity="1" />
-    </joint>
-
-    <!-- ===================== -->
-    <!-- Gripper Gear (dummy) -->
-    <!-- ===================== -->
     <link name="gripper_gear">
         <visual>
             <geometry>
-                <cylinder radius="0.04" length="0.02" />
+                <cylinder radius="0.02" length="0.02" />
             </geometry>
             <material name="red" />
         </visual>
@@ -247,15 +118,5 @@
             <origin xyz="0 0 0" rpy="0 0 0"/>
         </xacro:inertial_cylinder>
     </link>
-
-
-    <joint name="joint3" type="revolute">
-        <parent link="servo_3_axis" />
-        <child link="gripper_gear" />
-        <!-- offset so rotation is not through servo center -->
-        <origin xyz="0.00 0 0.027" rpy="0 0 -1.570796327" />
-        <axis xyz="0 0 1" />
-        <limit lower="-1.57" upper="1.57" effort="1" velocity="1" />
-    </joint>
 
 </robot>

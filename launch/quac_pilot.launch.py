@@ -78,7 +78,7 @@ def generate_launch_description():
     if sim_flag:
         ld.append(simulation)
 
-    #ld.append(nav_server)
+    ld.append(nav_server)
     ld.append(map_server)
         
 
