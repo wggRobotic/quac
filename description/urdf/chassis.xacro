@@ -13,26 +13,26 @@
     <joint name="chassis_joint" type="fixed">
         <parent link="base_link"/>
         <child link="chassis"/>
-        <origin xyz="0 0 0.07" rpy="0 0 ${-pi/2}"/>
+        <origin xyz="0 0 0.09705" rpy="0 0 0"/>
     </joint>
 
     <link name="chassis">
         <inertial>
-            <origin xyz="-7.066717348492194e-05 3.485618129802738e-05 0.00889428874586655" rpy="0 0 0"/>
-            <mass value="2.985747783671821"/>
-            <inertia ixx="0.025172" iyy="0.005971" izz="0.030362" ixy="-6e-06" iyz="2e-06" ixz="-2e-06"/>
+            <origin xyz="-0.006592503505638408 -1.5301626995551604e-17 0.04294027543409115" rpy="0 0 0"/>
+            <mass value="6.419279977222798"/>
+            <inertia ixx="0.031932" iyy="0.058111" izz="0.057234" ixy="-0.0" iyz="-0.0" ixz="0.003075"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://quac/meshes/base_link.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
+                <mesh filename="package://quac/meshes/chassis.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
             </geometry>
             <material name="chassis_material"/>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://quac/meshes/base_link.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
+                <mesh filename="package://quac/meshes/chassis.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
             </geometry>
         </collision>
     </link>
@@ -43,5 +43,17 @@
         <mu2>0.2</mu2>
         <gravity>true</gravity>
     </gazebo>
+
+    <material name="lidar_material">
+        <color rgba="0.8 0.2 0.2 1.0" />
+    </material>
+
+    <joint name="lidar_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="lidar"/>
+        <origin xyz="-0.02 0.0 0.15" rpy="0 0 0"/>
+    </joint>
+
+    <link name="lidar"/>
     
 </robot>

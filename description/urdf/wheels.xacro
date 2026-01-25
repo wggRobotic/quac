@@ -1,33 +1,31 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:macro name="wheel" params="name joint_origin_xyz link_xyz mesh">
+    <xacro:macro name="wheel" params="name xyz">
         <joint name="${name}_joint" type="continuous">
-            <origin xyz="${joint_origin_xyz}" rpy="0 0 0"/>
+            <origin xyz="${xyz}" rpy="0 0 0"/>
             <parent link="chassis"/>
             <child link="${name}"/>
-            <axis xyz="-1.0 0.0 0.0"/>
+            <axis xyz="0.0 1.0 0.0"/>
         </joint>
 
         <link name="${name}">
-            <inertial>
-                <origin xyz="0 0 0" rpy="0 0 0"/>
-                <mass value="1.0708903957924194"/>
-                <inertia ixx="0.001339" iyy="0.000897" izz="0.000897" ixy="0.0" iyz="0.0" ixz="0.0"/>
-            </inertial>
             <visual>
-                <origin xyz="${link_xyz}" rpy="0 0 0"/>
+                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
                 <geometry>
-                    <mesh filename="${mesh}" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
+                    <cylinder radius="0.06" length="0.04" />
                 </geometry>
-                <material name="wheel_material"/>
+                <material name="black" />
             </visual>
             <collision>
-                <origin xyz="${link_xyz}" rpy="0 0 0"/>
+                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
                 <geometry>
-                    <mesh filename="${mesh}" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
+                    <cylinder radius="0.06" length="0.04" />
                 </geometry>
             </collision>
+            <xacro:inertial_cylinder mass="0.1" radius="0.06" length="0.04">
+                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+            </xacro:inertial_cylinder>
 
             <gazebo>
                 <mu1>0.2</mu1>       <!-- lateral friction -->
@@ -47,30 +45,9 @@
 
     <!-- Four wheels -->
     
-    <xacro:wheel 
-        name="wheel_rear_right"  
-        joint_origin_xyz="0.105 -0.104 -0.0183"  
-        link_xyz="-0.105 0.104 0.0183" 
-        mesh="package://quac/meshes/wheel.stl"
-        />
-
-    <xacro:wheel 
-        name="wheel_front_right" 
-        joint_origin_xyz="0.105 0.104 -0.0183" 
-        link_xyz="-0.105 -0.104 0.0183" 
-        mesh="package://quac/meshes/wheel_2.stl"
-        />
-    <xacro:wheel 
-        name="wheel_front_left"   
-        joint_origin_xyz="-0.105 0.104 -0.0183" 
-        link_xyz="0.105 -0.104 0.0183" 
-        mesh="package://quac/meshes/wheel_3.stl"
-        />
-    <xacro:wheel 
-        name="wheel_rear_left"  
-        joint_origin_xyz="-0.105 -0.104 -0.0183" 
-        link_xyz="0.105 0.104 0.0183" 
-        mesh="package://quac/meshes/wheel_4.stl"
-        />
-
+    <xacro:wheel name="wheel_front_left" xyz="0.1075 0.1005 -0.03705" />
+    <xacro:wheel name="wheel_front_right" xyz="0.1075 -0.1005 -0.03705" />
+    <xacro:wheel name="wheel_rear_left" xyz="-0.1075 0.1005 -0.03705" />
+    <xacro:wheel name="wheel_rear_right" xyz="-0.1075 -0.1005 -0.03705" />
+    
 </robot>

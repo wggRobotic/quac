@@ -7,7 +7,6 @@
     <xacro:include filename="urdf/servo.xacro" />
 
     <xacro:include filename="urdf/chassis.xacro" />
-    <xacro:include filename="urdf/lidar.xacro" />
     <xacro:include filename="urdf/wheels.xacro" />
     <xacro:include filename="urdf/arm.xacro" />
 
