@@ -15,7 +15,7 @@ def generate_launch_description():
 
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(package_dir,'launch','rsp.launch.py')]),
-        launch_arguments={'use_sim_time': 'true'}.items()
+        launch_arguments={'sim_mode': 'true'}.items()
     )
     
     generate_sdf = ExecuteProcess(
@@ -48,7 +48,6 @@ def generate_launch_description():
         ]
     )
 
-    # Spawn robot
     spawn_entity = Node(
         package='ros_gz_sim', 
         executable='create',

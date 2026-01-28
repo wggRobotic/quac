@@ -8,19 +8,21 @@ from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    
-    use_sim_time = LaunchConfiguration('use_sim_time')
 
     pkg_path = os.path.join(get_package_share_directory('quac'))
     xacro_file = os.path.join(pkg_path,'description','robot.urdf.xacro')
-    robot_description_config = Command(['xacro ', xacro_file, ' sim_mode:=', use_sim_time])
+    robot_description_config = Command([
+        'xacro ', xacro_file, 
+        ' sim_mode:=', LaunchConfiguration('sim_mode'),
+        ' disable_wheels:=', LaunchConfiguration('disable_wheels'),
+        ' disable_arm:=', LaunchConfiguration('disable_arm'),
+    ])
     
-    params = {'robot_description': robot_description_config, 'use_sim_time': use_sim_time}
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
-        parameters=[params],
+        parameters=[{'robot_description': robot_description_config, 'use_sim_time': LaunchConfiguration('sim_mode')}],
         remappings=[
             ('/tf', 'tf'),
             ('/tf_static', 'tf_static'),
@@ -29,7 +31,23 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument('use_sim_time', default_value='false', description='Use sim time if true'),
+        DeclareLaunchArgument(
+            'sim_mode',
+            default_value='false',
+            description='Starts with gazebo version of description'
+        ),
+
+        DeclareLaunchArgument(
+            'disable_wheels',
+            default_value='false',
+            description='Whether to disable the wheels'
+        ),
+
+        DeclareLaunchArgument(
+            'disable_arm',
+            default_value='false',
+            description='Whether to disable the robotic arm'
+        ),
 
         node_robot_state_publisher
     ])

@@ -8,13 +8,19 @@ from launch_ros.actions import Node, PushRosNamespace
 from launch.substitutions import Command
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch.conditions import UnlessCondition
 
 def generate_launch_description():
     package_dir = get_package_share_directory('quac')
 
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch','rsp.launch.py')]),
-        launch_arguments={'use_sim_time': 'false'}.items()
+        launch_arguments={ 
+            'disable_wheels' : LaunchConfiguration('disable_wheels'),
+            'disable_arm' : LaunchConfiguration('disable_arm'),
+        }.items()
     )  
 
     robot_description = Command(['ros2 param get --hide-type /quac/robot_state_publisher robot_description'])
@@ -42,7 +48,11 @@ def generate_launch_description():
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource(
                         [os.path.join(package_dir,'launch','controllers.launch.py')]
-                    )
+                    ),
+                    launch_arguments={
+                        'disable_wheels' : LaunchConfiguration('disable_wheels'),
+                        'disable_arm' : LaunchConfiguration('disable_arm'),
+                    }.items()
                 )  
             ],
         )
@@ -52,12 +62,30 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('rplidar_ros'),'launch','rplidar_a2m8_launch.py')
         ),
-        launch_arguments={
-            'frame_id': 'lidar'
-        }.items()
+        launch_arguments={'frame_id': 'lidar'}.items(),
+        condition=UnlessCondition(LaunchConfiguration('disable_lidar'))
     )
 
     return LaunchDescription([
+
+        DeclareLaunchArgument(
+            'disable_wheels',
+            default_value='false',
+            description='Whether to disable the wheels'
+        ),
+
+        DeclareLaunchArgument(
+            'disable_arm',
+            default_value='false',
+            description='Whether to disable the robotic arm'
+        ),
+
+        DeclareLaunchArgument(
+            'disable_lidar',
+            default_value='false',
+            description='Whether to disable the lidar'
+        ),
+        
         PushRosNamespace('quac'),
         rsp,
         delayed_controller_manager,

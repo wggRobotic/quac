@@ -9,12 +9,11 @@
 #include <rclcpp/rclcpp.hpp>
 
 namespace quac_hardware {
-hardware_interface::CallbackReturn
-WaveshareServos::on_init(const hardware_interface::HardwareInfo &info) {
-  if (hardware_interface::SystemInterface::on_init(info) !=
-      hardware_interface::CallbackReturn::SUCCESS) {
+
+hardware_interface::CallbackReturn WaveshareServos::on_init(const hardware_interface::HardwareInfo &info) {
+  if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS)
     return hardware_interface::CallbackReturn::ERROR;
-  }
+
   // check urdf definitions
   pos_offsets_.resize(info_.joints.size(), 0.0);
   inverted_.resize(info_.joints.size(), false);
@@ -66,26 +65,18 @@ WaveshareServos::on_init(const hardware_interface::HardwareInfo &info) {
                      "or velocity");
         return hardware_interface::CallbackReturn::ERROR;
       }
-      // read optional min/max from the position command_interface params
-      if (joint.command_interfaces[ci].name == hardware_interface::HW_IF_POSITION) {
-        auto it_min = joint.command_interfaces[ci].parameters.find("min");
-        auto it_max = joint.command_interfaces[ci].parameters.find("max");
-        if (it_min != joint.command_interfaces[ci].parameters.end()) {
-          try {
-            pos_mins_[i] = std::stod(it_min->second);
-          } catch (...) {
-            // leave default
-          }
-        }
-        if (it_max != joint.command_interfaces[ci].parameters.end()) {
-          try {
-            pos_maxs_[i] = std::stod(it_max->second);
-          } catch (...) {
-            // leave default
-          }
-        }
-      }
     }
+
+    // read optional min/max from the position command_interface params
+
+    auto param_pos_min = joint.parameters.find("pos_min");
+    auto param_pos_max = joint.parameters.find("pos_max");
+
+    if (param_pos_min != joint.parameters.end())
+      try { pos_mins_[i] = std::stod(param_pos_min->second); } catch (...) { /*leave default*/ }
+    if (param_pos_max != joint.parameters.end())
+      try { pos_maxs_[i] = std::stod(param_pos_max->second); } catch (...) { /*leave default*/ }
+
     // store ids in different vectors by type
     if (joint.parameters.find("type")->second == "pos") {
       pos_ids_.emplace_back(std::stoul(joint.parameters.find("id")->second));

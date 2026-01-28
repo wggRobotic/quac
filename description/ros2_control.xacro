@@ -2,12 +2,23 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     
     <ros2_control name="wheel_ddsm115_control" type="system">
-        <hardware>
-            <plugin>quac_hardware/DDSM115</plugin>
-            <param name="port">/dev/ttyUSB1</param>
-            <param name="act">1</param>
-            <param name="feedback">true</param>
-        </hardware>
+
+        <xacro:arg name="disable_wheels" default="false"/>
+
+        <xacro:if value="$(arg disable_wheels)">
+            <hardware>
+                <plugin>mock_components/GenericSystem</plugin>
+            </hardware>
+        </xacro:if>
+
+        <xacro:unless value="$(arg disable_wheels)">
+            <hardware>
+                <plugin>quac_hardware/DDSM115</plugin>
+                <param name="port">/dev/ttyUSB1</param>
+                <param name="act">1</param>
+                <param name="feedback">true</param>
+            </hardware>
+        </xacro:unless>
 
         <joint name="wheel_front_left_joint">
             <command_interface name="velocity"/>
@@ -44,26 +55,37 @@
     </ros2_control>
 
     <ros2_control name="arm_waveshare_servos_control" type="system">
-        <hardware>
-            <plugin>quac_hardware/WaveshareServos</plugin>
-            <param name="crawler_arm_param_hw_start_duration_sec">0</param>
-            <param name="crawler_arm_hw_stop_duration_sec">3.0</param>
-            <param name="crawler_arm_hw_slowdown">100</param>
-        </hardware>
-    
+
+        <xacro:arg name="disable_arm" default="false"/>
+
+        <xacro:if value="$(arg disable_arm)">
+            <hardware>
+                <plugin>mock_components/GenericSystem</plugin>
+            </hardware>
+        </xacro:if>
+
+        <xacro:unless value="$(arg disable_arm)">
+            <hardware>
+                <plugin>quac_hardware/WaveshareServos</plugin>
+                <param name="crawler_arm_param_hw_start_duration_sec">0</param>
+                <param name="crawler_arm_hw_stop_duration_sec">3.0</param>
+                <param name="crawler_arm_hw_slowdown">100</param>
+            </hardware>
+        </xacro:unless>
+
         <joint name="arm_servo_0_joint">
             <param name="id">5</param>
             <param name="type">pos</param>
             <param name="offset">1.570796</param>
         
-            <command_interface name="position">
-                <param name="min">-1.570796</param>
-                <param name="max">1.570796</param>
-            </command_interface>
-            <command_interface name="velocity">
-                <param name="min">-9.2</param>
-                <param name="max">9.2</param>
-            </command_interface>
+            <command_interface name="position"/>
+            <param name="pos_min">-1.570796</param>
+            <param name="pos_max">1.570796</param>
+
+            <command_interface name="velocity"/>
+            <param name="vel_min">-9.2</param>
+            <param name="vel_max">9.2</param>
+
             <state_interface name="position"/>
             <state_interface name="velocity"/>
             <state_interface name="torque"/>
@@ -75,14 +97,15 @@
             <param name="type">pos</param>
             <param name="inverted">true</param>
             <param name="offset">1.8</param>
-            <command_interface name="position">
-                <param name="min">-0.8</param>
-                <param name="max">1.570796</param>
-            </command_interface>
-            <command_interface name="velocity">
-                <param name="min">-9.2</param>
-                <param name="max">9.2</param>
-            </command_interface>
+
+            <command_interface name="position"/>
+            <param name="pos_min">-0.8</param>
+            <param name="pos_max">1.570796</param>
+
+            <command_interface name="velocity"/>
+            <param name="vel_min">-9.2</param>
+            <param name="vel_max">9.2</param>
+
             <state_interface name="position"/>
             <state_interface name="velocity"/>
             <state_interface name="torque"/>
@@ -94,14 +117,15 @@
             <param name="type">pos</param>
             <param name="inverted">true</param> 
             <param name="offset">1.75</param>
-            <command_interface name="position">
-                <param name="min">0</param>
-                <param name="max">1.7</param>
-            </command_interface>
-            <command_interface name="velocity">
-                <param name="min">-9.2</param>
-                <param name="max">9.2</param>
-            </command_interface>
+
+            <command_interface name="position"/>
+            <param name="pos_min">0</param>
+            <param name="pos_max">1.7</param>
+
+            <command_interface name="velocity"/>
+            <param name="vel_min">-9.2</param>
+            <param name="vel_max">9.2</param>
+
             <state_interface name="position"/>
             <state_interface name="velocity"/>
             <state_interface name="torque"/>
