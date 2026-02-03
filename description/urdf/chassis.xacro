@@ -55,5 +55,13 @@
     </joint>
 
     <link name="lidar"/>
+
+    <joint name="rear_camera_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="rear_camera"/>
+        <origin xyz="-0.09 0.0 0.1" rpy="0 0 ${pi}"/>
+    </joint>
+
+    <link name="rear_camera"/>
     
 </robot>

@@ -10,14 +10,7 @@
     <xacro:include filename="urdf/wheels.xacro" />
     <xacro:include filename="urdf/arm.xacro" />
 
-    <xacro:arg name="sim_mode" default="false"/>
-
-    <xacro:if value="$(arg sim_mode)">
-        <xacro:include filename="gazebo.xacro" />
-    </xacro:if>
-    <xacro:unless value="$(arg sim_mode)">
-        <xacro:include filename="ros2_control.xacro" />
-    </xacro:unless>
+    <xacro:include filename="ros2_control.xacro" />
 
     <link name="base_link"/>
 

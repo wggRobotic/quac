@@ -2,9 +2,8 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <ros2_control name="GazeboSystemWheels" type="system">
-        <hardware>
-            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
+        
+        
 
          <joint name="wheel_front_left_joint">
             <command_interface name="velocity"/>
@@ -69,44 +68,14 @@
 
     </ros2_control>
 
-    <gazebo>
-        <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system.so">
-            <ros>
-                <namespace>quac</namespace>
-                <remapping>/robot_description:=robot_description</remapping>
-                <remapping>/tf:=tf</remapping>
-                <remapping>/clock:=clock</remapping>
-                <remapping>diff_drive_controller/cmd_vel:=cmd_vel</remapping>
-                <remapping>diff_drive_controller/odom:=odom</remapping>
-            </ros>
-            <parameters>$(find quac)/config/controllers.yaml</parameters>
-            <parameters>$(find quac)/config/gz_sim_time.yaml</parameters>
-        </plugin>
+    
+
+
+
+    <gazebo reference="rear_camera">
+
+        
     </gazebo>
 
-    <gazebo reference="lidar">
-        <material>Gazebo/Red</material>
-
-        <sensor name="laser" type="gpu_lidar">
-            <pose> 0 0 0 0 0 0 </pose>
-            <visualize>false</visualize>
-            <update_rate>10</update_rate>
-            <lidar>
-                <scan>
-                    <horizontal>
-                        <samples>360</samples>
-                        <min_angle>-3.14</min_angle>
-                        <max_angle>3.14</max_angle>
-                    </horizontal>
-                </scan>
-                <range>
-                    <min>0.3</min>
-                    <max>12</max>
-                </range>
-            </lidar>
-            <topic>scan</topic>
-            <gz_frame_id>lidar</gz_frame_id>
-        </sensor>
-    </gazebo>
 
 </robot>

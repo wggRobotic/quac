@@ -2,11 +2,9 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-from launch.actions import ExecuteProcess
-from launch.actions import RegisterEventHandler
+from launch.actions import ExecuteProcess, TimerAction, RegisterEventHandler, IncludeLaunchDescription
 from launch.event_handlers import OnProcessStart
 
 
@@ -63,11 +61,21 @@ def generate_launch_description():
         )
     )  
 
+    delayed_arm_position_reset = TimerAction(
+        period=7.0,
+        actions=[ExecuteProcess(
+                    cmd=['ros2',' topic pub --once /quac/arm_position_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: [\'arm_servo_0_joint\',\'arm_servo_1_joint\',\'gripper_servo_joint\'], points: [{positions: [-1.57, 1.57, 0.0], time_from_start: {sec: 5, nanosec: 0}}]}"'],
+                    output='screen',
+                    shell = True, 
+                )]
+    )
+
     return LaunchDescription([
         generate_sdf,
         rsp,
         gazebo,
         ros_gz_bridge,
         spawn_entity,
-        controllers
+        controllers,
+        delayed_arm_position_reset
     ])

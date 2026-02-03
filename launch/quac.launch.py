@@ -49,10 +49,6 @@ def generate_launch_description():
                     PythonLaunchDescriptionSource(
                         [os.path.join(package_dir,'launch','controllers.launch.py')]
                     ),
-                    launch_arguments={
-                        'disable_wheels' : LaunchConfiguration('disable_wheels'),
-                        'disable_arm' : LaunchConfiguration('disable_arm'),
-                    }.items()
                 )  
             ],
         )

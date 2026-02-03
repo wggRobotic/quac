@@ -1,138 +1,184 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     
-    <ros2_control name="wheel_ddsm115_control" type="system">
+    <xacro:arg name="sim_mode" default="false"/>
+    <xacro:arg name="disable_wheels" default="false"/>
+    <xacro:arg name="disable_arm" default="false"/>
+    
+    <!-- WHEELS -->
 
-        <xacro:arg name="disable_wheels" default="false"/>
+    <ros2_control name="wheel_control" type="system">
 
-        <xacro:if value="$(arg disable_wheels)">
-            <hardware>
-                <plugin>mock_components/GenericSystem</plugin>
-            </hardware>
-        </xacro:if>
+        <hardware>
+            <xacro:if value="$(arg sim_mode)">
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            </xacro:if>
 
-        <xacro:unless value="$(arg disable_wheels)">
-            <hardware>
-                <plugin>quac_hardware/DDSM115</plugin>
-                <param name="port">/dev/ttyUSB1</param>
-                <param name="act">1</param>
-                <param name="feedback">true</param>
-            </hardware>
-        </xacro:unless>
+            <xacro:unless value="$(arg sim_mode)">
 
-        <joint name="wheel_front_left_joint">
-            <command_interface name="velocity"/>
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-            <param name="id">4</param>
-            <param name="scalar">1</param>
-        </joint>
+                <xacro:unless value="$(arg disable_wheels)">
+                    <plugin>quac_hardware/DDSM115</plugin>
+                    <param name="port">/dev/ttyUSB1</param>
+                    <param name="act">1</param>
+                    <param name="feedback">true</param>
+                </xacro:unless>
 
-        <joint name="wheel_front_right_joint">
-            <command_interface name="velocity"/>
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-            <param name="id">1</param>
-            <param name="scalar">-1</param>
-        </joint>
+                <xacro:if value="$(arg disable_wheels)">
+                    <plugin>mock_components/GenericSystem</plugin>
+                </xacro:if>
 
-        <joint name="wheel_rear_left_joint">
-            <command_interface name="velocity"/>
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-            <param name="id">3</param>
-            <param name="scalar">1</param>
-        </joint>
+            </xacro:unless>
+        </hardware>
 
-        <joint name="wheel_rear_right_joint">
-            <command_interface name="velocity"/>
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-            <param name="id">2</param>
-            <param name="scalar">-1</param>
-        </joint>
+        <xacro:macro name="wheel_joint" params="name id scalar">
+            <joint name="${name}">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <param name="id">${id}</param>
+                <param name="scalar">${scalar}</param>
+            </joint>
+        </xacro:macro>
+
+        <xacro:wheel_joint name="wheel_front_left_joint" id="4" scalar="1"/>
+        <xacro:wheel_joint name="wheel_front_right_joint" id="1" scalar="-1"/>
+        <xacro:wheel_joint name="wheel_rear_left_joint" id="3" scalar="1"/>
+        <xacro:wheel_joint name="wheel_rear_right_joint" id="2" scalar="-1"/>
 
     </ros2_control>
 
-    <ros2_control name="arm_waveshare_servos_control" type="system">
+    <!-- ARM -->
 
-        <xacro:arg name="disable_arm" default="false"/>
+    <ros2_control name="arm_control" type="system">
 
-        <xacro:if value="$(arg disable_arm)">
-            <hardware>
-                <plugin>mock_components/GenericSystem</plugin>
-            </hardware>
-        </xacro:if>
+        <hardware>
+            <xacro:if value="$(arg sim_mode)">
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            </xacro:if>
 
-        <xacro:unless value="$(arg disable_arm)">
-            <hardware>
-                <plugin>quac_hardware/WaveshareServos</plugin>
-                <param name="crawler_arm_param_hw_start_duration_sec">0</param>
-                <param name="crawler_arm_hw_stop_duration_sec">3.0</param>
-                <param name="crawler_arm_hw_slowdown">100</param>
-            </hardware>
-        </xacro:unless>
+            <xacro:unless value="$(arg sim_mode)">
 
-        <joint name="arm_servo_0_joint">
-            <param name="id">5</param>
-            <param name="type">pos</param>
-            <param name="offset">1.570796</param>
-        
-            <command_interface name="position"/>
-            <param name="pos_min">-1.570796</param>
-            <param name="pos_max">1.570796</param>
+                <xacro:unless value="$(arg disable_arm)">
+                    <plugin>quac_hardware/WaveshareServos</plugin>
+                    <param name="crawler_arm_param_hw_start_duration_sec">0</param>
+                    <param name="crawler_arm_hw_stop_duration_sec">3.0</param>
+                    <param name="crawler_arm_hw_slowdown">100</param>
+                </xacro:unless>
 
-            <command_interface name="velocity"/>
-            <param name="vel_min">-9.2</param>
-            <param name="vel_max">9.2</param>
+                <xacro:if value="$(arg disable_arm)">
+                    <plugin>mock_components/GenericSystem</plugin>
+                </xacro:if>
 
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-            <state_interface name="torque"/>
-            <state_interface name="temperature"/>
-        </joint>
+            </xacro:unless>
+        </hardware>
 
-        <joint name="arm_servo_1_joint">
-            <param name="id">6</param>
-            <param name="type">pos</param>
-            <param name="inverted">true</param>
-            <param name="offset">1.8</param>
+        <xacro:macro name="arm_joint" params="name id inverted offset pos_min pos_max">
+            <joint name="${name}">
+                <param name="id">${id}</param>
+                <param name="type">pos</param>
+                <param name="inverted">${inverted}</param>
+                <param name="offset">${offset}</param>
+            
+                <command_interface name="position"/>
+                <param name="pos_min">${pos_min}</param>
+                <param name="pos_max">${pos_max}</param>
 
-            <command_interface name="position"/>
-            <param name="pos_min">-0.8</param>
-            <param name="pos_max">1.570796</param>
+                <command_interface name="velocity"/>
+                <param name="vel_min">-9.2</param>
+                <param name="vel_max">9.2</param>
 
-            <command_interface name="velocity"/>
-            <param name="vel_min">-9.2</param>
-            <param name="vel_max">9.2</param>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="torque"/>
+                <state_interface name="temperature"/>
+            </joint>
+        </xacro:macro>
 
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-            <state_interface name="torque"/>
-            <state_interface name="temperature"/>
-        </joint>
-
-        <joint name="gripper_servo_joint">
-            <param name="id">1</param>
-            <param name="type">pos</param>
-            <param name="inverted">true</param> 
-            <param name="offset">1.75</param>
-
-            <command_interface name="position"/>
-            <param name="pos_min">0</param>
-            <param name="pos_max">1.7</param>
-
-            <command_interface name="velocity"/>
-            <param name="vel_min">-9.2</param>
-            <param name="vel_max">9.2</param>
-
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-            <state_interface name="torque"/>
-            <state_interface name="temperature"/>
-        </joint>
+        <xacro:arm_joint name="arm_servo_0_joint"   id="5" inverted="false" offset="${pi/2}" pos_min="${-pi/2}" pos_max="${pi/2}"/>
+        <xacro:arm_joint name="arm_servo_1_joint"   id="6" inverted="true"  offset="1.8"     pos_min="-0.8"     pos_max="${pi/2}"/>
+        <xacro:arm_joint name="gripper_servo_joint" id="1" inverted="true"  offset="1.75"    pos_min="0"        pos_max="1.7" />
 
     </ros2_control> 
 
+    <!-- EXTRA GAZEBO PLUGIN AND SENSORS -->
+
+    <gazebo>
+        <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system.so">
+            <ros>
+                <namespace>quac</namespace>
+                <remapping>/robot_description:=robot_description</remapping>
+                <remapping>/tf:=tf</remapping>
+                <remapping>/clock:=clock</remapping>
+                <remapping>diff_drive_controller/cmd_vel:=cmd_vel</remapping>
+                <remapping>diff_drive_controller/odom:=odom</remapping>
+            </ros>
+            <parameters>$(find quac)/config/controllers.yaml</parameters>
+            <parameters>$(find quac)/config/gz_sim_time.yaml</parameters>
+        </plugin>
+    </gazebo>
+
+    <gazebo reference="lidar">
+        <material>Gazebo/Red</material>
+
+        <sensor name="lidar_sim" type="gpu_lidar">
+            <pose> 0 0 0 0 0 0 </pose>
+            <visualize>false</visualize>
+            <update_rate>10</update_rate>
+            <lidar>
+                <scan>
+                    <horizontal>
+                        <samples>360</samples>
+                        <min_angle>-3.14</min_angle>
+                        <max_angle>3.14</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.3</min>
+                    <max>12</max>
+                </range>
+            </lidar>
+            <topic>scan</topic>
+            <gz_frame_id>lidar</gz_frame_id>
+        </sensor>
+    </gazebo>
     
+    <xacro:macro name="cam_sim" params="frame">
+        <gazebo reference="${frame}">
+            <sensor name="${frame}_sim" type="rgbd_camera">
+                <always_on>true</always_on>
+                <visualize>true</visualize>
+                <update_rate>10</update_rate>
+                <topic>${frame}</topic>
+                <gz_frame_id>${frame}</gz_frame_id>
+                <camera>
+                <horizontal_fov>1.48702</horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>3</far>
+                </clip>
+                </camera>
+                <baseline>0.2</baseline>
+                <pointCloudCutoff>0.5</pointCloudCutoff>
+                <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+                <distortionK1>0</distortionK1>
+                <distortionK2>0</distortionK2>
+                <distortionK3>0</distortionK3>
+                <distortionT1>0</distortionT1>
+                <distortionT2>0</distortionT2>
+                <CxPrime>0</CxPrime>
+                <Cx>0</Cx>
+                <Cy>0</Cy>
+                <focalLength>0</focalLength>
+                <hackBaseline>0</hackBaseline>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:cam_sim frame="front_camera"/>
+    <xacro:cam_sim frame="rear_camera"/>
+
 </robot>

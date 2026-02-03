@@ -2,12 +2,11 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, PushRosNamespace
-from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
 
@@ -67,7 +66,8 @@ def generate_launch_description():
             'use_sim_time': LaunchConfiguration('sim_mode'),
             'namespace': 'quac',
             'params_file': os.path.join(package_dir, 'config', 'nav2_params.yaml')
-        }.items()
+        }.items(),
+        condition=UnlessCondition(LaunchConfiguration('disable_nav'))
     )
 
     return LaunchDescription([
@@ -75,6 +75,11 @@ def generate_launch_description():
             'sim_mode',
             default_value='false',
             description='Simulates the robot in Gazebo'
+        ),
+        DeclareLaunchArgument(
+            'disable_nav',
+            default_value='false',
+            description='disables nav2'
         ),
 
         PushRosNamespace('quac'),
