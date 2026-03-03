@@ -1,13 +1,9 @@
 #include "ddsm115/ddsm115.hpp"
 
 #include <chrono>
-#include <cmath>
 #include <limits>
 #include <memory>
 #include <vector>
-#include <fcntl.h>
-#include <unistd.h>
-#include <termios.h>
 #include <thread>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
@@ -93,46 +89,13 @@ hardware_interface::CallbackReturn DDSM115::on_configure(const rclcpp_lifecycle:
 {
   RCLCPP_INFO(m_Logger, "Configuring ...please wait...");
 
-  if ((m_SerialFD = open(m_Port.c_str(), O_RDWR | O_NOCTTY)) < 0) {
-    RCLCPP_INFO(m_Logger, "Error opening serial port");
-    return hardware_interface::CallbackReturn::ERROR;
-  }
-
-  struct termios tty;
-  if (tcgetattr(m_SerialFD, &tty) != 0)
+  if (m_CMD.connect(m_Port) == false)
   {
-    RCLCPP_INFO(m_Logger, "Error from tcgetattr");
-
-    close(m_SerialFD);
-    return hardware_interface::CallbackReturn::ERROR;
-  }
-
-  cfsetospeed(&tty, B115200);
-  cfsetispeed(&tty, B115200);
-
-  tty.c_cflag &= ~PARENB; // No parity
-  tty.c_cflag &= ~CSTOPB; // 1 stop bit
-  tty.c_cflag &= ~CSIZE; // Clear byte size bits
-  tty.c_cflag |= CS8; // 8 bits per byte
-  tty.c_cflag &= ~CRTSCTS; // Disable CTS/RTS
-  tty.c_lflag = 0; // Make tty raw
-  tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
-  tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
-  tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes
-  tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-  tty.c_cc[VTIME] = 0;
-  tty.c_cc[VMIN] = 0;
-
-  if (tcsetattr(m_SerialFD, TCSANOW, &tty) != 0)
-  {
-    RCLCPP_INFO(m_Logger, "Error from tcsetattr");
-
-    close(m_SerialFD);
+    RCLCPP_INFO(m_Logger, m_CMD.get_error());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
   RCLCPP_INFO(m_Logger, "Successfully configured!");
-
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -140,29 +103,11 @@ hardware_interface::CallbackReturn DDSM115::on_cleanup(const rclcpp_lifecycle::S
 {
   RCLCPP_INFO(m_Logger, "Cleaning up ...please wait...");
   
-  close(m_SerialFD);
+  m_CMD.disconnect();
 
   RCLCPP_INFO(m_Logger, "Successfully cleaned up!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
-}
-
-uint8_t maximCrc8(uint8_t* data, const unsigned int size)
-{
-  uint8_t crc = 0;
-  for (unsigned int i = 0; i < size; ++i)
-  {
-    uint8_t inbyte = data[i];
-    for (unsigned char j = 0; j < 8; ++j)
-    {
-      uint8_t mix = (crc ^ inbyte) & 0x01;
-      crc >>= 1;
-      if (mix)
-        crc ^= 0x8C;
-      inbyte >>= 1;
-    }
-  }
-  return crc;
 }
 
 hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const rclcpp::Duration & period)
@@ -238,25 +183,8 @@ hardware_interface::return_type DDSM115::write(const rclcpp::Time & time, const 
   {
     int16_t rpm = static_cast<int16_t>(std::round(m_Wheels[i].command_velocity * (double)m_Wheels[i].scalar / (2.0 * M_PI) * 60.0));
 
-    uint8_t cmd[] = 
-    {
-      (uint8_t) m_Wheels[i].id,
-      100,
-      (uint8_t)((rpm >> 8) & 0xFF),
-      (uint8_t)(rpm & 0xFF),
-      0x00,
-      0x00,
-      m_Act,
-      0x00,
-      0x00,
-      0x00 
-    };
-
-    cmd[9] = maximCrc8(cmd, 9);
-
-    ::write(m_SerialFD, cmd, sizeof(cmd));
+    m_CMD.drive(m_Wheels[i].id, rpm, m_Act, 0);
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    tcdrain(m_SerialFD);
   }
 
   m_Counter = (m_Counter+1)%5;

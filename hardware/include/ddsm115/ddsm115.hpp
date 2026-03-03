@@ -10,8 +10,7 @@
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "stdbool.h"
-
-#define M_PI 3.14159265358979323846
+#include "ddsm115/DDSM115CMD.h"
 
 namespace quac_hardware
 {
@@ -55,7 +54,7 @@ private:
   std::chrono::time_point<std::chrono::system_clock> m_Time;
   std::vector<ddsm115_motor> m_Wheels;
 
-  int m_SerialFD;
+  DDSM115CMD m_CMD;
   std::string m_Port;
   int m_Act;
   bool m_Feedback;

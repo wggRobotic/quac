@@ -13,7 +13,7 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "visibility_controls.h"
-#include "SCServo.h"
+#include "waveshare_servos/SCServo.h"
 
 namespace quac_hardware
 {

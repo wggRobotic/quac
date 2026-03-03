@@ -22,19 +22,18 @@
                 <geometry>
                     <cylinder radius="0.06" length="0.04" />
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1.0</mu>       <!-- Static friction -->
+                            <mu2>1.0</mu2>     <!-- Dynamic friction -->
+                        </ode>
+                    </friction>
+                </surface>
             </collision>
             <xacro:inertial_cylinder mass="0.1" radius="0.06" length="0.04">
                 <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
             </xacro:inertial_cylinder>
-
-            <gazebo>
-                <mu1>0.2</mu1>       <!-- lateral friction -->
-                <mu2>0.8</mu2>       <!-- longitudinal friction -->
-                <fdir1>1 0 0</fdir1> <!-- wheel forward direction -->
-                <slip1>0.1</slip1>  <!-- longitudinal slip tolerance -->
-                <slip2>0.5</slip2>  <!-- lateral slip tolerance -->
-                <turning_surface>false</turning_surface> <!-- optional -->
-            </gazebo>
 
         </link>
 
