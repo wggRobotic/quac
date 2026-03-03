@@ -11,13 +11,10 @@ public:
     void disconnect();
     const char* get_error();
 
-    bool drive(uint8_t id, double value, uint8_t act, uint8_t brake);
-    bool drive_feedback(uint8_t* id, uint8_t* mode, double* current, double* velocity, double* position, uint8_t error_code);
-    bool feedback(uint8_t id, int value, int act, int brake);
+    bool drive(uint8_t id, double velocity, uint8_t act, uint8_t brake);
+    bool drive_feedback(uint8_t* id, uint8_t* mode, double* current, double* velocity, double* position, uint8_t* error_code);
 
 private:
-    bool send_msg(uint8_t* msg);
-    bool rec_msg(uint8_t* msg);
     void set_error(char* str, ...);
 
     char m_Error[64];

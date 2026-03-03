@@ -18,10 +18,11 @@ namespace quac_hardware
 struct ddsm115_motor
 {
   std::string name;
-  uint16_t last_position;
+  double last_position;
   double command_velocity;
   double state_position;
   double state_velocity;
+  double state_current;
   int id;
   int scalar;
   bool read;
@@ -58,7 +59,6 @@ private:
   std::string m_Port;
   int m_Act;
   bool m_Feedback;
-  int m_Counter;
 };
 
 }

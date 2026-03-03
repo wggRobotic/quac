@@ -84,9 +84,9 @@ uint8_t maximCrc8(uint8_t* data, const unsigned int size)
   return crc;
 }
 
-bool DDSM115CMD::drive(uint8_t id, double value, uint8_t act, uint8_t brake)
+bool DDSM115CMD::drive(uint8_t id, double velocity, uint8_t act, uint8_t brake)
 {
-  int16_t rpm = static_cast<int16_t>(std::round(value / (2.0 * M_PI) * 60.0));
+  int16_t rpm = static_cast<int16_t>(std::round(velocity / (2.0 * M_PI) * 60.0));
 
 
   uint8_t cmd[] = 
@@ -109,7 +109,7 @@ bool DDSM115CMD::drive(uint8_t id, double value, uint8_t act, uint8_t brake)
 
 }
 
-bool DDSM115CMD::drive_feedback(uint8_t* id, uint8_t* mode, double* current, double* velocity, double* position, uint8_t error_code)
+bool DDSM115CMD::drive_feedback(uint8_t* id, uint8_t* mode, double* current, double* velocity, double* position, uint8_t* error_code)
 {
   uint8_t response[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
   int total_num_bytes = 0;
@@ -149,23 +149,10 @@ bool DDSM115CMD::drive_feedback(uint8_t* id, uint8_t* mode, double* current, dou
   *id = response[0];
   *mode = response[1];
   *current = (double)drive_current / 32768.0*8000.0;
-  *velocity = 
+  *velocity = (double)drive_velocity / 60.0 * 2.0 * M_PI;
+  *position = (double)drive_position / 32768.0 * 2.0 * M_PI;
+  *error_code = response[8];
 
   return true;
-}
-
-bool DDSM115CMD::feedback(uint8_t id, int value, int act, int brake)
-{
-
-}
-
-bool DDSM115CMD::send_msg(uint8_t* msg)
-{
-
-}
-
-bool DDSM115CMD::rec_msg(uint8_t* msg)
-{
-
 }
 

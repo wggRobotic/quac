@@ -26,7 +26,6 @@ hardware_interface::CallbackReturn DDSM115::on_init(const hardware_interface::Ha
   m_Port = info.hardware_parameters.at("port");
   m_Act = std::stoi(info.hardware_parameters.at("act"));
   m_Feedback = (info.hardware_parameters.at("feedback") == "true");
-  m_Counter = 0;
 
   RCLCPP_INFO(m_Logger, "  port: '%s'", m_Port.c_str());
   RCLCPP_INFO(m_Logger, "  act: %d", m_Act);
@@ -68,6 +67,7 @@ std::vector<hardware_interface::StateInterface> DDSM115::export_state_interfaces
   {
     state_interfaces.emplace_back(hardware_interface::StateInterface(m_Wheels[i].name, hardware_interface::HW_IF_POSITION, &m_Wheels[i].state_position));
     state_interfaces.emplace_back(hardware_interface::StateInterface(m_Wheels[i].name, hardware_interface::HW_IF_VELOCITY, &m_Wheels[i].state_velocity));
+    state_interfaces.emplace_back(hardware_interface::StateInterface(m_Wheels[i].name, hardware_interface::HW_IF_CURRENT, &m_Wheels[i].state_current));
   }
 
   return state_interfaces;
@@ -114,60 +114,32 @@ hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const r
 {
   double dt = period.seconds();
 
-  if (m_Counter == 0) RCLCPP_INFO(m_Logger, "Info:");
-
   for (size_t i = 0; i < m_Wheels.size(); i++)
   {
     double vel = m_Wheels[i].command_velocity, pos = m_Wheels[i].state_position + m_Wheels[i].state_velocity * dt;
 
-    uint8_t drive_response[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-    int total_num_bytes = 0;
-    int num_bytes = 0;
-    for (int j = 0; j < sizeof(drive_response); j++) {
-      num_bytes = ::read(m_SerialFD, &drive_response[j], 1);
-      if (num_bytes <= 0) {
-        break;
-      }
-      total_num_bytes += num_bytes;
-    }
+    uint8_t fb_id, fb_mode, fb_error_code;
+    double fb_vel, fb_pos, fb_current;
 
-    if (m_Feedback)
+    if (m_CMD.drive_feedback(&fb_id, &fb_mode, &fb_vel, &fb_pos, &fb_current, &fb_error_code) == false) RCLCPP_INFO(m_Logger, m_CMD.get_error());
+    else if (fb_id != m_Wheels[i].id) RCLCPP_INFO(m_Logger, "Received response for wheel %d instead of %d", drive_response[0], m_Wheels[i].id);
+    else
     {
-      if (num_bytes < 0) RCLCPP_INFO(m_Logger, "Error reading DDSM115 response for wheel id %d", m_Wheels[i].id);
-
-      else if (total_num_bytes < 10)
+      if (m_Wheels[i].read == false)
       {
-        RCLCPP_INFO(m_Logger, "Timeout reading DDSM115 response for wheel id %d", m_Wheels[i].id);
-        RCLCPP_INFO(m_Logger, "Received %d bytes", total_num_bytes);
-        for (int j = 0; j < total_num_bytes; j++) RCLCPP_INFO(m_Logger, "%02x", drive_response[j]);
+        m_Wheels[i].last_position = fb_pos;
+        m_Wheels[i].read = true;
       }
 
-      else if (drive_response[9] != maximCrc8(drive_response, 9)) RCLCPP_INFO(m_Logger, "CRC error in response from wheel %d", m_Wheels[i].id);
-      else if (drive_response[0] != m_Wheels[i].id) RCLCPP_INFO(m_Logger, "Received response for wheel %d instead of %d", drive_response[0], m_Wheels[i].id);
-      else
-      {
-        int16_t drive_current = (drive_response[2] << 8) + drive_response[3];
-        int16_t drive_velocity = (drive_response[4] << 8) + drive_response[5];
-        uint16_t drive_position = (drive_response[6] << 8) + drive_response[7];
+      vel = (double)(m_Wheels[i].scalar * (int)drive_velocity) / 60.0 * 2.0 * M_PI;
 
-        if (m_Wheels[i].read == false)
-        {
-          m_Wheels[i].last_position = drive_position;
-          m_Wheels[i].read = true;
-        }
+      double delta = fb_pos - m_Wheels[i].last_position;
+      m_Wheels[i].last_position = fb_pos;
 
-        vel = (double)(m_Wheels[i].scalar * (int)drive_velocity) / 60.0 * 2.0 * M_PI;
+      if (delta > 0.5) delta -= 2.0 * M_PI;
+      else if (delta < -0.5) delta += 2.0 * M_PI;
 
-        double delta = ((double)drive_position - (double)m_Wheels[i].last_position) / 32768.0;
-        m_Wheels[i].last_position = drive_position;
-
-        if (delta > 0.5) delta -= 1.0;
-        else if (delta < -0.5) delta += 1.0;
-
-        pos = m_Wheels[i].state_position - (double)m_Wheels[i].scalar * delta * 2.0 * M_PI;
-
-        if (m_Counter == 0) RCLCPP_INFO(m_Logger, "  %-23s:  - vel %3d rpm   - pos %.4f rad   - curr %4.1f mA", m_Wheels[i].name.c_str(), drive_velocity, pos, (double)drive_current / 32768.0*8000.0);
-      }
+      pos = m_Wheels[i].state_position - (double)m_Wheels[i].scalar * delta;
     }
 
     m_Wheels[i].state_velocity = vel;
@@ -183,11 +155,10 @@ hardware_interface::return_type DDSM115::write(const rclcpp::Time & time, const 
   {
     int16_t rpm = static_cast<int16_t>(std::round(m_Wheels[i].command_velocity * (double)m_Wheels[i].scalar / (2.0 * M_PI) * 60.0));
 
-    m_CMD.drive(m_Wheels[i].id, rpm, m_Act, 0);
+    if (m_CMD.drive(m_Wheels[i].id, rpm, m_Act, 0) == false) RCLCPP_INFO(m_Logger, m_CMD.get_error());
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
 
-  m_Counter = (m_Counter+1)%5;
   return hardware_interface::return_type::OK;
 }
 
