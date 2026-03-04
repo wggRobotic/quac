@@ -24,12 +24,17 @@ sudo apt install ros-jazzy-navigation2 ros-jazzy-nav2-bringup
 
 ## Build
 ```
-docker build -t quac:latest .
-docker build -t quac_test:latest .
+docker build -t quac:stable .
+docker build -t quac:dev .
 ```
 
 ## Run
 ```
-docker run -it --rm --network host --privileged quac:latest
-docker run -it --rm --network host --privileged quac_test:latest
+docker run -it --rm --network host --privileged quac:stable
+docker run -it --rm --network host --privileged quac:dev
+```
+
+To disable individual components, do
+```
+sudo docker run -e DISABLE_LIDAR=true -e DISABLE_ARM=true -e DISABLE_WHEELS=true -it --rm --network host --privileged quac:dev
 ```

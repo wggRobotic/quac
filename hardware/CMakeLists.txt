@@ -4,7 +4,7 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(controller_interface REQUIRED)
 
-include_directories(include src )
+include_directories(include src)
 
 add_library(quac_hardware SHARED
   src/ddsm115/ddsm115.cpp
@@ -40,13 +40,8 @@ ament_export_libraries(
   quac_hardware
 )
 
-install(FILES
-  quac_hardware.xml
-  DESTINATION share/${PROJECT_NAME}
-)
-
 install(TARGETS quac_hardware
-  DESTINATION lib/${PROJECT_NAME}
+  DESTINATION lib
 )
 
 install(

@@ -67,7 +67,7 @@ std::vector<hardware_interface::StateInterface> DDSM115::export_state_interfaces
   {
     state_interfaces.emplace_back(hardware_interface::StateInterface(m_Wheels[i].name, hardware_interface::HW_IF_POSITION, &m_Wheels[i].state_position));
     state_interfaces.emplace_back(hardware_interface::StateInterface(m_Wheels[i].name, hardware_interface::HW_IF_VELOCITY, &m_Wheels[i].state_velocity));
-    state_interfaces.emplace_back(hardware_interface::StateInterface(m_Wheels[i].name, hardware_interface::HW_IF_CURRENT, &m_Wheels[i].state_current));
+    state_interfaces.emplace_back(hardware_interface::StateInterface(m_Wheels[i].name, "current", &m_Wheels[i].state_current));
   }
 
   return state_interfaces;

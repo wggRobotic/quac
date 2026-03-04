@@ -20,5 +20,9 @@ WORKDIR /ros2_ws
 SHELL ["/bin/bash", "-c"]
 
 RUN . /opt/ros/jazzy/setup.bash && colcon build --symlink-install
+RUN chmod +x /ros2_ws/src/quac/run.sh
 
-CMD ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && source /ros2_ws/install/setup.bash && ros2 launch quac quac.launch.py"]
+ENV DISABLE_LIDAR=false
+ENV DISABLE_WHEELS=false
+ENV DISABLE_ARM=false
+CMD ["/ros2_ws/src/quac/run.sh"]
