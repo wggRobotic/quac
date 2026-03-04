@@ -46,12 +46,10 @@ install(FILES
 )
 
 install(TARGETS quac_hardware
-  DESTINATION lib
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
   TARGETS set_id calibrate_midpoint
   DESTINATION lib/${PROJECT_NAME}
 )
-
-ament_package()

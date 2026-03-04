@@ -122,7 +122,7 @@ hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const r
     double fb_vel, fb_pos, fb_current;
 
     if (m_CMD.drive_feedback(&fb_id, &fb_mode, &fb_vel, &fb_pos, &fb_current, &fb_error_code) == false) RCLCPP_INFO(m_Logger, m_CMD.get_error());
-    else if (fb_id != m_Wheels[i].id) RCLCPP_INFO(m_Logger, "Received response for wheel %d instead of %d", drive_response[0], m_Wheels[i].id);
+    else if (fb_id != m_Wheels[i].id) RCLCPP_INFO(m_Logger, "Received response for wheel %d instead of %d", fb_id, m_Wheels[i].id);
     else
     {
       if (m_Wheels[i].read == false)
@@ -131,7 +131,7 @@ hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const r
         m_Wheels[i].read = true;
       }
 
-      vel = (double)(m_Wheels[i].scalar * (int)drive_velocity) / 60.0 * 2.0 * M_PI;
+      vel = (double)m_Wheels[i].scalar * fb_vel;
 
       double delta = fb_pos - m_Wheels[i].last_position;
       m_Wheels[i].last_position = fb_pos;
