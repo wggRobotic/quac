@@ -24,14 +24,14 @@ sudo apt install ros-jazzy-navigation2 ros-jazzy-nav2-bringup
 
 ## Build
 ```
-docker build -t quac:stable .
-docker build -t quac:dev .
+sudo docker build -t quac:stable .
+sudo docker build -t quac:dev .
 ```
 
 ## Run
 ```
-docker run -it --rm --network host --privileged quac:stable
-docker run -it --rm --network host --privileged quac:dev
+sudo docker run -it --rm --network host --privileged quac:stable
+sudo docker run -it --rm --network host --privileged quac:dev
 ```
 
 To disable individual components, do

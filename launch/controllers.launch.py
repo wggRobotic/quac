@@ -10,14 +10,18 @@ def generate_launch_description():
         package='controller_manager',
         executable='spawner',
         arguments=['joint_state_broadcaster'],
-        output='screen',
     )
 
     diff_drive_controller = Node(
         package='controller_manager',
         executable='spawner',
         arguments=['diff_drive_controller'],
-        output='screen',
+    )
+
+    wheel_monitor = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["wheel_monitor"],
     )
 
     arm_position_controller = Node(
@@ -27,7 +31,8 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        diff_drive_controller,
         joint_state_controller,
+        diff_drive_controller,
+        wheel_monitor,
         arm_position_controller,
     ])

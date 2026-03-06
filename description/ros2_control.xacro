@@ -18,7 +18,7 @@
 
                 <xacro:unless value="$(arg disable_wheels)">
                     <plugin>quac_hardware/DDSM115</plugin>
-                    <param name="port">/dev/ttyUSB1</param>
+                    <param name="port">/dev/quac_wheels_rs485</param>
                     <param name="act">1</param>
                     <param name="feedback">true</param>
                 </xacro:unless>

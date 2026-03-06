@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
-
+find_package(rclcpp REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(controller_interface REQUIRED)
@@ -48,3 +47,5 @@ install(
   TARGETS set_id calibrate_midpoint
   DESTINATION lib/${PROJECT_NAME}
 )
+
+set(AMENT_EXTENSIONS_ament_package ${AMENT_EXTENSIONS_ament_package} PARENT_SCOPE)

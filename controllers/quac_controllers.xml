@@ -1,0 +1,6 @@
+<library path="quac_controllers">
+  <class name="quac_controllers/WheelMonitor"
+         type="quac_controllers::WheelMonitor"
+         base_class_type="controller_interface::ControllerInterface">
+  </class>
+</library>
