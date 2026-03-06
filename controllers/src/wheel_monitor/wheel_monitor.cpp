@@ -72,14 +72,9 @@ controller_interface::return_type WheelMonitor::update(const rclcpp::Time & time
 {
   for (int i = 0; i < m_Wheels.size(); i++)
   {
-    auto optional_pos = state_interfaces_[m_Wheels[i].pos.id].get_optional<double>();
-    m_InfoMessage.data[3*i+0] = (optional_pos ? optional_pos.value() : 0.0);
-
-    auto optional_vel = state_interfaces_[m_Wheels[i].vel.id].get_optional<double>();
-    m_InfoMessage.data[3*i+1] = (optional_vel ? optional_vel.value() : 0.0);
-
-    auto optional_cur = state_interfaces_[m_Wheels[i].cur.id].get_optional<double>();
-    m_InfoMessage.data[3*i+2] = (optional_cur ? optional_cur.value() : 0.0);
+    m_InfoMessage.data[3*i+0] = state_interfaces_[m_Wheels[i].pos.id].get_value();
+    m_InfoMessage.data[3*i+1] = state_interfaces_[m_Wheels[i].vel.id].get_value();
+    m_InfoMessage.data[3*i+2] = state_interfaces_[m_Wheels[i].cur.id].get_value();
   }
 
   m_InfoPublisher->publish(m_InfoMessage);
