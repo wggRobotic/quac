@@ -53,11 +53,3 @@ quac:
       constraints:
         stopped_velocity_tolerance: 0.01
         goal_time: 0.0
-
-  wheel_monitor:
-    ros__parameters:
-      wheel_names:
-        - wheel_front_left_joint
-        - wheel_rear_left_joint
-        - wheel_front_right_joint
-        - wheel_rear_right_joint

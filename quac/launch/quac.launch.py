@@ -23,7 +23,12 @@ def generate_launch_description():
         }.items()
     )  
 
-    robot_description = Command(['ros2 param get --hide-type /quac/robot_state_publisher robot_description'])
+    xacro_file = os.path.join(package_dir,'description','robot.urdf.xacro')
+    robot_description = Command([
+        'xacro ', xacro_file, 
+        ' disable_wheels:=', LaunchConfiguration('disable_wheels'),
+        ' disable_arm:=', LaunchConfiguration('disable_arm'),
+    ])
 
     controller_manager = Node(
         package="controller_manager",

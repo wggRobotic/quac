@@ -6,6 +6,9 @@
 #include <stdarg.h>
 #include <cmath>
 
+#include <chrono>
+#include <thread>
+
 const char* DDSM115CMD::get_error() { return m_Error; }
 
 void DDSM115CMD::set_error(char* str, ...)
@@ -88,6 +91,7 @@ bool DDSM115CMD::drive(uint8_t id, double velocity, uint8_t act, uint8_t brake)
 {
   int16_t rpm = static_cast<int16_t>(std::round(velocity / (2.0 * M_PI) * 60.0));
 
+  printf("rpm: %d\n", rpm);
 
   uint8_t cmd[] = 
   {
@@ -106,6 +110,10 @@ bool DDSM115CMD::drive(uint8_t id, double velocity, uint8_t act, uint8_t brake)
   cmd[9] = maximCrc8(cmd, 9);
 
   ::write(m_SerialFD, cmd, sizeof(cmd));
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+  tcdrain(m_SerialFD);
 
 }
 

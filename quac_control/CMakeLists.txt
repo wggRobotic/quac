@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(quac)
+project(quac_control)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14)
@@ -18,11 +18,6 @@ find_package(controller_interface REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
-
-install(
-  DIRECTORY config description launch worlds meshes
-  DESTINATION share/${PROJECT_NAME}  
-)
 
 #-----------------------------------------------
 #----------------- controllers -----------------

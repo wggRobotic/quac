@@ -14,12 +14,19 @@ WORKDIR /ros2_ws/src
 
 RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
 
-COPY . /ros2_ws/src/quac
-
 WORKDIR /ros2_ws
 SHELL ["/bin/bash", "-c"]
 
-RUN . /opt/ros/jazzy/setup.bash && colcon build --symlink-install
+RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select rplidar_ros
+
+COPY ./quac_control /ros2_ws/src/quac/quac_control
+RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select quac_control
+
+COPY ./quac /ros2_ws/src/quac/quac
+RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select quac
+
+COPY . /ros2_ws/src/quac
+
 RUN chmod +x /ros2_ws/src/quac/run.sh
 
 ENV DISABLE_LIDAR=false
