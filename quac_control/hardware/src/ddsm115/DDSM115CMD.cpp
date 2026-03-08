@@ -61,6 +61,7 @@ bool DDSM115CMD::connect(const std::string& port)
     return false;
   }
 
+  return true;
 }
 
 void DDSM115CMD::disconnect()
@@ -91,8 +92,6 @@ bool DDSM115CMD::drive(uint8_t id, double velocity, uint8_t act, uint8_t brake)
 {
   int16_t rpm = static_cast<int16_t>(std::round(velocity / (2.0 * M_PI) * 60.0));
 
-  printf("rpm: %d\n", rpm);
-
   uint8_t cmd[] = 
   {
     (uint8_t) id,
@@ -115,9 +114,10 @@ bool DDSM115CMD::drive(uint8_t id, double velocity, uint8_t act, uint8_t brake)
 
   tcdrain(m_SerialFD);
 
+  return true;
 }
 
-bool DDSM115CMD::drive_feedback(uint8_t* id, uint8_t* mode, double* current, double* velocity, double* position, uint8_t* error_code)
+bool DDSM115CMD::drive_feedback(uint8_t* id, uint8_t* mode, double* position, double* velocity, double* current, uint8_t* error_code)
 {
   uint8_t response[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
   int total_num_bytes = 0;
@@ -138,7 +138,7 @@ bool DDSM115CMD::drive_feedback(uint8_t* id, uint8_t* mode, double* current, dou
 
   else if (total_num_bytes < 10)
   {
-    set_error("Erro reading DDSM115 response, only received %d bytes" 
+    set_error("Error reading DDSM115 response, only received %d bytes " 
       "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x", total_num_bytes,
       response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]
     );

@@ -58,7 +58,6 @@ private:
   DDSM115CMD m_CMD;
   std::string m_Port;
   int m_Act;
-  bool m_Feedback;
 };
 
 }

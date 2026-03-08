@@ -33,10 +33,8 @@ controller_interface::CallbackReturn WheelMonitor::on_init()
 
 controller_interface::CallbackReturn WheelMonitor::on_configure(const rclcpp_lifecycle::State & previous_state)
 {
-  //get_node()->declare_parameter("wheel_names", std::vector<std::string>{"wheel_joint"});
-  //auto wheel_names = get_node()->get_parameter("wheel_names").as_string_array();
-  
-  std::vector<std::string> wheel_names = {"wheel_front_left_joint", "wheel_rear_left_joint", "wheel_front_right_joint", "wheel_rear_right_joint"};
+  get_node()->declare_parameter("wheel_names", std::vector<std::string>{"wheel_joint"});
+  auto wheel_names = get_node()->get_parameter("wheel_names").as_string_array();
   m_Wheels.resize(wheel_names.size());
   for (int i = 0; i < wheel_names.size(); i++) m_Wheels[i].name = wheel_names[i];
   m_InfoMessage.data.resize(wheel_names.size()*3);
@@ -66,13 +64,13 @@ controller_interface::CallbackReturn WheelMonitor::on_activate(const rclcpp_life
       return controller_interface::CallbackReturn::ERROR;
     }
 
-    if ((m_Wheels[i].pos.id = get_joint_interface_id(m_Wheels[i].name, "velocity")) == -1)
+    if ((m_Wheels[i].vel.id = get_joint_interface_id(m_Wheels[i].name, "velocity")) == -1)
     {
       RCLCPP_ERROR(get_node()->get_logger(), "velocity interface for wheel %d not found", i);
       return controller_interface::CallbackReturn::ERROR;
     }
 
-    if ((m_Wheels[i].pos.id = get_joint_interface_id(m_Wheels[i].name, "current")) == -1)
+    if ((m_Wheels[i].cur.id = get_joint_interface_id(m_Wheels[i].name, "current")) == -1)
     {
       RCLCPP_ERROR(get_node()->get_logger(), "current interface for wheel %d not found", i);
       return controller_interface::CallbackReturn::ERROR;
@@ -89,8 +87,6 @@ controller_interface::return_type WheelMonitor::update(const rclcpp::Time & time
     m_InfoMessage.data[3*i+0] = state_interfaces_[m_Wheels[i].pos.id].get_value();
     m_InfoMessage.data[3*i+1] = state_interfaces_[m_Wheels[i].vel.id].get_value();
     m_InfoMessage.data[3*i+2] = state_interfaces_[m_Wheels[i].cur.id].get_value();
-
-    //RCLCPP_INFO(get_node()->get_logger(), "wheel %d: pos %f vel %f cur %f", i, m_InfoMessage.data[3*i+0], m_InfoMessage.data[3*i+1], m_InfoMessage.data[3*i+0]);
   }
 
   m_InfoPublisher->publish(m_InfoMessage);

@@ -27,9 +27,12 @@ RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select quac
 
 COPY . /ros2_ws/src/quac
 
-RUN chmod +x /ros2_ws/src/quac/run.sh
-
-ENV DISABLE_LIDAR=false
 ENV DISABLE_WHEELS=false
+ENV DISABLE_LIDAR=false
 ENV DISABLE_ARM=false
-CMD ["/ros2_ws/src/quac/run.sh"]
+CMD echo DISABLE_WHEELS=$DISABLE_WHEELS && \
+    echo DISABLE_LIDAR=$DISABLE_LIDAR && \
+    echo DISABLE_ARM=$DISABLE_ARM && \
+    source /opt/ros/jazzy/setup.bash && \
+    source /ros2_ws/install/setup.bash && \
+    ros2 launch quac quac.launch.py disable_wheels:=${DISABLE_WHEELS} disable_lidar:=${DISABLE_LIDAR} disable_arm:=${DISABLE_ARM}

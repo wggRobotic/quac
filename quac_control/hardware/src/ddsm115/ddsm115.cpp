@@ -25,11 +25,9 @@ hardware_interface::CallbackReturn DDSM115::on_init(const hardware_interface::Ha
 
   m_Port = info.hardware_parameters.at("port");
   m_Act = std::stoi(info.hardware_parameters.at("act"));
-  m_Feedback = (info.hardware_parameters.at("feedback") == "true");
 
   RCLCPP_INFO(m_Logger, "  port: '%s'", m_Port.c_str());
   RCLCPP_INFO(m_Logger, "  act: %d", m_Act);
-  RCLCPP_INFO(m_Logger, "  feedback: %s", m_Feedback ? "true" : "false");
 
   m_Wheels.resize(0);
 
@@ -121,7 +119,7 @@ hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const r
     uint8_t fb_id, fb_mode, fb_error_code;
     double fb_vel, fb_pos, fb_cur;
 
-    if (m_CMD.drive_feedback(&fb_id, &fb_mode, &fb_vel, &fb_pos, &fb_cur, &fb_error_code) == false) RCLCPP_INFO(m_Logger, m_CMD.get_error());
+    if (m_CMD.drive_feedback(&fb_id, &fb_mode, &fb_pos, &fb_vel, &fb_cur, &fb_error_code) == false) RCLCPP_INFO(m_Logger, m_CMD.get_error());
     else if (fb_id != m_Wheels[i].id) RCLCPP_INFO(m_Logger, "Received response for wheel %d instead of %d", fb_id, m_Wheels[i].id);
     else
     {
@@ -136,13 +134,12 @@ hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const r
       double delta = fb_pos - m_Wheels[i].last_position;
       m_Wheels[i].last_position = fb_pos;
 
-      if (delta > 0.5) delta -= 2.0 * M_PI;
-      else if (delta < -0.5) delta += 2.0 * M_PI;
+      if (delta > M_PI) delta -= 2.0 * M_PI;
+      else if (delta < -M_PI) delta += 2.0 * M_PI;
 
       pos = m_Wheels[i].state_position - (double)m_Wheels[i].scalar * delta;
       cur = fb_cur;
 
-      //RCLCPP_INFO(m_Logger, "Wheel %d: pos %f vel %f cur %f", i, fb_pos, fb_vel, fb_cur);
     }
 
     m_Wheels[i].state_velocity = vel;
@@ -156,11 +153,8 @@ hardware_interface::return_type DDSM115::read(const rclcpp::Time & time, const r
 hardware_interface::return_type DDSM115::write(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
   for (size_t i = 0; i < m_Wheels.size(); i++)
-  {
-    int16_t rpm = static_cast<int16_t>(std::round(m_Wheels[i].command_velocity * (double)m_Wheels[i].scalar / (2.0 * M_PI) * 60.0));
-
-    if (m_CMD.drive(m_Wheels[i].id, rpm, m_Act, 0) == false) RCLCPP_INFO(m_Logger, m_CMD.get_error());
-  }
+    if (m_CMD.drive(m_Wheels[i].id, m_Wheels[i].command_velocity * m_Wheels[i].scalar, m_Act, 0) == false)
+      RCLCPP_INFO(m_Logger, m_CMD.get_error());
 
   return hardware_interface::return_type::OK;
 }
