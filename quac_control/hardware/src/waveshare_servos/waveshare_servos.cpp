@@ -14,6 +14,7 @@ hardware_interface::CallbackReturn WaveshareServos::on_init(const hardware_inter
   if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS)
     return hardware_interface::CallbackReturn::ERROR;
 
+  port_ = info.hardware_parameters.at("port");
   // check urdf definitions
   pos_offsets_.resize(info_.joints.size(), 0.0);
   inverted_.resize(info_.joints.size(), false);
@@ -123,6 +124,7 @@ hardware_interface::CallbackReturn WaveshareServos::on_configure(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   // start servo communication
   if (!sm_st.begin(baudrate_, port_.c_str())) {
+    RCLCPP_ERROR(rclcpp::get_logger("waveshare_servos"), "failed do start on port %s", port_.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
   // ping motors

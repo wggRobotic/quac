@@ -67,7 +67,7 @@ private:
 
     // motor variables
     int baudrate_ = 1000000;
-    std::string port_ = "/dev/ttyACM0"; // /dev/ttyTHS1 if using UART
+    std::string port_;// = "/dev/ttyACM0"; // /dev/ttyTHS1 if using UART
     SMS_STS sm_st;
     double KT_ = 9.0; // torque constant (kg*cm / A)
     int steps_ = 4096;

@@ -60,6 +60,7 @@
 
                 <xacro:unless value="$(arg disable_arm)">
                     <plugin>quac_hardware/WaveshareServos</plugin>
+                    <param name="port">/dev/quac/arm_servos</param>
                     <param name="crawler_arm_param_hw_start_duration_sec">0</param>
                     <param name="crawler_arm_hw_stop_duration_sec">3.0</param>
                     <param name="crawler_arm_hw_slowdown">100</param>

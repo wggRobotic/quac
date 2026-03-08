@@ -39,8 +39,10 @@ def generate_launch_description():
         ],
         remappings=[
             ('/tf', 'tf'),
+            ('/trajectories', 'trajectories'),
             ('diff_drive_controller/cmd_vel', 'cmd_vel'),
-            ('diff_drive_controller/odom', 'odom')
+            ('diff_drive_controller/odom', 'odom'),
+            ('arm_position_controller/joint_trajectory', 'arm_joint_trajectory')
         ],
     )
 
@@ -67,6 +69,15 @@ def generate_launch_description():
         condition=UnlessCondition(LaunchConfiguration('disable_lidar'))
     )
 
+    arm_ik = Node(
+        package="quac_control",
+        executable="quac_ik_node",
+        remappings=[
+            ('/ee_pos', 'ee_pos'),
+            ('/joint_commands', 'arm_joint_trajectory')
+        ],
+    )
+
     return LaunchDescription([
 
         DeclareLaunchArgument(
@@ -91,5 +102,6 @@ def generate_launch_description():
         rsp,
         delayed_controller_manager,
         delayed_controllers,
-        lidar
+        lidar,
+        arm_ik
     ])

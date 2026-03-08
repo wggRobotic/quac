@@ -17,6 +17,7 @@ sudo nano /etc/udev/rules.d/99-quac.rules
 add the following
 ```
 SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A50285BI", SYMLINK+="quac/wheels_rs485", MODE="0666"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="58FA095462", SYMLINK+="quac/arm_servos", MODE="0666"
 ```
 reload the rules
 ```
