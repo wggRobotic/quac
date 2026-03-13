@@ -14,6 +14,9 @@ quac:
       arm_position_controller:
         type: joint_trajectory_controller/JointTrajectoryController
 
+      arm_controller:
+        type: quac_controllers/ArmController
+
       wheel_monitor:
         type: quac_controllers/WheelMonitor
 
@@ -67,3 +70,9 @@ quac:
         - wheel_rear_left_joint
         - wheel_front_right_joint
         - wheel_rear_right_joint
+
+  arm_controller:
+    ros__parameters:
+      arm_joint_names:
+        - arm_servo_0_joint
+        - arm_servo_1_joint

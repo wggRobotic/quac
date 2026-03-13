@@ -118,7 +118,7 @@
         </plugin>
     </gazebo>
 
-    <gazebo reference="lidar">
+    <gazebo reference="laser">
         <material>Gazebo/Red</material>
 
         <sensor name="lidar_sim" type="gpu_lidar">
@@ -139,7 +139,7 @@
                 </range>
             </lidar>
             <topic>scan</topic>
-            <gz_frame_id>lidar</gz_frame_id>
+            <gz_frame_id>laser</gz_frame_id>
         </sensor>
     </gazebo>
     

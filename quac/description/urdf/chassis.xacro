@@ -44,17 +44,13 @@
         <gravity>true</gravity>
     </gazebo>
 
-    <material name="lidar_material">
-        <color rgba="0.8 0.2 0.2 1.0" />
-    </material>
-
-    <joint name="lidar_joint" type="fixed">
+    <joint name="laser_joint" type="fixed">
         <parent link="chassis"/>
-        <child link="lidar"/>
+        <child link="laser"/>
         <origin xyz="-0.02 0.0 0.15" rpy="0 0 0"/>
     </joint>
 
-    <link name="lidar"/>
+    <link name="laser"/>
 
     <joint name="rear_camera_joint" type="fixed">
         <parent link="chassis"/>

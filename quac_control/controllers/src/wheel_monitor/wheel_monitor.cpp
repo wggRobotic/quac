@@ -10,7 +10,7 @@ controller_interface::InterfaceConfiguration WheelMonitor::state_interface_confi
 {
   controller_interface::InterfaceConfiguration conf;
   conf.type = controller_interface::interface_configuration_type::INDIVIDUAL;
-  conf.names.reserve(m_Wheels.size());
+  conf.names.reserve(m_Wheels.size()*3);
   
   for (int i = 0; i < m_Wheels.size(); i++)
   {

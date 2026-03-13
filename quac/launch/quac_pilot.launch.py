@@ -48,14 +48,37 @@ def generate_launch_description():
         ],
     )
 
-    map_server = IncludeLaunchDescription(
+    ohm_map_server = Node(
+        package='ohm_tsd_slam',
+        executable='slam_node',
+        name='tsd_slam',
+        remappings=[
+            # Subscriptions
+            ('tsd_slam/laser', 'scan'),
+            # Publisher
+            ('tsd_slam/map', 'map'),
+            ('tsd_slam/estimated_pose', 'estimated_pose'),
+            ('tsd_slam/map/image', 'map/image'),
+            # Services
+            ('tsd_slam/start_stop_slam', 'start_stop_slam'),
+            ('tsd_slam/get_map', 'get_map'),
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static'),
+
+        ],
+        parameters=[os.path.join(get_package_share_directory('ohm_tsd_slam'), 'config', 'single-laser.yaml')],
+        condition=IfCondition(LaunchConfiguration('ohm_slam'))
+    )
+
+    slam_toolbox_map_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(package_dir, 'launch', 'online_async_launch.py')
         ),
         launch_arguments={
             'use_sim_time': LaunchConfiguration('sim_mode'),
             'params_file': os.path.join(package_dir, 'config', 'mapper_params_online_async.yaml'),
-        }.items()
+        }.items(),
+        condition=UnlessCondition(LaunchConfiguration('ohm_slam'))
     )
 
     nav_server = IncludeLaunchDescription(
@@ -81,11 +104,17 @@ def generate_launch_description():
             default_value='false',
             description='disables nav2'
         ),
+        DeclareLaunchArgument(
+            'ohm_slam',
+            default_value='false',
+            description='uses ohm_tsd_slam instead of slam_toolbox'
+        ),
 
         PushRosNamespace('quac'),
         rviz,
         twist_mux,
         simulation,
         nav_server,
-        map_server
+        slam_toolbox_map_server,
+        ohm_map_server
     ])

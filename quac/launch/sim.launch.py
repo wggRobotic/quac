@@ -17,7 +17,7 @@ def generate_launch_description():
     )
     
     generate_sdf = ExecuteProcess(
-        cmd=['xacro', 'src/quac/worlds/obstacles.sdf.xacro','-o', '/tmp/world.sdf'],
+        cmd=['xacro', os.path.join(package_dir,'worlds','obstacles.sdf.xacro'),'-o', '/tmp/world.sdf'],
         output='screen'
     )
     

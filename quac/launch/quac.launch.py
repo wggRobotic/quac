@@ -21,22 +21,12 @@ def generate_launch_description():
             'disable_wheels' : LaunchConfiguration('disable_wheels'),
             'disable_arm' : LaunchConfiguration('disable_arm'),
         }.items()
-    )  
-
-    xacro_file = os.path.join(package_dir,'description','robot.urdf.xacro')
-    robot_description = Command([
-        'xacro ', xacro_file, 
-        ' disable_wheels:=', LaunchConfiguration('disable_wheels'),
-        ' disable_arm:=', LaunchConfiguration('disable_arm'),
-    ])
+    )
 
     controller_manager = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[
-            os.path.join(package_dir,'config','controllers.yaml'),
-            {'robot_description': robot_description},           
-        ],
+        parameters=[os.path.join(package_dir,'config','controllers.yaml'),],
         remappings=[
             ('/tf', 'tf'),
             ('/trajectories', 'trajectories'),
@@ -45,8 +35,6 @@ def generate_launch_description():
             ('arm_position_controller/joint_trajectory', 'arm_joint_trajectory')
         ],
     )
-
-    delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
 
     delayed_controllers = RegisterEventHandler(
         event_handler=OnProcessStart(
@@ -65,7 +53,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('rplidar_ros'),'launch','rplidar_a2m8_launch.py')
         ),
-        launch_arguments={'frame_id': 'lidar'}.items(),
+        launch_arguments={'frame_id': 'laser', 'serial_port': '/dev/quac/lidar_uart'}.items(),
         condition=UnlessCondition(LaunchConfiguration('disable_lidar'))
     )
 
@@ -100,7 +88,7 @@ def generate_launch_description():
         
         PushRosNamespace('quac'),
         rsp,
-        delayed_controller_manager,
+        controller_manager,
         delayed_controllers,
         lidar,
         arm_ik
