@@ -1,0 +1,75 @@
+FROM ultralytics/ultralytics:latest-jetson-jetpack6
+
+RUN apt-get update && apt-get install -y \
+    unzip \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --upgrade pip
+
+#RUN pip3 install opencv-python-headless numpy
+RUN pip3 install onnxscript
+
+WORKDIR /deepstream_tmp
+# download DeepStream 7.1
+RUN wget --content-disposition https://api.ngc.nvidia.com/v2/resources/nvidia/ngc-apps/ngc_cli/versions/4.15.0/files/ngccli_arm64.zip -O ngccli_arm64.zip
+RUN unzip ngccli_arm64.zip
+RUN chmod u+x ngc-cli/ngc
+SHELL ["/bin/bash", "-c"]
+# extract
+RUN ./ngc-cli/ngc registry resource download-version "nvidia/deepstream:7.1"
+
+WORKDIR /deepstream_tmp/deepstream_v7.1
+RUN apt update
+RUN apt install -y \
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-good1.0-dev \
+    libgstreamer-plugins-bad1.0-dev \
+    libgstrtspserver-1.0-dev \
+    libyaml-cpp-dev \
+    libssl-dev \
+    wget \
+    build-essential \
+    pkg-config
+
+RUN dpkg -i deepstream-7.1_7.1.0-1_arm64.deb
+RUN apt install -f
+
+WORKDIR /workspace
+RUN apt update && apt-get install -y \
+    build-essential cmake git pkg-config \
+    libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev \
+    libxcursor-dev libxi-dev libudev-dev libv4l-dev \
+    libusb-1.0-0-dev libssl-dev freeglut3-dev mesa-utils mesa-common-dev
+
+RUN git clone https://github.com/realsenseai/librealsense.git
+WORKDIR /workspace/librealsense/build
+RUN cmake ..
+RUN cmake --build . --config Release
+RUN cmake --install .
+
+# --- deepstream yolo setup
+
+WORKDIR /workspace
+
+RUN git clone https://github.com/marcoslucianops/DeepStream-Yolo.git DeepStream-Yolo
+
+WORKDIR /workspace/DeepStream-Yolo
+
+ENV CUDA_VER=12.6
+RUN make -C nvdsinfer_custom_impl_Yolo clean && make -C nvdsinfer_custom_impl_Yolo
+
+# --- app ---
+
+COPY ./quac_video/application /workspace/ros2_ws/src/quac/quac_video/application
+WORKDIR /workspace/ros2_ws/src/quac/quac_video/application/build
+RUN cmake ..
+RUN make
+RUN chmod +x application
+
+COPY ./quac_video/infer /workspace/ros2_ws/src/quac/quac_video/infer
+
+COPY entrypoint.video.sh /entrypoint.video.sh
+RUN chmod +x /entrypoint.video.sh
+

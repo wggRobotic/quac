@@ -95,9 +95,9 @@
             </joint>
         </xacro:macro>
 
-        <xacro:arm_joint name="arm_servo_0_joint"   id="5" inverted="false" offset="${pi/2}" pos_min="${-pi/2}" pos_max="${pi/2}"/>
-        <xacro:arm_joint name="arm_servo_1_joint"   id="6" inverted="true"  offset="1.8"     pos_min="-0.8"     pos_max="${pi/2}"/>
-        <xacro:arm_joint name="gripper_servo_joint" id="1" inverted="true"  offset="1.75"    pos_min="0"        pos_max="1.7" />
+        <xacro:arm_joint name="arm_servo_0_joint"   id="5" inverted="false" offset="${pi}" pos_min="${-pi/2}" pos_max="${pi/2}"/>
+        <xacro:arm_joint name="arm_servo_1_joint"   id="6" inverted="true"  offset="1.8"   pos_min="-0.8"     pos_max="${pi/2}"/>
+        <xacro:arm_joint name="gripper_servo_joint" id="1" inverted="true"  offset="1.75"  pos_min="0"        pos_max="1.7" />
 
     </ros2_control> 
 

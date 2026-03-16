@@ -15,6 +15,7 @@
         "/home/christopher/ros2_ws/install/camera_calibration_parsers/include/**",
         "/opt/ros/iron/include/**",
         "/opt/ros/jazzy/include/**",
+        "/opt/ros/humble/include/**",
         "/home/christopher/ros2_ws/src/guiniverse/include/**",
         "/home/christopher/ros2_ws/src/image_common/camera_calibration_parsers/include/**",
         "/home/christopher/ros2_ws/src/image_common/camera_info_manager/include/**",
@@ -24,7 +25,9 @@
         "/home/christopher/ros2_ws/src/image_transport_plugins/theora_image_transport/include/**",
         "/home/christopher/ros2_ws/src/rplidar_ros/include/**",
         "/usr/include/**",
-        "/home/christopher/quac_ws/ros2_ws/src/quac/hardware/include"
+        "/home/christopher/quac_ws/ros2_ws/src/quac/hardware/include",
+        "/opt/nvidia/deepstream/deepstream-7.1/includes",
+        "/opt/nvidia/deepstream/deepstream-7.1/sources/includes"
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",

@@ -77,8 +77,11 @@ private:
 
     point.positions.push_back(angles[0]);
     point.positions.push_back(angles[1]);
+    point.time_from_start.sec = 2;
 
     joint_trajectory.points.push_back(point);
+    joint_trajectory.joint_names.push_back("arm_servo_0_joint");
+    joint_trajectory.joint_names.push_back("arm_servo_1_joint");
 
     joint_commands_pub_->publish(joint_trajectory);
   }
