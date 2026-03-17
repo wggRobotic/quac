@@ -64,11 +64,21 @@ def generate_launch_description():
     delayed_arm_position_reset = TimerAction(
         period=7.0,
         actions=[ExecuteProcess(
-                    cmd=['ros2',' topic pub --once /quac/arm_position_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: [\'arm_servo_0_joint\',\'arm_servo_1_joint\',\'gripper_servo_joint\'], points: [{positions: [-1.57, 1.57, 0.0], time_from_start: {sec: 5, nanosec: 0}}]}"'],
+                    cmd=['ros2',' topic pub --once /quac/arm_joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: [\'arm_servo_0_joint\',\'arm_servo_1_joint\',\'gripper_servo_joint\'], points: [{positions: [-1.57, 1.57, 0.0], time_from_start: {sec: 5, nanosec: 0}}]}"'],
                     output='screen',
                     shell = True, 
                 )]
     )
+
+    arm_ik = Node(
+        package="quac_control",
+        executable="quac_ik_node",
+        remappings=[
+            ('/ee_pos', 'ee_pos'),
+            ('/joint_commands', 'arm_joint_trajectory')
+        ],
+    )
+
 
     return LaunchDescription([
         generate_sdf,
@@ -77,5 +87,6 @@ def generate_launch_description():
         ros_gz_bridge,
         spawn_entity,
         controllers,
-        delayed_arm_position_reset
+        delayed_arm_position_reset,
+        arm_ik
     ])
