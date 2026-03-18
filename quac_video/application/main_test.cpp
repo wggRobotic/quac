@@ -19,6 +19,8 @@
 #include "gstnvdsmeta.h"
 #include <librealsense2/rs.hpp>
 
+#include "ament_index_cpp/get_package_share_directory.hpp"
+
 #define MAX_DISPLAY_LEN 64
 
 gchar* class_names[] = {
@@ -213,6 +215,9 @@ stop_feed (GstElement * source, AppSrcData * data)
 
 int get_args(int argc, char *argv[], guint* fps, long* width, long* height)
 {
+  *fps = 30; *width = 640; *height=480;
+  return 0;
+
   gchar *endptr1 = NULL, *endptr2 = NULL, *endptr3 = NULL;
    
   if (argc < 4) {
@@ -282,6 +287,11 @@ main (int argc, char *argv[])
   GST_CHECK(nvvidconv3 = gst_element_factory_make("nvvideoconvert", "nvvideo-converter3"));
   GST_CHECK(encoder = gst_element_factory_make("x264enc", "h264-encoder"));
   g_object_set(encoder,
+             "tune", 4,             // zerolatency
+             "speed-preset", 1,     // ultrafast
+             "key-int-max", 30,
+             NULL);
+  g_object_set(encoder,
              "preset-level", 1,         // 1 = ultrafast
              "iframeinterval", 30,      // keyframe every second
              "bitrate", 2000,           // kbps, tune as needed
@@ -294,7 +304,7 @@ main (int argc, char *argv[])
 
   GST_CHECK(udp_sink = gst_element_factory_make("udpsink", "udp-sink"));
   g_object_set(udp_sink,
-             "host", "192.168.137.26",
+             "host", "192.168.1.136",
              "port", 5000,
              "sync", FALSE,     // don’t wait for pipeline clock
              "async", FALSE,    // start immediately
@@ -333,7 +343,11 @@ main (int argc, char *argv[])
 
   /* Set all the necessary properties of the nvinfer element,
    * the necessary ones are : */
-  g_object_set (G_OBJECT (pgie), "config-file-path", PGIE_CONFIG_FILE, NULL);
+
+  std::string pkg_share_dir = ament_index_cpp::get_package_share_directory("quac_video");
+  std::string model_path = pkg_share_dir + "/config/hazmat_config.txt";
+
+  g_object_set (G_OBJECT (pgie), "config-file-path", model_path.c_str(), NULL);
 
   /* we add a message handler */
   bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));

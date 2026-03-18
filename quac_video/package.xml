@@ -7,6 +7,8 @@
   <maintainer email="mail@mail.com">name</maintainer>
   <license>Apache-2.0</license>
 
+  <depend>ament_index_cpp</depend>
+
   <!-- Build system -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 

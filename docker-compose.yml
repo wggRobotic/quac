@@ -21,7 +21,7 @@ services:
 
   quac_video:
     image: quac_video:dev
-    entrypoint: ["/entrypoint.video.sh"]
+    #entrypoint: ["/entrypoint.video.sh"]
 
     build:
       context: .
