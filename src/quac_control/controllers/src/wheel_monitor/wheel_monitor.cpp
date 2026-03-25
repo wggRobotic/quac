@@ -33,7 +33,7 @@ controller_interface::CallbackReturn WheelMonitor::on_init()
 
 controller_interface::CallbackReturn WheelMonitor::on_configure(const rclcpp_lifecycle::State & previous_state)
 {
-  get_node()->declare_parameter("wheel_names", std::vector<std::string>{"wheel_joint"});
+  //get_node()->declare_parameter("wheel_names", std::vector<std::string>{"wheel_joint"});
   auto wheel_names = get_node()->get_parameter("wheel_names").as_string_array();
   m_Wheels.resize(wheel_names.size());
   for (int i = 0; i < wheel_names.size(); i++) m_Wheels[i].name = wheel_names[i];

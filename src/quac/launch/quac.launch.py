@@ -29,7 +29,8 @@ def generate_launch_description():
             ('/trajectories', 'trajectories'),
             ('diff_drive_controller/cmd_vel', 'cmd_vel'),
             ('diff_drive_controller/odom', 'odom'),
-            ('arm_position_controller/joint_trajectory', 'arm_joint_trajectory')
+            ('arm_position_controller/joint_trajectory', 'arm_joint_trajectory'),
+            ('controller_manager/robot_description', 'robot_description')
         ],
     )
 
@@ -67,7 +68,7 @@ def generate_launch_description():
         package="quac_video",
         executable="video_app",
         parameters=[
-            {'hazmat_engine': os.path.join(os.getenv("QUAC_VIDEO_ENGINE_FOLDER", "/invalid"), "hazmat_yolo26.engine")},
+            {'hazmat.property_parameters.model-engine-file': os.path.join(os.getenv("QUAC_VIDEO_ENGINE_FOLDER", "/invalid"), "hazmat_yolo26.engine")},
             {'paintroller_engine': os.path.join(os.getenv("QUAC_VIDEO_ENGINE_FOLDER", "/invalid"), "paintroller_yolo11.engine")},
             {'hazmat.property_parameters.custom-lib-path': os.getenv("NVINVER_YOLO_LIB_PATH", "/invalid.so")},
             os.path.join(package_dir, "config", "video", "video_app_params.yaml"),
@@ -103,9 +104,10 @@ def generate_launch_description():
         ),
         
         PushRosNamespace('quac'),
-        rsp,
-        controller_manager,
-        delayed_controllers,
-        lidar,
-        arm_ik,
+        #rsp,
+        #controller_manager,
+        #delayed_controllers,
+        #lidar,
+        #arm_ik,
+        video_app
     ])

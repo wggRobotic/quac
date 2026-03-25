@@ -4,4 +4,6 @@ log/
 engines/
 
 .cache
-.hazmat_config.txt
+.nvinfer_config/
+
+*.engine
