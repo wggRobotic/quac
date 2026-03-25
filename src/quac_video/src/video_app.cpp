@@ -1,5 +1,6 @@
 #include "video_app/video_app.hpp"
 #include <memory>
+#include <fstream>
 
 void on_detection(void* data)
 {
@@ -15,7 +16,24 @@ const void* on_get_frame(void* data)
   return color_frame.get_data();
 }
 
-VideoApp::VideoApp() : Node("video_app") {}
+VideoApp::VideoApp() : Node("video_app")
+{
+  {
+    std::ofstream file(".hazmat_config.txt", std::ios::trunc);
+    
+    file << "[property]\n";
+    auto result = list_parameters({"hazmat.property_parameters"}, 10);
+
+    for (const auto & name : result.names) {
+      file << name << ": " << get_parameter(name).as_string() << "\n";    
+    }
+    file << "[class-attrs-all]\n";
+
+    file.close();
+  }
+
+  
+}
 
 void VideoApp::run()
 {

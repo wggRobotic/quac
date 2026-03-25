@@ -1,2 +1,7 @@
 build/
+install/
+log/
 engines/
+
+.cache
+.hazmat_config.txt

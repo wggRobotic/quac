@@ -6,8 +6,14 @@ https://github.com/htchr/waveshare_servos
 # On the robot
 ```
 sudo apt update
-sudo apt install ros-jazzy-ros2-control ros-jazzy-ros2-controlllers ros-jazzy-xacro
+sudo apt install ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro
 git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
+```
+
+Set paths:
+```
+export QUAC_VIDEO_ENGINE_FOLDER=/home/pilot/quac/models
+export NVINVER_YOLO_LIB_PATH=/home/pilot/DeepStream-Yolo/nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
 ```
 
 ## udev rules
@@ -35,10 +41,10 @@ sudo chmod +x docker.sh
 # On the pilot's machine
 ```
 sudo apt update
-sudo apt install ros-jazzy-twist-mux
-sudo apt install ros-jazzy-ros-gz ros-jazzy-gz-ros2-control 
-sudo apt install ros-jazzy-slam-toolbox
-sudo apt install ros-jazzy-navigation2 ros-jazzy-nav2-bringup
+sudo apt install ros-humble-twist-mux
+sudo apt install ros-humble-ros-gz ros-humble-gz-ros2-control 
+sudo apt install ros-humble-slam-toolbox
+sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
 ```
 
 # Quac_vide

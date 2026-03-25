@@ -63,6 +63,19 @@ def generate_launch_description():
         ],
     )
 
+    video_app = Node(
+        package="quac_video",
+        executable="video_app",
+        parameters=[
+            {'hazmat_engine': os.path.join(os.getenv("QUAC_VIDEO_ENGINE_FOLDER", "/invalid"), "hazmat_yolo26.engine")},
+            {'paintroller_engine': os.path.join(os.getenv("QUAC_VIDEO_ENGINE_FOLDER", "/invalid"), "paintroller_yolo11.engine")},
+            {'hazmat.property_parameters.custom-lib-path': os.getenv("NVINVER_YOLO_LIB_PATH", "/invalid.so")},
+            os.path.join(package_dir, "config", "video", "video_app_params.yaml"),
+            os.path.join(package_dir, "config", "video", "hazmat_params.yaml")
+        ],
+        condition=UnlessCondition(LaunchConfiguration('disable_video'))
+    ) 
+
     return LaunchDescription([
 
         DeclareLaunchArgument(
@@ -81,6 +94,12 @@ def generate_launch_description():
             'disable_lidar',
             default_value='false',
             description='Whether to disable the lidar'
+        ),
+
+        DeclareLaunchArgument(
+            'disable_video',
+            default_value='false',
+            description='Whether to disable the video streaming and processing'
         ),
         
         PushRosNamespace('quac'),

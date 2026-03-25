@@ -52,55 +52,6 @@ install(FILES controllers/quac_controllers.xml
 
 pluginlib_export_plugin_description_file(controller_interface controllers/quac_controllers.xml)
 
-#--------------------------------------------
-#----------------- hardware -----------------
-#--------------------------------------------
-
-include_directories(hardware/include hardware/src)
-
-add_library(quac_hardware SHARED
-  hardware/src/ddsm115/ddsm115.cpp
-  hardware/src/ddsm115/DDSM115CMD.cpp
-
-  hardware/src/waveshare_servos/waveshare_servos.cpp
-  hardware/src/waveshare_servos/SCSCL.cpp
-  hardware/src/waveshare_servos/SCS.cpp
-  hardware/src/waveshare_servos/SCSerial.cpp
-  hardware/src/waveshare_servos/SMSBL.cpp
-  hardware/src/waveshare_servos/SMSCL.cpp
-  hardware/src/waveshare_servos/SMS_STS.cpp
-)
-
-ament_target_dependencies(quac_hardware
-  rclcpp
-  hardware_interface
-  pluginlib
-  controller_interface
-)
-
-add_executable(set_id hardware/src/waveshare_servos/set_id.cpp)
-target_link_libraries(set_id quac_hardware)
-ament_target_dependencies(set_id rclcpp)
-
-add_executable(calibrate_midpoint hardware/src/waveshare_servos/calibrate_midpoint.cpp)
-target_link_libraries(calibrate_midpoint quac_hardware)
-ament_target_dependencies(calibrate_midpoint rclcpp)
-
-pluginlib_export_plugin_description_file(hardware_interface hardware/quac_hardware.xml)
-
-ament_export_libraries(
-  quac_hardware
-)
-
-install(TARGETS quac_hardware
-  DESTINATION lib
-)
-
-install(
-  TARGETS set_id calibrate_midpoint
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 #-----------------------------------------
 #----------------- nodes -----------------
 #--------------------------------------------

@@ -1,0 +1,10 @@
+FROM osrf/ros:humble-desktop-full
+
+SHELL ["/bin/bash", "-c"]
+
+RUN sudo apt update
+RUN sudo apt install ros-humble-twist-mux
+RUN sudo apt install ros-humble-ros-gz ros-humble-gz-ros2-control 
+RUN sudo apt install ros-humble-slam-toolbox
+RUN sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
+RUN sudo apt install ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro

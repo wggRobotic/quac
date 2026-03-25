@@ -1,0 +1,25 @@
+quac:
+  video_app:
+    ros__parameters:
+      hazmat:
+        property_parameters:
+        - gpu-id: "0"
+        - net-scale-factor: "0.0039215697906911373"
+        - model-color-format: "0"
+        - batch-size: "1"
+        - network-mode: "1"
+        - num-detected-classes: "15"
+        - interval: "0"
+        - gie-unique-id: "1"
+        - process-mode: "1"
+        - network-type: "0"
+        - cluster-mode: "4"
+        - maintain-aspect-ratio: "1"
+        - symmetric-padding: "1"
+        - workspace-size: "2000"
+        #- parse-bbox-func-name: "NvDsInferParseYolo"
+        - parse-bbox-func-name: "NvDsInferParseYoloCuda"
+        - engine-create-func-name: "NvDsInferYoloCudaEngineGet"
+        class_parameters:
+        - pre-cluster-threshold: "0.25"
+        - topk: "300"
