@@ -4,6 +4,4 @@ log/
 engines/
 
 .cache
-.nvinfer_config/
-
-*.engine
+.nvinfer/

@@ -68,11 +68,10 @@ def generate_launch_description():
         package="quac_video",
         executable="video_app",
         parameters=[
-            {'hazmat.property_parameters.model-engine-file': os.path.join(os.getenv("QUAC_VIDEO_ENGINE_FOLDER", "/invalid"), "hazmat_yolo26.engine")},
-            {'paintroller_engine': os.path.join(os.getenv("QUAC_VIDEO_ENGINE_FOLDER", "/invalid"), "paintroller_yolo11.engine")},
+            {'hazmat.model': os.path.join(package_dir, "models", "hazmat_yolo26.onnx")},
             {'hazmat.property_parameters.custom-lib-path': os.getenv("NVINVER_YOLO_LIB_PATH", "/invalid.so")},
             os.path.join(package_dir, "config", "video", "video_app_params.yaml"),
-            os.path.join(package_dir, "config", "video", "hazmat_params.yaml")
+            os.path.join(package_dir, "config", "video", "nvinfer_params.yaml")
         ],
         condition=UnlessCondition(LaunchConfiguration('disable_video'))
     ) 

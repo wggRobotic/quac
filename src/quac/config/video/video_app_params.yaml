@@ -5,9 +5,15 @@ quac:
       ip: "192.168.137.26"
       #ip: "192.168.1.136"
 
+      width: 640
+      height: 480
+      fps: 30
+      
       front:
         port: 5000
-        cam_serial: "827312072798"
+        serial_number: "827312072798"
       back:
         port: 5001
-        cam_serial: "938422071694" 
+        serial_number: "938422071694" 
+
+      

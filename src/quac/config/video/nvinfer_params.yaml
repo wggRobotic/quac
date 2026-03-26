@@ -1,6 +1,8 @@
 quac:
   video_app:
     ros__parameters:
+      nvinfer_parse_folder: .nvinfer/
+
       hazmat:
         labels:
         - blasting_agents
@@ -20,6 +22,7 @@ quac:
         - spontaneously_combustible
 
         property_parameters:
+          model-engine-file: "hazmat_yolo26.engine"
           gpu-id: "0"
           net-scale-factor: "0.0039215697906911373"
           model-color-format: "0"
@@ -35,7 +38,6 @@ quac:
           maintain-aspect-ratio: "1"
           symmetric-padding: "1"
           workspace-size: "2000"
-        #- parse-bbox-func-name: "NvDsInferParseYolo"
           parse-bbox-func-name: "NvDsInferParseYoloCuda"
           engine-create-func-name: "NvDsInferYoloCudaEngineGet"
         class_parameters:

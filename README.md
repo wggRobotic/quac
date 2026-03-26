@@ -12,7 +12,6 @@ git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
 
 Set paths:
 ```
-export QUAC_VIDEO_ENGINE_FOLDER=/home/pilot/quac/models
 export NVINVER_YOLO_LIB_PATH=/home/pilot/DeepStream-Yolo/nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
 ```
 

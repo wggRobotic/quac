@@ -4,7 +4,7 @@ project(quac)
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY config description launch worlds meshes
+  DIRECTORY config description launch worlds meshes models
   DESTINATION share/${PROJECT_NAME}  
 )
 
