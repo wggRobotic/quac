@@ -34,6 +34,7 @@ quac:
       base_frame_id: "base_link"
       enable_odom_tf: true
       tf_frame_prefix_enable: false
+      use_stamped_vel: false
 
   arm_position_controller:
     ros__parameters:
@@ -67,3 +68,10 @@ quac:
         - wheel_rear_left_joint
         - wheel_front_right_joint
         - wheel_rear_right_joint
+
+  ik_node:
+    ros__parameters:
+      l1: 0.105
+      l2: 0.035
+      l3: 0.05
+      gripper_range: 0.8

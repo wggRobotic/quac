@@ -6,7 +6,7 @@ from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, PushRosNamespace
 from launch.substitutions import LaunchConfiguration
-from launch.conditions import IfCondition, UnlessCondition
+from launch.conditions import IfCondition
 
 def generate_launch_description():
 
@@ -14,7 +14,12 @@ def generate_launch_description():
 
     simulation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(package_dir,'launch','sim.launch.py')]),
-        condition=IfCondition(LaunchConfiguration('sim_mode'))
+        condition=IfCondition(LaunchConfiguration('sim_mode')),
+        launch_arguments={ 
+            'disable_nav' : LaunchConfiguration('disable_nav'),
+            'ohm_slam' : LaunchConfiguration('ohm_slam'),
+            'disable_slam' : LaunchConfiguration('disable_slam')
+        }.items()
     )
 
     rviz = Node(
@@ -28,69 +33,13 @@ def generate_launch_description():
             ('/tf_static', 'tf_static'),
             ('/clicked_point', 'clicked_point'),
             ('/goal_pose', 'goal_pose'),
-            ('/initialpose', 'initialpose'),
+            ('/initialpose', 'initialpose')
         ],
     )
 
-    twist_mux = Node(
-        package='twist_mux',
-        executable='twist_mux',
-        output='screen',
-        parameters=[
-            os.path.join(
-                package_dir,
-                'config',
-                'twist_mux.yaml'
-            )
-        ],
-        remappings=[
-            ('cmd_vel_out', 'cmd_vel')
-        ],
-    )
-
-    ohm_map_server = Node(
-        package='ohm_tsd_slam',
-        executable='slam_node',
-        name='tsd_slam',
-        remappings=[
-            # Subscriptions
-            ('tsd_slam/laser', 'scan'),
-            # Publisher
-            ('tsd_slam/map', 'map'),
-            ('tsd_slam/estimated_pose', 'estimated_pose'),
-            ('tsd_slam/map/image', 'map/image'),
-            # Services
-            ('tsd_slam/start_stop_slam', 'start_stop_slam'),
-            ('tsd_slam/get_map', 'get_map'),
-            ('/tf', 'tf'),
-            ('/tf_static', 'tf_static'),
-
-        ],
-        parameters=[os.path.join(get_package_share_directory('ohm_tsd_slam'), 'config', 'single-laser.yaml')],
-        condition=IfCondition(LaunchConfiguration('ohm_slam'))
-    )
-
-    slam_toolbox_map_server = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(package_dir, 'launch', 'online_async_launch.py')
-        ),
-        launch_arguments={
-            'use_sim_time': LaunchConfiguration('sim_mode'),
-            'params_file': os.path.join(package_dir, 'config', 'mapper_params_online_async.yaml'),
-        }.items(),
-        condition=UnlessCondition(LaunchConfiguration('ohm_slam'))
-    )
-
-    nav_server = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(package_dir, 'launch', 'navigation_launch.py')
-        ),
-        launch_arguments={
-            'use_sim_time': LaunchConfiguration('sim_mode'),
-            'namespace': 'quac',
-            'params_file': os.path.join(package_dir, 'config', 'nav2_params.yaml')
-        }.items(),
-        condition=UnlessCondition(LaunchConfiguration('disable_nav'))
+    guiniverse = Node(
+        package="guiniverse",
+        executable="main"
     )
 
     return LaunchDescription([
@@ -109,12 +58,14 @@ def generate_launch_description():
             default_value='false',
             description='uses ohm_tsd_slam instead of slam_toolbox'
         ),
+        DeclareLaunchArgument(
+            'disable_slam',
+            default_value='false',
+            description='whether to diable slam'
+        ),
 
         PushRosNamespace('quac'),
         rviz,
-        twist_mux,
         simulation,
-        nav_server,
-        slam_toolbox_map_server,
-        ohm_map_server
+        #guiniverse
     ])

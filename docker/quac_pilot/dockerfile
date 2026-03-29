@@ -1,0 +1,36 @@
+FROM osrf/ros:humble-desktop-full
+
+SHELL ["/bin/bash", "-c"]
+
+RUN apt update
+RUN apt install -y ros-humble-rmw-cyclonedds-cpp
+RUN apt install -y ros-humble-twist-mux
+RUN apt install -y ros-humble-ros-gz ros-humble-gz-ros2-control
+RUN apt install -y ros-humble-slam-toolbox
+RUN apt install -y ros-humble-navigation2 ros-humble-nav2-bringup
+RUN apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro
+RUN apt install -y git libgsl-dev libann-dev libflann-dev libboost-thread-dev liblz4-dev
+RUN apt install -y ros-humble-opennav-docking
+
+WORKDIR /ros2_ws/src
+RUN git clone https://github.com/autonohm/ohm_tsd_slam.git
+WORKDIR /ros2_ws
+RUN . /opt/ros/humble/setup.bash && colcon build
+
+WORKDIR /quac
+
+COPY ./src/quac_control /quac/src/quac_control
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_control
+
+COPY ./src/quac /quac/src/quac
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac
+
+ENV SIM_MODE=false
+ENV DISABLE_NAV=false
+ENV OHM_SLAM=false
+ENV DISABLE_SLAM=false
+
+COPY ./docker/quac_pilot/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+CMD ./entrypoint.sh

@@ -1,33 +1,132 @@
-FROM ros:jazzy
+FROM ultralytics/ultralytics:latest-jetson-jetpack6
 
-RUN sudo apt update && apt install git
-
-RUN sudo apt install -y \
-    ros-jazzy-ros2-control \
-    ros-jazzy-ros2-controllers \
-    ros-jazzy-xacro \
-    ros-jazzy-rmw-cyclonedds-cpp
-
-RUN rm -rf /var/lib/apt/lists/*
-
-WORKDIR /ros2_ws
 SHELL ["/bin/bash", "-c"]
 
-COPY ./dependencies/rplidar_ros /ros2_ws/src/rplidar_ros
+# install ros2 humble
 
-RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select rplidar_ros
+RUN apt update && apt install locales
+RUN locale-gen en_US en_US.UTF-8
+RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+RUN export LANG=en_US.UTF-8
 
-COPY ./quac_control /ros2_ws/src/quac_control
-RUN . /opt/ros/jazzy/setup.bash && colcon build
+RUN apt install software-properties-common
+RUN add-apt-repository universe
 
-COPY ./quac /ros2_ws/src/quac
-RUN . /opt/ros/jazzy/setup.bash && colcon build --packages-select quac
+RUN apt update && apt install curl -y
+RUN export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}') && \
+    curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb" && \
+    dpkg -i /tmp/ros2-apt-source.deb
 
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN apt update
+RUN apt upgrade
+RUN apt install ros-humble-ros-base
+RUN apt install ros-dev-tools
+
+# install some libs
+
+RUN apt install -y unzip git
+RUN apt install -y \
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-good1.0-dev \
+    libgstreamer-plugins-bad1.0-dev \
+    libgstrtspserver-1.0-dev \
+    libyaml-cpp-dev \
+    libssl-dev \
+    wget \
+    build-essential \
+    pkg-config
+
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install onnxscript
+
+# librealsense
+
+WORKDIR /workspace
+RUN apt update && apt-get install -y \
+    build-essential cmake git pkg-config \
+    libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev \
+    libxcursor-dev libxi-dev libudev-dev libv4l-dev \
+    libusb-1.0-0-dev libssl-dev freeglut3-dev mesa-utils mesa-common-dev
+
+RUN git clone https://github.com/realsenseai/librealsense.git
+WORKDIR /workspace/librealsense/build
+RUN cmake ..
+RUN cmake --build . --config Release
+RUN cmake --install .
+
+# deepstream
+
+WORKDIR /deepstream_tmp
+
+RUN wget --content-disposition https://api.ngc.nvidia.com/v2/resources/nvidia/ngc-apps/ngc_cli/versions/4.15.0/files/ngccli_arm64.zip -O ngccli_arm64.zip
+RUN unzip ngccli_arm64.zip
+RUN chmod u+x ngc-cli/ngc
+
+
+RUN ./ngc-cli/ngc registry resource download-version "nvidia/deepstream:7.1"
+
+WORKDIR /deepstream_tmp/deepstream_v7.1
+RUN apt update
+
+
+RUN dpkg -i deepstream-7.1_7.1.0-1_arm64.deb
+RUN apt install -f
+
+WORKDIR /
+RUN rm -rf /deepstream_tmp
+
+# deepstream yolo
+
+RUN git clone https://github.com/marcoslucianops/DeepStream-Yolo.git
+WORKDIR /DeepStream-Yolo
+RUN export CUDA_VER=12.6 && make -C nvdsinfer_custom_impl_Yolo clean && make -C nvdsinfer_custom_impl_Yolo
+
+# ros2 package dependencies
+RUN apt install -y ros-humble-rmw-cyclonedds-cpp
+RUN apt install -y ros-humble-twist-mux
+RUN apt install -y ros-humble-slam-toolbox
+RUN apt install -y ros-humble-navigation2 ros-humble-nav2-bringup
+RUN apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro
+RUN apt install -y git libgsl-dev libann-dev libflann-dev libboost-thread-dev liblz4-dev
+RUN apt install -y ros-humble-opennav-docking
+
+WORKDIR /ros2_ws/src
+
+RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
+RUN git clone https://github.com/autonohm/ohm_tsd_slam.git
+
+WORKDIR /ros2_ws
+
+RUN . /opt/ros/humble/setup.bash && colcon build
+
+# quac
+
+WORKDIR /quac
+
+COPY ./src/quac_control src/quac_control
+RUN . /opt/ros/humble/setup.bash && colcon build
+
+COPY ./src/quac_hardware src/quac_hardware
+RUN . /opt/ros/humble/setup.bash && colcon build
+
+COPY ./src/quac_video src/quac_video
+RUN . /opt/ros/humble/setup.bash && colcon build
+
+COPY ./src/quac src/quac
+RUN . /opt/ros/humble/setup.bash && colcon build
 
 ENV DISABLE_WHEELS=false
 ENV DISABLE_LIDAR=false
 ENV DISABLE_ARM=false
+ENV DISABLE_VIDEO=false
+ENV REGENERATE_HAZMAT=false
+ENV REGENERATE_PAINTROLLER=false
+ENV DISABLE_NAV=false
+ENV OHM_SLAM=false
+ENV DISABLE_SLAM=false
 
-CMD /entrypoint.sh
+COPY ./docker/quac/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+CMD ./entrypoint.sh

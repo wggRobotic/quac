@@ -4,8 +4,9 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-from launch.actions import ExecuteProcess, TimerAction, RegisterEventHandler, IncludeLaunchDescription
+from launch.actions import ExecuteProcess, TimerAction, RegisterEventHandler, IncludeLaunchDescription, DeclareLaunchArgument
 from launch.event_handlers import OnProcessStart
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
@@ -55,10 +56,16 @@ def generate_launch_description():
         output='screen'
     )
 
-    controllers = IncludeLaunchDescription(
+    quac_common = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [os.path.join(package_dir,'launch','controllers.launch.py')]
-        )
+            [os.path.join(package_dir,'launch','quac_common.launch.py')]
+        ),
+        launch_arguments={
+            'use_sim_time': 'true',
+            'disable_nav' : LaunchConfiguration('disable_nav'),
+            'ohm_slam' : LaunchConfiguration('ohm_slam'),
+            'disable_slam' : LaunchConfiguration('disable_slam')
+        }.items()
     )  
 
     delayed_arm_position_reset = TimerAction(
@@ -70,23 +77,28 @@ def generate_launch_description():
                 )]
     )
 
-    arm_ik = Node(
-        package="quac_control",
-        executable="quac_ik_node",
-        remappings=[
-            ('/ee_pos', 'ee_pos'),
-            ('/joint_commands', 'arm_joint_trajectory')
-        ],
-    )
-
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'disable_nav',
+            default_value='false',
+            description='disables nav2'
+        ),
+        DeclareLaunchArgument(
+            'ohm_slam',
+            default_value='false',
+            description='uses ohm_tsd_slam instead of slam_toolbox'
+        ),
+        DeclareLaunchArgument(
+            'disable_slam',
+            default_value='false',
+            description='whether to diable slam'
+        ),
         generate_sdf,
         rsp,
         gazebo,
         ros_gz_bridge,
         spawn_entity,
-        controllers,
-        delayed_arm_position_reset,
-        arm_ik
+        quac_common,
+        #delayed_arm_position_reset,
     ])

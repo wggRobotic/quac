@@ -29,12 +29,6 @@
             </geometry>
             <material name="chassis_material"/>
         </visual>
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <mesh filename="package://quac/meshes/chassis.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
-            </geometry>
-        </collision>
     </link>
 
     <gazebo reference="chassis">

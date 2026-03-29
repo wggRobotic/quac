@@ -2,9 +2,10 @@ FROM osrf/ros:humble-desktop-full
 
 SHELL ["/bin/bash", "-c"]
 
-RUN sudo apt update
-RUN sudo apt install ros-humble-twist-mux -y
-RUN sudo apt install ros-humble-ros-gz ros-humble-gz-ros2-control -y
-RUN sudo apt install ros-humble-slam-toolbox -y
-RUN sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup -y
-RUN sudo apt install ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro -y
+RUN apt update
+RUN apt install -y ros-humble-rmw-cyclonedds-cpp
+RUN apt install -y ros-humble-twist-mux
+RUN apt install -y ros-humble-ros-gz ros-humble-gz-ros2-control
+RUN apt install -y ros-humble-slam-toolbox
+RUN apt install -y ros-humble-navigation2 ros-humble-nav2-bringup
+RUN apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro

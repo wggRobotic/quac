@@ -37,7 +37,7 @@
     <joint name="arm_base_joint" type="fixed">
         <parent link="chassis" />
         <child link="arm_servo_0_axis" />
-        <origin xyz="0.135 0.0 0.04" rpy="${pi/2} ${pi/2} 0" />
+        <origin xyz="0.135 0.0 0.064" rpy="${pi/2} ${pi/2} 0" />
     </joint>
 
     <xacro:servo_flipped name="arm_servo_0"/>

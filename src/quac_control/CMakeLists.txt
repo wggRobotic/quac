@@ -57,7 +57,7 @@ pluginlib_export_plugin_description_file(controller_interface controllers/quac_c
 #--------------------------------------------
 
 add_executable(quac_ik_node nodes/src/quac_ik_node.cpp)
-ament_target_dependencies(quac_ik_node rclcpp geometry_msgs trajectory_msgs)
+ament_target_dependencies(quac_ik_node rclcpp geometry_msgs trajectory_msgs std_msgs)
 
 install(TARGETS
   quac_ik_node
