@@ -9,7 +9,7 @@ RUN locale-gen en_US en_US.UTF-8
 RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 RUN export LANG=en_US.UTF-8
 
-RUN apt install software-properties-common
+RUN apt install -y software-properties-common
 RUN add-apt-repository universe
 
 RUN apt update && apt install curl -y
@@ -18,9 +18,12 @@ RUN export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-inf
     dpkg -i /tmp/ros2-apt-source.deb
 
 RUN apt update
-RUN apt upgrade
-RUN apt install ros-humble-ros-base
-RUN apt install ros-dev-tools
+RUN apt upgrade -y
+RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata && \
+    ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+RUN apt install -y ros-humble-ros-base
+RUN apt install -y ros-dev-tools
 
 # install some libs
 
@@ -100,21 +103,29 @@ WORKDIR /ros2_ws
 
 RUN . /opt/ros/humble/setup.bash && colcon build
 
+# sensor packages
+
+RUN pip3 install adafruit-circuitpython-tlv493d
+RUN pip3 install adafruit-circuitpython-lsm6ds
+
 # quac
 
 WORKDIR /quac
 
 COPY ./src/quac_control src/quac_control
-RUN . /opt/ros/humble/setup.bash && colcon build
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_control
 
 COPY ./src/quac_hardware src/quac_hardware
-RUN . /opt/ros/humble/setup.bash && colcon build
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_hardware
 
 COPY ./src/quac_video src/quac_video
-RUN . /opt/ros/humble/setup.bash && colcon build
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_video
+
+COPY ./src/quac_sensor src/quac_sensor
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_sensor
 
 COPY ./src/quac src/quac
-RUN . /opt/ros/humble/setup.bash && colcon build
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac
 
 ENV DISABLE_WHEELS=false
 ENV DISABLE_LIDAR=false
@@ -125,6 +136,10 @@ ENV REGENERATE_PAINTROLLER=false
 ENV DISABLE_NAV=false
 ENV OHM_SLAM=false
 ENV DISABLE_SLAM=false
+ENV DISABLE_SENSORS=false
+ENV DISABLE_THERMAL_CAM=false
+ENV DISABLE_IMU=false
+ENV DISABLE_MAGNETOMETER=false
 
 COPY ./docker/quac/entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh

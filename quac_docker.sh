@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build -t quac:dev .
+docker build -t quac:dev -f docker/quac/dockerfile .
 
 cmd=(
   docker run
@@ -8,6 +8,7 @@ cmd=(
   --rm
   --network host
   --runtime nvidia
+  --device /dev/i2c-0
   -e NVIDIA_VISIBLE_DEVICES=all
   -e ROS_DOMAIN_ID=187
   -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
@@ -44,6 +45,18 @@ cmd=(
 
 [[ " $@ " =~ " -dslam "    ]] \
   && cmd+=(-e DISABLE_SLAM="true")
+
+[[ " $@ " =~ " -dsensor "    ]] \
+  && cmd+=(-e DISABLE_SENSORS="true")
+
+[[ " $@ " =~ " -dthermal "    ]] \
+  && cmd+=(-e DISABLE_THERMAL_CAM="true")
+
+[[ " $@ " =~ " -dimu "    ]] \
+  && cmd+=(-e DISABLE_IMU="true")
+
+[[ " $@ " =~ " -dmagnet "    ]] \
+  && cmd+=(-e DISABLE_MAGNETOMETER="true")
 
 cmd+=(quac:dev)
 

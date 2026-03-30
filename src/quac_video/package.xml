@@ -4,7 +4,7 @@
   <name>quac_video</name>
   <version>0.0.0</version>
   <description>Quac video processing</description>
-  <maintainer email="mail@mail.com">name</maintainer>
+  <maintainer email="robotik@wgg-neumarkt.de">pilot</maintainer>
   <license>Apache-2.0</license>
 
   <depend>ament_index_cpp</depend>

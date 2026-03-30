@@ -2,12 +2,12 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, PushRosNamespace
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch.event_handlers import OnProcessStart
-from launch.conditions import UnlessCondition
+from launch.conditions import UnlessCondition, IfCondition
 
 def generate_launch_description():
     package_dir = get_package_share_directory('quac')
@@ -45,7 +45,10 @@ def generate_launch_description():
                     launch_arguments={ 
                         'disable_nav' : LaunchConfiguration('disable_nav'),
                         'ohm_slam' : LaunchConfiguration('ohm_slam'),
-                        'disable_slam' : LaunchConfiguration('disable_slam')
+                        'disable_slam' : PythonExpression(["'",
+                            LaunchConfiguration('disable_slam'), "' == 'true' or '",
+                            LaunchConfiguration('disable_lidar'), "' == 'true'"
+                        ])
                     }.items()
                 )  
             ],
@@ -73,6 +76,27 @@ def generate_launch_description():
         condition=UnlessCondition(LaunchConfiguration('disable_lidar'))
     )
 
+    sensors = GroupAction(
+        actions=[
+            Node(
+                package="quac_sensor",
+                executable="thermal_cam",
+                condition=UnlessCondition(LaunchConfiguration('disable_thermal_cam'))
+            ),
+            Node(
+                package="quac_sensor",
+                executable="imu",
+                condition=UnlessCondition(LaunchConfiguration('disable_imu'))
+            ),
+            Node(
+                package="quac_sensor",
+                executable="magnetometer",
+                condition=UnlessCondition(LaunchConfiguration('disable_magnetometer'))
+            ),
+        ],
+        condition=UnlessCondition(LaunchConfiguration('disable_sensors'))
+    )
+
     video_app = Node(
         package="quac_video",
         executable="video_app",
@@ -85,7 +109,7 @@ def generate_launch_description():
             {'paintroller.regenerate': LaunchConfiguration('regenerate_paintroller')}
         ],
         condition=UnlessCondition(LaunchConfiguration('disable_video'))
-    ) 
+    )
 
     return LaunchDescription([
 
@@ -138,7 +162,27 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'disable_slam',
             default_value='false',
-            description='whether to diable slam'
+            description='whether to disable slam'
+        ),
+        DeclareLaunchArgument(
+            'disable_sensors',
+            default_value='false',
+            description='whether to disable all sensors'
+        ),
+        DeclareLaunchArgument(
+            'disable_thermal_cam',
+            default_value='false',
+            description='whether to disable all sensors'
+        ),
+        DeclareLaunchArgument(
+            'disable_imu',
+            default_value='false',
+            description='whether to disable the imu'
+        ),
+        DeclareLaunchArgument(
+            'disable_magnetometer',
+            default_value='false',
+            description='whether to disable the magnetometer'
         ),
         
         PushRosNamespace('quac'),
@@ -147,5 +191,6 @@ def generate_launch_description():
         quac_common,
         wheel_monitor,
         lidar,
+        sensors,
         video_app
     ])

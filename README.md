@@ -1,4 +1,4 @@
-# For more information, go to the [wiki](https://github.com/wggRobotic/Team-Docs/wiki/Quac-%E2%80%93-All-Terrain-Crawler)
+# For more information, go to the [wiki](https://github.com/wggRobotic/Team-Docs/wiki/4.-Quac-%E2%80%93-All-Terrain-Crawler)
 
 # External code used in this repo
 https://github.com/htchr/waveshare_servos
