@@ -7,7 +7,7 @@ from adafruit_lsm6ds.lsm6dsox import LSM6DSOX
 class ImuPublisher(Node):
     def __init__(self):
         super().__init__('imu_publisher')
-        self.publisher = self.create_publisher(Imu, 'imu/data_raw', 10)
+        self.publisher = self.create_publisher(Imu, 'imu', 10)
 
         i2c = board.I2C()
         self.sox = LSM6DSOX(i2c)
@@ -19,7 +19,11 @@ class ImuPublisher(Node):
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = 'imu'
 
-        acc_x, acc_y, acc_z = self.sox.acceleration
+        try:
+            acc_x, acc_y, acc_z = self.sox.acceleration
+        except OSError as e:
+            self.get_logger().error(f'OSError: {e}')
+            return
         msg.linear_acceleration.x = acc_x
         msg.linear_acceleration.y = acc_y
         msg.linear_acceleration.z = acc_z
@@ -36,9 +40,13 @@ class ImuPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = ImuPublisher()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        node.get_logger().info("KeyboardInterrupt caught!")
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

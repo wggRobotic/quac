@@ -6,7 +6,7 @@ from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, PushRosNamespace
 from launch.substitutions import LaunchConfiguration
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
 
@@ -39,7 +39,8 @@ def generate_launch_description():
 
     guiniverse = Node(
         package="guiniverse",
-        executable="main"
+        executable="main",
+        condition=UnlessCondition(LaunchConfiguration('disable_guiniverse')),
     )
 
     return LaunchDescription([
@@ -67,5 +68,5 @@ def generate_launch_description():
         PushRosNamespace('quac'),
         rviz,
         simulation,
-        #guiniverse
+        guiniverse
     ])

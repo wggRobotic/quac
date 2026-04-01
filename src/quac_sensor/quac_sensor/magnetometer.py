@@ -11,7 +11,7 @@ class MagnetometerPublisher(Node):
         self.publisher = self.create_publisher(MagneticField, 'magnetic_field', 10)
 
         i2c = board.I2C()
-        self.tlv = adafruit_tlv493d.TLV493D(self.i2c)
+        self.tlv = adafruit_tlv493d.TLV493D(i2c)
         
         self.timer = self.create_timer(0.1, self.publish_field)
 
@@ -20,7 +20,12 @@ class MagnetometerPublisher(Node):
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = 'magnetometer'
         
-        mag_x, mag_y, mag_z = self.tlv.magnetic
+        try:
+            mag_x, mag_y, mag_z = self.tlv.magnetic
+        except OSError as e:
+            self.get_logger().error(f'OSError: {e}')
+            return
+
         msg.magnetic_field.x = mag_x
         msg.magnetic_field.y = mag_y
         msg.magnetic_field.z = mag_z
@@ -32,9 +37,13 @@ class MagnetometerPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = MagnetometerPublisher()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        node.get_logger().info("KeyboardInterrupt caught!")
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

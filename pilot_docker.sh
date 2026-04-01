@@ -9,6 +9,7 @@ cmd=(
     -e QT_X11_NO_MITSHM=1
     -e ROS_DOMAIN_ID=187
     -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    -v guiniverse_config:/guiniverse_config
     --volume /tmp/.X11-unix:/tmp/.X11-unix
     --device /dev/dri:/dev/dri
 )
@@ -24,6 +25,9 @@ cmd=(
 
 [[ " $@ " =~ " -dslam "    ]] \
   && cmd+=(-e DISABLE_SLAM="true")
+
+[[ " $@ " =~ " -dgui "    ]] \
+  && cmd+=(-e DISABLE_GUINIVERSE="true")
 
 cmd+=(quac_pilot:dev)
 

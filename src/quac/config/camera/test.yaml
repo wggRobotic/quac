@@ -1,0 +1,8 @@
+camera_app:
+  ros__parameters:
+    width: 640
+    height: 480
+    fps: 30
+    
+    port: 5000
+    serial_number: "938422071694"

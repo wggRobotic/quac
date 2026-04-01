@@ -8,7 +8,8 @@ cmd=(
   --rm
   --network host
   --runtime nvidia
-  --device /dev/i2c-0
+  #--device /dev/i2c-0
+  #--privileged
   -e NVIDIA_VISIBLE_DEVICES=all
   -e ROS_DOMAIN_ID=187
   -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
@@ -46,17 +47,20 @@ cmd=(
 [[ " $@ " =~ " -dslam "    ]] \
   && cmd+=(-e DISABLE_SLAM="true")
 
-[[ " $@ " =~ " -dsensor "    ]] \
+[[ " $@ " =~ " -dsen "    ]] \
   && cmd+=(-e DISABLE_SENSORS="true")
 
-[[ " $@ " =~ " -dthermal "    ]] \
+[[ " $@ " =~ " -dtmc"    ]] \
   && cmd+=(-e DISABLE_THERMAL_CAM="true")
 
 [[ " $@ " =~ " -dimu "    ]] \
   && cmd+=(-e DISABLE_IMU="true")
 
-[[ " $@ " =~ " -dmagnet "    ]] \
+[[ " $@ " =~ " -dmag "    ]] \
   && cmd+=(-e DISABLE_MAGNETOMETER="true")
+
+[[ " $@ " =~ " -dent "    ]] \
+  || cmd+=(--entrypoint "./entrypoint.sh")
 
 cmd+=(quac:dev)
 

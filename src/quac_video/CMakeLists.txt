@@ -15,51 +15,51 @@ find_package(rclcpp REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-app-1.0)
+pkg_check_modules(GST REQUIRED gstreamer-1.0)
+pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
+find_package(OpenCV REQUIRED)
 find_package(realsense2 REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(sensor_msgs)
+find_package(image_transport REQUIRED)
 
 #-----------------------------------------------
 #----------------- application -----------------
 #-----------------------------------------------
 
 include_directories(
-    ${GST_INCLUDE_DIRS}
-    ${realsense2_INCLUDE_DIR}
-    ${CUDA_INCLUDE_DIRS}
-    /opt/nvidia/deepstream/deepstream-7.1/includes
-    /opt/nvidia/deepstream/deepstream-7.1/sources/includes
-    include/
+  ${GST_INCLUDE_DIRS}
+  ${realsense2_INCLUDE_DIR}
+  ${CUDA_INCLUDE_DIRS}
+  ${OPENCV_INCLUDE_DIRS}
+  include/
 )
 
 link_directories(
     ${GST_LIBRARY_DIRS}
-    /opt/nvidia/deepstream/deepstream-7.1/lib
 )
 
-add_executable(video_app
-  src/video_app.cpp
-  src/gst_app.cpp
+add_executable(camera_app
+  src/camera_app.cpp
 )
 
-target_link_libraries(video_app
+target_link_libraries(camera_app
     ${GST_LIBRARIES}
+    ${GST_APP_LIBRARIES}
     ${realsense2_LIBRARY}
     ${CUDA_LIBRARIES}
-    nvdsgst_meta
-    nvdsgst_helper
-    nvds_infer
+    ${OpenCV_LIBS}
 )
 
-ament_target_dependencies(video_app
+ament_target_dependencies(camera_app
   rclcpp
   sensor_msgs
   ament_index_cpp
+  image_transport
 )
 
 install(
-  TARGETS video_app
+  TARGETS camera_app
   DESTINATION lib/${PROJECT_NAME}
 )
 

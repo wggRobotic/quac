@@ -80,17 +80,17 @@ def generate_launch_description():
         actions=[
             Node(
                 package="quac_sensor",
-                executable="thermal_cam",
+                executable="thermal_cam_publisher",
                 condition=UnlessCondition(LaunchConfiguration('disable_thermal_cam'))
             ),
             Node(
                 package="quac_sensor",
-                executable="imu",
+                executable="imu_publisher",
                 condition=UnlessCondition(LaunchConfiguration('disable_imu'))
             ),
             Node(
                 package="quac_sensor",
-                executable="magnetometer",
+                executable="magnetometer_publisher",
                 condition=UnlessCondition(LaunchConfiguration('disable_magnetometer'))
             ),
         ],
