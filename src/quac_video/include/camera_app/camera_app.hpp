@@ -13,6 +13,8 @@
 #include <chrono>
 #include <opencv2/opencv.hpp>
 
+#include "yolos/tasks/detection.hpp"
+
 
 class CameraApp : public rclcpp::Node
 {

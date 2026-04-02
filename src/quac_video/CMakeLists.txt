@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(quac_video)
+project(quac_video LANGUAGES CXX CUDA)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14)
@@ -22,6 +22,9 @@ find_package(realsense2 REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(sensor_msgs)
 find_package(image_transport REQUIRED)
+find_package(CUDAToolkit REQUIRED)
+
+add_subdirectory(YOLOs-CPP-TensorRT)
 
 #-----------------------------------------------
 #----------------- application -----------------
@@ -33,6 +36,7 @@ include_directories(
   ${CUDA_INCLUDE_DIRS}
   ${OPENCV_INCLUDE_DIRS}
   include/
+  YOLOs-CPP-TensorRT/include
 )
 
 link_directories(
@@ -43,12 +47,27 @@ add_executable(camera_app
   src/camera_app.cpp
 )
 
+target_include_directories(camera_app PRIVATE
+    "${TENSORRT_INCLUDE_DIR}"
+)
+
+if(UNIX)
+  set_target_properties(camera_app PROPERTIES
+      BUILD_RPATH "$ORIGIN"
+      INSTALL_RPATH "$ORIGIN"
+  )
+endif()
+
 target_link_libraries(camera_app
-    ${GST_LIBRARIES}
-    ${GST_APP_LIBRARIES}
-    ${realsense2_LIBRARY}
-    ${CUDA_LIBRARIES}
-    ${OpenCV_LIBS}
+  ${GST_LIBRARIES}
+  ${GST_APP_LIBRARIES}
+  ${realsense2_LIBRARY}
+  ${CUDA_LIBRARIES}
+  ${OpenCV_LIBS}
+  ${NVINFER_LIB}
+  CUDA::cudart
+  cuda_preprocessing
+  Threads::Threads
 )
 
 ament_target_dependencies(camera_app

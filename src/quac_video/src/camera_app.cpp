@@ -1,4 +1,13 @@
 #include "camera_app/camera_app.hpp"
+#include "yolos/core/version.hpp"
+#include <atomic>
+#include <csignal>
+
+std::atomic<bool> keep_running{true};
+
+void handle_signal(int signum) {
+  keep_running.store(false);
+}
 
 CameraApp::CameraApp() : Node("camera_app")
 {
@@ -81,9 +90,12 @@ void CameraApp::run()
 {
   gst_init(NULL, NULL);
 
+  yolos::det::YOLODetector hazmat_detector(".nvinfer/hazmat_yolo26.engine", ".nvinfer/hazmat_labels.txt", yolos::YOLOVersion::V26);
+  yolos::det::YOLODetector paintroller_detector(".nvinfer/paintroller_yolo11.engine", ".nvinfer/paintroller_labels.txt");
+
   std::string gst_pipeline_desc = 
     "appsrc name=appsrc format=time "
-    "caps=video/x-raw,format=RGB,width=" + std::to_string(width) + 
+    "caps=video/x-raw,format=BGR,width=" + std::to_string(width) + 
     ",height=" + std::to_string(height) + ",framerate=" + std::to_string(fps) + "/1 "
     "! videoconvert ! x264enc speed-preset=ultrafast tune=zerolatency "
     "! rtph264pay config-interval=1 ! udpsink host=" + ip + " port=" + std::to_string(port) + " sync=false";
@@ -107,13 +119,24 @@ void CameraApp::run()
   rs_pipeline.start(rs_cfg);
   RCLCPP_INFO(get_logger(), "Streaming camera on %s:%d", ip.c_str(), port);
 
-  while (rclcpp::ok())
+  signal(SIGTERM, handle_signal);
+  signal(SIGINT, handle_signal);
+
+  while (keep_running.load())
   {
     rs2::frameset frames = rs_pipeline.wait_for_frames();
     rs2::video_frame color_frame = frames.get_color_frame();
     rs2::depth_frame depth_frame = frames.get_depth_frame();
 
-    send_gst_frame(color_frame.get_data());
+    cv::Mat image(height, width, CV_8UC3, (void*)color_frame.get_data());
+
+    std::vector<yolos::det::Detection> hazmat_results = hazmat_detector.detect(image);
+    std::vector<yolos::det::Detection> paintroller_results = paintroller_detector.detect(image);
+
+    hazmat_detector.drawDetections(image, hazmat_results);
+    paintroller_detector.drawDetections(image, paintroller_results);
+
+    send_gst_frame(image.data);
   }
  
   rs_pipeline.stop();
@@ -130,8 +153,8 @@ int main (int argc, char *argv[])
   auto node = std::make_shared<CameraApp>();
 
   image_transport::ImageTransport it(node);
-  node->init(it);
-  node->run();
+  if (node->init(it) == 0) node->run();
+  
   rclcpp::shutdown();
 }
 

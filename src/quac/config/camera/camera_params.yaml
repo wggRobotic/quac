@@ -4,7 +4,7 @@ quac:
       ros__parameters:
         width: 640
         height: 480
-        fps: 30
+        fps: 15
         
         port: 5000
         serial_number: "827312072798"
@@ -14,7 +14,7 @@ quac:
       ros__parameters:
         width: 640
         height: 480
-        fps: 30
+        fps: 15
         
         port: 5001
         serial_number: "938422071694"
