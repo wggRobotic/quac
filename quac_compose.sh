@@ -1,20 +1,17 @@
 #!/bin/bash
 
-#docker build -t quac:dev -f docker/quac/dockerfile .
+ENV_OVERRIDE=$(mktemp)
+echo "services:" >> $ENV_OVERRIDE
+echo "  quac:" >> $ENV_OVERRIDE
+echo "    environment:" >> $ENV_OVERRIDE
+
+DEVICE_OVERRIDE=$(mktemp)
+echo "services:" >> $DEVICE_OVERRIDE
+echo "  quac:" >> $DEVICE_OVERRIDE
+echo "    devices:" >> $DEVICE_OVERRIDE
 
 cmd=(
-  docker run
-  -it
-  --rm
-  --network host
-  --runtime nvidia
-  --device /dev/i2c-0
-  --privileged
-  -e NVIDIA_VISIBLE_DEVICES=all
-  -e ROS_DOMAIN_ID=187
-  -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-  --ipc=host
-  -v quac_nvinfer:/quac/.nvinfer
+  docker compose up -f docker/docker-compose.yaml
 )
 
 ([[ " $@ " =~ " -dlidar "  ]] || [ ! -e /dev/quac/lidar_uart ]) \
@@ -31,6 +28,12 @@ cmd=(
 
 [[ " $@ " =~ " -dvid " ]] \
   && cmd+=(-e DISABLE_VIDEO="true")
+
+[[ " $@ " =~ " -rhm " ]] \
+  && cmd+=(-e REGENERATE_HAZMAT="true")
+
+[[ " $@ " =~ " -rpr " ]] \
+  && cmd+=(-e REGENERATE_PAINTROLLER="true")
 
 [[ " $@ " =~ " -dnav " ]] \
   && cmd+=(-e DISABLE_NAV="true")

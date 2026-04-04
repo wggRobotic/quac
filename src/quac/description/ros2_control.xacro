@@ -114,7 +114,7 @@
                 <remapping>diff_drive_controller/odom:=odom</remapping>
                 <remapping>arm_position_controller/joint_trajectory:=arm_joint_trajectory</remapping>
             </ros>
-            <parameters>$(find quac)/config/control.yaml</parameters>
+            <parameters>$(find quac)/config/controllers.yaml</parameters>
             <parameters>$(find quac)/config/gz_sim_time.yaml</parameters>
         </plugin>
     </gazebo>
@@ -180,7 +180,7 @@
         </gazebo>
     </xacro:macro>
 
-    <xacro:cam_sim frame="front_camera"/>
-    <xacro:cam_sim frame="rear_camera"/>
+    <xacro:cam_sim frame="camera_font"/>
+    <xacro:cam_sim frame="camera_back"/>
 
 </robot>

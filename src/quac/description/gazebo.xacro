@@ -72,7 +72,7 @@
 
 
 
-    <gazebo reference="rear_camera">
+    <gazebo reference="camera_back">
 
         
     </gazebo>

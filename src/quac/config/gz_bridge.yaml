@@ -18,40 +18,40 @@
 
 # front cam
 
-- ros_topic_name: "front_camera/camera_info"
-  gz_topic_name: front_camera/camera_info"
+- ros_topic_name: "camera_font/camera_info"
+  gz_topic_name: camera_font/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "front_camera/points"
-  gz_topic_name: "front_camera/points"
+- ros_topic_name: "camera_font/points"
+  gz_topic_name: "camera_font/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "gz.msgs.PointCloudPacked"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "front_camera/image_raw"
-  gz_topic_name: "front_camera/image"
+- ros_topic_name: "camera_font/image_raw"
+  gz_topic_name: "camera_font/image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
 
   # rear cam
 
-- ros_topic_name: "rear_camera/camera_info"
-  gz_topic_name: rear_camera/camera_info"
+- ros_topic_name: "camera_back/camera_info"
+  gz_topic_name: camera_back/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "rear_camera/points"
-  gz_topic_name: "rear_camera/points"
+- ros_topic_name: "camera_back/points"
+  gz_topic_name: "camera_back/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "gz.msgs.PointCloudPacked"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "rear_camera/image_raw"
-  gz_topic_name: "rear_camera/image"
+- ros_topic_name: "camera_back/image_raw"
+  gz_topic_name: "camera_back/image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS

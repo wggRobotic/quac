@@ -24,9 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'thermal_cam_publisher    = quac_sensor.thermal_cam:main',
-            'magnetometer_publisher     = quac_sensor.magnetometer:main',
-            'imu_publisher              = quac_sensor.imu:main',
+            'sensor_publisher = quac_sensor.sensor:main'
         ],
     },
 )

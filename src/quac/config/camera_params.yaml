@@ -1,0 +1,34 @@
+quac:
+  camera_front:
+    ros__parameters:
+      width: 1280
+      height: 720
+      fps: 15
+      
+      port: 5000
+      #serial_number: "827312072798"
+      serial_number: "938422071694"
+      
+      hazmat:
+        enabled: true
+        model: "hazmat_yolo26"
+      paintroller:
+        #enabled: true
+        model: "paintroller_yolo11"
+
+      depth_detection:
+        range: [0.3, 3]
+        sample_diameter: 6
+        min_sample: 20
+
+  camera_back:
+    ros__parameters:
+      width: 1280
+      height: 720
+      fps: 15
+      
+      port: 5001
+      serial_number: "938422071694"
+        
+
+      

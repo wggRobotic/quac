@@ -1,0 +1,7 @@
+quac:
+  ik_node:
+    ros__parameters:
+      l1: 0.105
+      l2: 0.035
+      l3: 0.13
+      gripper_range: 0.8

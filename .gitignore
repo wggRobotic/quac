@@ -2,10 +2,4 @@ build/
 install/
 log/
 engines/
-
 .cache
-.nvinfer/
-
-frames*
-
-YOLOs-CPP-TensorRT

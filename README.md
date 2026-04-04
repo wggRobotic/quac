@@ -1,7 +1,8 @@
 # For more information, go to the [wiki](https://github.com/wggRobotic/Team-Docs/wiki/4.-Quac-%E2%80%93-All-Terrain-Crawler)
 
-# External code used in this repo
+# External code used
 https://github.com/htchr/waveshare_servos
+https://github.com/Geekgineer/YOLOs-CPP-TensorRT
 
 # On the robot
 ```
@@ -48,9 +49,9 @@ sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
 
 # Quac_vide
 
-convert to onnc
+convert to onnx to tensorrt
 
 ```
 python3 export_yolo26.py -w hazmat_yolo26.pt --opset 18
-mv labels.txt hazmat_labels.txt
+/usr/src/tensorrt/bin/trtexec --onnx=hazmat_yolo26.onnx --saveEngine=hazmat_yolo26.engine --fp16 --verbose
 ```

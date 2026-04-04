@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  camera_font_app:
+    image: quac_camera_app:dev
+    build:
+      context: ../
+      dockerfile: docker/dockerfiles/camera_app.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    runtime: nvidia
+    ipc: host
+    privileged: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - QUAC_ENGINES_DIR=/quac_trt_engines/
+      - CAMERA_NAME=camera_font
+    env_file:
+      - ros.env
+    volumes:
+      - quac_trt_engines:/quac_trt_engines
+
+volumes:
+  quac_trt_engines:

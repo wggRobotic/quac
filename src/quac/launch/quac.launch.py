@@ -2,113 +2,81 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, GroupAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch_ros.actions import Node, PushRosNamespace
-from launch.substitutions import LaunchConfiguration, PythonExpression
-from launch.event_handlers import OnProcessStart
+from launch.substitutions import LaunchConfiguration
 from launch.conditions import UnlessCondition, IfCondition
 
 def generate_launch_description():
     package_dir = get_package_share_directory('quac')
 
     rsp = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch','rsp.launch.py')]),
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'rsp.launch.py')]),
         launch_arguments={ 
             'disable_wheels' : LaunchConfiguration('disable_wheels'),
             'disable_arm' : LaunchConfiguration('disable_arm')
         }.items()
     )
 
-    controller_manager = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[os.path.join(package_dir,'config','control.yaml'),],
-        remappings=[
-            ('/tf', 'tf'),
-            ('/trajectories', 'trajectories'),
-            ('diff_drive_controller/cmd_vel_unstamped', 'cmd_vel'),
-            ('diff_drive_controller/odom', 'odom'),
-            ('arm_position_controller/joint_trajectory', 'arm_joint_trajectory'),
-            ('controller_manager/robot_description', 'robot_description')
-        ],
+    twist_mux = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'twist_mux.launch.py')]),
     )
 
-    quac_common = RegisterEventHandler(
-        event_handler=OnProcessStart(
-            target_action=controller_manager,
-            on_start=[
-                IncludeLaunchDescription(
-                    PythonLaunchDescriptionSource(
-                        [os.path.join(package_dir,'launch','quac_common.launch.py')]
-                    ),
-                    launch_arguments={ 
-                        'disable_nav' : LaunchConfiguration('disable_nav'),
-                        'ohm_slam' : LaunchConfiguration('ohm_slam'),
-                        'disable_slam' : PythonExpression(["'",
-                            LaunchConfiguration('disable_slam'), "' == 'true' or '",
-                            LaunchConfiguration('disable_lidar'), "' == 'true'"
-                        ])
-                    }.items()
-                )  
-            ],
-        )
+    control = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'control.launch.py')]),
     )
 
-    wheel_monitor = RegisterEventHandler(
-        event_handler=OnProcessStart(
-            target_action=controller_manager,
-            on_start=[
-                Node(
-                    package="controller_manager",
-                    executable="spawner",
-                    arguments=["wheel_monitor"],
-                )
-            ],
-        )
+    inverse_kinematics = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'inverse_kinematics.launch.py')]),
     )
 
     lidar = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('rplidar_ros'),'launch','rplidar_a2m8_launch.py')
-        ),
-        launch_arguments={'frame_id': 'laser', 'serial_port': '/dev/quac/lidar_uart'}.items(),
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'lidar.launch.py')]),
         condition=UnlessCondition(LaunchConfiguration('disable_lidar'))
     )
 
-    sensors = GroupAction(
-        actions=[
-            Node(
-                package="quac_sensor",
-                executable="thermal_cam_publisher",
-                condition=UnlessCondition(LaunchConfiguration('disable_thermal_cam'))
-            ),
-            Node(
-                package="quac_sensor",
-                executable="imu_publisher",
-                condition=UnlessCondition(LaunchConfiguration('disable_imu'))
-            ),
-            Node(
-                package="quac_sensor",
-                executable="magnetometer_publisher",
-                condition=UnlessCondition(LaunchConfiguration('disable_magnetometer'))
-            ),
-        ],
+    sensors = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'sensors.launch.py')]),
+        launch_arguments={ 
+            'disable_imu': LaunchConfiguration('disable_imu'),
+            'disable_magnetometer': LaunchConfiguration('disable_magnetometer'),
+            'disable_thermal_cam': LaunchConfiguration('disable_thermal_cam'),
+        }.items(),
         condition=UnlessCondition(LaunchConfiguration('disable_sensors'))
     )
 
-    video_app = Node(
-        package="quac_video",
-        executable="video_app",
-        parameters=[
-            {'hazmat.model': os.path.join(package_dir, "models", "hazmat_yolo26.onnx")},
-            {'hazmat.property_parameters.custom-lib-path': os.getenv("NVINVER_YOLO_LIB_PATH", "/invalid.so")},
-            os.path.join(package_dir, "config", "video", "video_app_params.yaml"),
-            os.path.join(package_dir, "config", "video", "nvinfer_params.yaml"),
-            {'hazmat.regenerate': LaunchConfiguration('regenerate_hazmat')},
-            {'paintroller.regenerate': LaunchConfiguration('regenerate_paintroller')}
+    video = GroupAction(
+        actions=[
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'camera_app.launch.py')]),
+                launch_arguments={ 'camera_name': 'camera_front'}.items(),
+                condition=UnlessCondition(LaunchConfiguration('disable_camera_front'))
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'camera_app.launch.py')]),
+                launch_arguments={'camera_name': 'camera_back'}.items(),
+                condition=UnlessCondition(LaunchConfiguration('disable_camera_back'))
+            )
         ],
         condition=UnlessCondition(LaunchConfiguration('disable_video'))
+    )
+
+    slam_nav = GroupAction(
+        actions=[
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'slam_toolbox.launch.py')]),
+                condition=UnlessCondition(LaunchConfiguration('ohm_slam'))
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'ohm_slam.launch.py')]),
+                condition=IfCondition(LaunchConfiguration('ohm_slam'))
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'nav2.launch.py')]),
+                condition=UnlessCondition(LaunchConfiguration('disable_nav'))
+            )
+        ],
+        condition=UnlessCondition(LaunchConfiguration('disable_slam'))
     )
 
     return LaunchDescription([
@@ -118,37 +86,31 @@ def generate_launch_description():
             default_value='false',
             description='Whether to disable the wheels'
         ),
-
         DeclareLaunchArgument(
             'disable_arm',
             default_value='false',
             description='Whether to disable the robotic arm'
         ),
-
         DeclareLaunchArgument(
             'disable_lidar',
             default_value='false',
             description='Whether to disable the lidar'
         ),
-
         DeclareLaunchArgument(
             'disable_video',
             default_value='false',
-            description='Whether to disable the video streaming and processing'
+            description='Whether to disable all video streaming and processing'
         ),
-
         DeclareLaunchArgument(
-            'regenerate_hazmat',
+            'disable_camera_front',
             default_value='false',
-            description='Whether to regenerate the tensorrt hazmat engine'
+            description='Whether to disable the front camera'
         ),
-
         DeclareLaunchArgument(
-            'regenerate_paintroller',
+            'disable_camera_back',
             default_value='false',
-            description='Whether to regenerate the tensorrt paintroller engine'
+            description='Whether to disable the back camera'
         ),
-
         DeclareLaunchArgument(
             'disable_nav',
             default_value='false',
@@ -172,7 +134,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'disable_thermal_cam',
             default_value='false',
-            description='whether to disable all sensors'
+            description='whether to disable the thermal cam'
         ),
         DeclareLaunchArgument(
             'disable_imu',
@@ -185,12 +147,12 @@ def generate_launch_description():
             description='whether to disable the magnetometer'
         ),
         
-        PushRosNamespace('quac'),
         rsp,
-        controller_manager,
-        quac_common,
-        wheel_monitor,
+        twist_mux,
+        control,
+        inverse_kinematics,
         lidar,
         sensors,
-        video_app
+        video,
+        slam_nav
     ])

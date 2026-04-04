@@ -1,0 +1,6 @@
+[submodule "src/quac_video/YOLOs-CPP-TensorRT"]
+	path = src/quac_video/YOLOs-CPP-TensorRT
+	url = https://github.com/Geekgineer/YOLOs-CPP-TensorRT
+[submodule "src/quac_video/quirc"]
+	path = src/quac_video/quirc
+	url = https://github.com/dlbeer/quirc.git

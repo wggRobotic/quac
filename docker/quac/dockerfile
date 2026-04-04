@@ -58,34 +58,8 @@ RUN cmake ..
 RUN cmake --build . --config Release
 RUN cmake --install .
 
-# deepstream
-
-WORKDIR /deepstream_tmp
-
-RUN wget --content-disposition https://api.ngc.nvidia.com/v2/resources/nvidia/ngc-apps/ngc_cli/versions/4.15.0/files/ngccli_arm64.zip -O ngccli_arm64.zip
-RUN unzip ngccli_arm64.zip
-RUN chmod u+x ngc-cli/ngc
-
-
-RUN ./ngc-cli/ngc registry resource download-version "nvidia/deepstream:7.1"
-
-WORKDIR /deepstream_tmp/deepstream_v7.1
-RUN apt update
-
-
-RUN dpkg -i deepstream-7.1_7.1.0-1_arm64.deb
-RUN apt install -f
-
-WORKDIR /
-RUN rm -rf /deepstream_tmp
-
-# deepstream yolo
-
-RUN git clone https://github.com/marcoslucianops/DeepStream-Yolo.git
-WORKDIR /DeepStream-Yolo
-RUN export CUDA_VER=12.6 && make -C nvdsinfer_custom_impl_Yolo clean && make -C nvdsinfer_custom_impl_Yolo
-
 # ros2 package dependencies
+
 RUN apt install -y ros-humble-rmw-cyclonedds-cpp
 RUN apt install -y ros-humble-twist-mux
 RUN apt install -y ros-humble-slam-toolbox
@@ -135,8 +109,6 @@ ENV DISABLE_WHEELS=false
 ENV DISABLE_LIDAR=false
 ENV DISABLE_ARM=false
 ENV DISABLE_VIDEO=false
-ENV REGENERATE_HAZMAT=false
-ENV REGENERATE_PAINTROLLER=false
 ENV DISABLE_NAV=false
 ENV OHM_SLAM=false
 ENV DISABLE_SLAM=false

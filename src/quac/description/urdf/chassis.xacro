@@ -46,12 +46,12 @@
 
     <link name="laser"/>
 
-    <joint name="rear_camera_joint" type="fixed">
+    <joint name="camera_back_joint" type="fixed">
         <parent link="chassis"/>
-        <child link="rear_camera"/>
+        <child link="camera_back"/>
         <origin xyz="-0.09 0.0 0.1" rpy="0 0 ${pi}"/>
     </joint>
 
-    <link name="rear_camera"/>
+    <link name="camera_back"/>
     
 </robot>
