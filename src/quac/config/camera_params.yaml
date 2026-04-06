@@ -13,11 +13,11 @@ quac:
         enabled: true
         model: "hazmat_yolo26"
       paintroller:
-        #enabled: true
+        enabled: true
         model: "paintroller_yolo11"
 
       depth_detection:
-        range: [0.3, 3]
+        range: [0.3, 3.0]
         sample_diameter: 6
         min_sample: 20
 

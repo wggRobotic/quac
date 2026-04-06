@@ -2,7 +2,10 @@
 
 # External code used
 https://github.com/htchr/waveshare_servos
+
 https://github.com/Geekgineer/YOLOs-CPP-TensorRT
+
+https://github.com/dlbeer/quirc.git
 
 # On the robot
 ```

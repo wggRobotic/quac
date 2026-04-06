@@ -12,6 +12,14 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+add_compile_definitions(JETSON_PLATFORM)
+
+# Jetson Orin = sm_87, Xavier = sm_72
+set(CMAKE_CUDA_ARCHITECTURES "72;87")
+
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -25,30 +33,50 @@ find_package(image_transport REQUIRED)
 find_package(CUDAToolkit REQUIRED)
 
 
-set(CMAKE_CUDA_STANDARD 17)
-set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+if(NOT DEFINED TENSORRT_DIR)
+    # Try common TensorRT locations
+    set(TENSORRT_SEARCH_PATHS
+        "/usr/lib/x86_64-linux-gnu"          # Ubuntu x86 system install
+        "/usr/lib/aarch64-linux-gnu"          # Jetson / aarch64 system
+        "/usr/local/tensorrt"                 # Manual install
+        "$ENV{TENSORRT_DIR}"                  # Environment variable
+        "${CMAKE_SOURCE_DIR}/TensorRT"        # Local copy
+    )
+    foreach(path ${TENSORRT_SEARCH_PATHS})
+        if(EXISTS "${path}/libnvinfer.so" OR EXISTS "${path}/lib/libnvinfer.so")
+            set(TENSORRT_DIR "${path}")
+            break()
+        endif()
+    endforeach()
+endif()
 
-# Jetson Orin = sm_87, Xavier = sm_72
-set(CMAKE_CUDA_ARCHITECTURES "72;87")
+find_path(TENSORRT_INCLUDE_DIR NvInfer.h
+    HINTS ${TENSORRT_DIR}/include /usr/include/x86_64-linux-gnu /usr/include/aarch64-linux-gnu /usr/include
+)
 
-set(TENSORRT_INCLUDE_DIR /usr/include)
-link_directories(/usr/lib/aarch64-linux-gnu)
+# Find TensorRT libraries
+find_library(NVINFER_LIB nvinfer
+    HINTS ${TENSORRT_DIR}/lib ${TENSORRT_DIR} /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu
+)
+find_library(NVONNXPARSER_LIB nvonnxparser
+    HINTS ${TENSORRT_DIR}/lib ${TENSORRT_DIR} /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu
+)
 
 # CUDA Preprocessing Library
 
 add_library(cuda_preprocessing STATIC
-    YOLOs-CPP-TensorRT/include/yolos/core/cuda_preprocessing.cu
+  YOLOs-CPP-TensorRT/include/yolos/core/cuda_preprocessing.cu
 )
 target_include_directories(cuda_preprocessing PRIVATE
-    YOLOs-CPP-TensorRT/include
-    ${TENSORRT_INCLUDE_DIR}
+  YOLOs-CPP-TensorRT/include
+  ${TENSORRT_INCLUDE_DIR}
 )
 target_link_libraries(cuda_preprocessing PRIVATE
-    CUDA::cudart
+  CUDA::cudart
 )
 set_target_properties(cuda_preprocessing PROPERTIES
-    CUDA_SEPARABLE_COMPILATION ON
-    POSITION_INDEPENDENT_CODE ON
+  CUDA_SEPARABLE_COMPILATION ON
+  POSITION_INDEPENDENT_CODE ON
 )
 
 # quirc
@@ -91,6 +119,10 @@ target_link_libraries(camera_app
   quirc
 )
 
+if(NVONNXPARSER_LIB)
+  target_link_libraries(camera_app ${NVONNXPARSER_LIB})
+endif()
+
 ament_target_dependencies(camera_app
   rclcpp
   sensor_msgs
@@ -100,6 +132,10 @@ ament_target_dependencies(camera_app
 install(
   TARGETS camera_app
   DESTINATION lib/${PROJECT_NAME}
+)
+
+target_link_options(camera_app PRIVATE
+  -Wl,--allow-shlib-undefined
 )
 
 ament_package()

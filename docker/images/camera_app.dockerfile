@@ -22,7 +22,7 @@ RUN cmake --install .
 RUN apt update && apt install locales
 RUN locale-gen en_US en_US.UTF-8
 RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-RUN export LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 RUN apt install -y software-properties-common
 RUN add-apt-repository universe
@@ -66,8 +66,3 @@ WORKDIR /quac
 
 COPY ./src/quac_video /quac/src/quac_video
 RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_video
-
-COPY ./src/quac /quac/src/quac
-RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac
-
-CMD source install/setup.bash && exec ros2 launch quac camera_app.launch.py camera_name:=${CAMERA_NAME}

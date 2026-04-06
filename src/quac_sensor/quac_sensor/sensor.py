@@ -17,6 +17,7 @@ import adafruit_mlx90640
 
 class SensorPublisher(Node):
     def __init__(self):
+        super().__init__('sensor_publisher')
 
         i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
         self.timer = self.create_timer(0.1, self.publish_sensor)

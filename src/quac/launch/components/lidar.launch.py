@@ -15,10 +15,10 @@ def generate_launch_description():
             parameters=[{
                 'channel_type': 'serial',
                 'serial_port': '/dev/quac/lidar_uart',
-                'serial_baudrate': '115200',
+                'serial_baudrate': 115200,
                 'frame_id': 'laser',
-                'inverted': 'false',
-                'angle_compensate': 'true'
+                'inverted': False,
+                'angle_compensate': True
             }]
         )
     ])
