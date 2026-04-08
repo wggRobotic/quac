@@ -238,7 +238,7 @@ void CameraApp::run()
     "appsrc name=appsrc format=time "
     "caps=video/x-raw,format=BGR,width=" + std::to_string(width) + 
     ",height=" + std::to_string(height) + ",framerate=" + std::to_string(fps) + "/1 "
-    "! videoconvert ! x264enc speed-preset=ultrafast tune=zerolatency "
+    "! videoconvert ! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=" + std::to_string(fps*2) + " "
     "! rtph264pay config-interval=1 ! udpsink host=" + ip + " port=" + std::to_string(port) + " sync=false";
 
 

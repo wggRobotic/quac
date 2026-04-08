@@ -5,6 +5,7 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, GroupAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 from launch.conditions import UnlessCondition, IfCondition
 
 def generate_launch_description():
@@ -58,7 +59,7 @@ def generate_launch_description():
     guiniverse = Node(
         package='guiniverse',
         executable='main',
-        namespace='quac'
+        namespace='quac',
         output='screen',
         parameters=[{'use_sim_time': LaunchConfiguration('sim_mode')}],
         condition=UnlessCondition(LaunchConfiguration('disable_guiniverse')),

@@ -1,6 +1,6 @@
 xhost +local:docker
 
-docker build -t quac_basic:dev -f docker/basic/dockerfile .
+docker build -t quac_desktop:dev -f dockerfiles/desktop.dockerfile .
 
 sudo docker run \
     -it --rm --network host \
@@ -11,4 +11,4 @@ sudo docker run \
     --volume /tmp/.X11-unix:/tmp/.X11-unix \
     --device /dev/dri:/dev/dri \
     -v "$(pwd)":/quac_host \
-    quac_basic:dev
+    quac_desktop:dev

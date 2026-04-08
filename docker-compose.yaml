@@ -1,0 +1,158 @@
+services:
+
+  camera_front_app:
+    image: quac_camera_app:dev
+    build:
+      dockerfile: dockerfiles/camera_app.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    runtime: nvidia
+    ipc: host
+    privileged: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - QUAC_ENGINES_DIR=/quac_trt_engines/
+    volumes:
+      - quac_trt_engines:/quac_trt_engines
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac camera_app.launch.py camera_name:=camera_front"
+    profiles:
+      - camera_front_profile
+      - all
+
+  camera_back_app:
+    image: quac_camera_app:dev
+    stop_signal: SIGINT
+    network_mode: "host"
+    runtime: nvidia
+    ipc: host
+    privileged: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - QUAC_ENGINES_DIR=/quac_trt_engines/
+    volumes:
+      - quac_trt_engines:/quac_trt_engines
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac camera_app.launch.py camera_name:=camera_back"
+    profiles:
+      - camera_back_profile
+      - all
+
+  control:
+    image: quac_control:dev
+    build:
+      dockerfile: dockerfiles/control.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    devices:
+      - ${WHEELS_DEVICE}:${WHEELS_DEVICE}
+      - ${ARM_DEVICE}:${ARM_DEVICE}
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac control.launch.py"
+
+  inverse_kinematics:
+    image: quac_control:dev
+    stop_signal: SIGINT
+    network_mode: "host"
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac inverse_kinematics.launch.py"
+
+  rsp:
+    image: quac_rsp:dev
+    build:
+      dockerfile: dockerfiles/rsp.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    environment:
+      - DISABLE_WHEELS=${DISABLE_WHEELS}
+      - DISABLE_ARM=${DISABLE_ARM}
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false}"
+
+  twist_mux:
+    image: quac_twist_mux:dev
+    build:
+      dockerfile: dockerfiles/twist_mux.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac twist_mux.launch.py"
+
+  lidar:
+    image: quac_lidar:dev
+    build:
+      dockerfile: dockerfiles/lidar.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    devices:
+      - /dev/quac/lidar_uart:/dev/quac/lidar_uart
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac lidar.launch.py"
+    profiles:
+      - lidar_profile
+      - all
+
+  sensors:
+    image: quac_sensors:dev
+    build:
+      dockerfile: dockerfiles/sensors.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    privileged: true
+    environment:
+      - DISABLE_THERMAL_CAM=${DISABLE_THERMAL_CAM}
+      - DISABLE_IMU=${DISABLE_IMU}
+      - DISABLE_MAGNETOMETER=${DISABLE_MAGNETOMETER}
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac sensors.launch.py disable_thermal_cam:=${DISABLE_THERMAL_CAM:-false} disable_imu:=${DISABLE_IMU:-false} disable_magnetometer:=${DISABLE_MAGNETOMETER:-false}"
+    profiles:
+      - sensors_profile
+      - all
+
+  nav2:
+    image: quac_nav2:dev
+    build:
+      dockerfile: dockerfiles/nav2.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac nav2.launch.py"
+    profiles:
+      - nav2_profile
+      - all
+
+  slam_toolbox:
+    image: quac_slam_toolbox:dev
+    build:
+      dockerfile: dockerfiles/slam_toolbox.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac slam_toolbox.launch.py"
+    profiles:
+      - slam_toolbox_profile
+      - all
+
+  ohm_slam:
+    image: quac_ohm_slam:dev
+    build:
+      dockerfile: dockerfiles/ohm_slam.dockerfile
+    stop_signal: SIGINT
+    network_mode: "host"
+    volumes:
+      - ../src/quac:/quac/src/quac:ro
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac ohm_slam.launch.py"
+    profiles:
+      - ohm_slam_profile
+      - all
+
+volumes:
+  quac_trt_engines:

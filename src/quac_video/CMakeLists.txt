@@ -20,17 +20,19 @@ add_compile_definitions(JETSON_PLATFORM)
 # Jetson Orin = sm_87, Xavier = sm_72
 set(CMAKE_CUDA_ARCHITECTURES "72;87")
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GST REQUIRED gstreamer-1.0)
 pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
 find_package(OpenCV REQUIRED)
 find_package(realsense2 REQUIRED)
 find_package(CUDA REQUIRED)
-find_package(sensor_msgs)
-find_package(image_transport REQUIRED)
 find_package(CUDAToolkit REQUIRED)
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs)
+find_package(tf2_msgs)
+find_package(image_transport REQUIRED)
 
 
 if(NOT DEFINED TENSORRT_DIR)
@@ -129,13 +131,26 @@ ament_target_dependencies(camera_app
   image_transport
 )
 
-install(
-  TARGETS camera_app
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 target_link_options(camera_app PRIVATE
   -Wl,--allow-shlib-undefined
+)
+
+# Detection server
+
+add_executable(detection_server
+  src/detection_server.cpp
+)
+
+ament_target_dependencies(detection_server
+  rclcpp
+  sensor_msgs
+  tf2_msgs
+  image_transport
+)
+
+install(
+  TARGETS camera_app detection_server
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()
