@@ -137,19 +137,19 @@ target_link_options(camera_app PRIVATE
 
 # Detection server
 
-add_executable(detection_server
-  src/detection_server.cpp
-)
+# add_executable(detection_server
+#   src/detection_server.cpp
+# )
 
-ament_target_dependencies(detection_server
-  rclcpp
-  sensor_msgs
-  tf2_msgs
-  image_transport
-)
+# ament_target_dependencies(detection_server
+#   rclcpp
+#   sensor_msgs
+#   tf2_msgs
+#   image_transport
+# )
 
 install(
-  TARGETS camera_app detection_server
+  TARGETS camera_app #detection_server
   DESTINATION lib/${PROJECT_NAME}
 )
 
