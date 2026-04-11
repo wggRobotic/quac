@@ -1,0 +1,62 @@
+services:
+
+  camera_front:
+    build:
+      dockerfile: dockerfiles/camera.dockerfile
+    image: quac_camera:dev
+
+  camera_back:
+    image: quac_camera:dev
+
+  control:
+    build:
+      dockerfile: dockerfiles/control.dockerfile
+    image: quac_control:dev
+
+  inverse_kinematics:
+    image: quac_control:dev
+
+  rsp:
+    build:
+      dockerfile: dockerfiles/rsp.dockerfile
+    image: quac_rsp:dev
+
+  twist_mux:
+    build:
+      dockerfile: dockerfiles/twist_mux.dockerfile
+    image: quac-twist-mux:dev
+
+  lidar:
+    build:
+      dockerfile: dockerfiles/lidar.dockerfile
+    image: quac_lidar:dev
+
+  sensors:
+    build:
+      dockerfile: dockerfiles/sensors.dockerfile
+    image: quac_sensors:dev
+
+  nav2:
+    build:
+      dockerfile: dockerfiles/nav2.dockerfile
+    image: quac_nav2:dev
+
+  slam_toolbox:
+    build:
+      dockerfile: dockerfiles/slam_toolbox.dockerfile
+    image: quac_slam-toolbox:dev
+
+  ohm_slam:
+    build:
+      dockerfile: dockerfiles/ohm_slam.dockerfile
+    image: quac_ohm-slam:dev
+
+  gazebo:
+    build:
+      dockerfile: dockerfiles/gazebo.dockerfile
+    image: quac_gazebo:dev
+
+  rviz:
+    build:
+      dockerfile: dockerfiles/rviz.dockerfile
+    image: osrf/ros:humble-desktop-full

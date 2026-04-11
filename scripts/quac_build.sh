@@ -1,0 +1,1 @@
+docker compose -f docker-compose-files.local.yaml build camera_front camera_back control inverse_kinematics rsp twist_mux lidar sensors nav2 slam_toolbox ohm_slam

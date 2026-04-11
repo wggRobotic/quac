@@ -1,0 +1,40 @@
+services:
+
+  camera_front:
+    image: ghcr.io/wggrobotic/quac-camera:latest
+
+  camera_back:
+    image: ghcr.io/wggrobotic/quac-camera:latest
+
+  control:
+    image: ghcr.io/wggrobotic/quac-control:latest
+
+  inverse_kinematics:
+    image: ghcr.io/wggrobotic/quac-control:latest
+
+  rsp:
+    image: ghcr.io/wggrobotic/quac-rsp:latest
+
+  twist_mux:
+    image: ghcr.io/wggrobotic/quac-twist-mux:latest
+
+  lidar:
+    image: ghcr.io/wggrobotic/quac-lidar:latest
+
+  sensors:
+    image: ghcr.io/wggrobotic/quac-sensors:latest
+
+  nav2:
+    image: ghcr.io/wggrobotic/quac-nav2:latest
+
+  slam_toolbox:
+    image: ghcr.io/wggrobotic/quac-slam-toolbox:latest
+
+  ohm_slam:
+    image: ghcr.io/wggrobotic/quac-ohm-slam:latest
+
+  gazebo:
+    image: ghcr.io/wggrobotic/quac-gazebo:latest
+
+  rviz:
+    image: ghcr.io/wggrobotic/quac-rviz:latest

@@ -1,0 +1,1 @@
+docker compose -f docker-compose-files.local.yaml build inverse_kinematics rsp twist_mux nav2 slam_toolbox ohm_slam gazebo rviz

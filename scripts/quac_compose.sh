@@ -1,17 +1,26 @@
-#docker compose -f docker/quac.docker-compose.yaml --profile all build
-#docker compose -f docker/quac.docker-compose.yaml --profile hardware up camera_front_app
-
 cmd=(env)
 
-([[ " $@ " =~ " -dwheels " ]] || [ ! -e /dev/quac/wheels_rs485 ]) \
+dwheels=false
+([[ " $@ " =~ " -dwheels " ]] || [ ! -e /dev/quac/wheels_rs485 ]) && dwheels=true
+
+darm=false
+([[ " $@ " =~ " -darm "    ]] || [ ! -e /dev/quac/arm_servos ]) && darm=true
+
+dlidar=false
+([[ " $@ " =~ " -dlidar "  ]] || [ ! -e /dev/quac/lidar_uart ]) && dlidar=true
+
+dslam=false
+([[ " $@ " =~ " -dslam " ]] || [[ $dwheels == true ]] || [[ $dlidar == true ]]) dslam=true
+
+[[ $dwheels == true ]] \
   && cmd+=(WHEELS_DEVICE=/dev/null DISABLE_WHEELS=true) \
   || cmd+=(WHEELS_DEVICE=)
 
-([[ " $@ " =~ " -darm "    ]] || [ ! -e /dev/quac/arm_servos ]) \
+[[ $darm == true ]] \
   && cmd+=(ARM_DEVICE=/dev/null DISABLE_ARM=true) \
   || cmd+=(ARM_DEVICE=/dev/quac/arm_servos)
 
-[[ " $@ " =~ " -dtc"    ]] \
+[[ " $@ " =~ " -dtcam"    ]] \
   && cmd+=(DISABLE_THERMAL_CAM=true)
 
 [[ " $@ " =~ " -dimu "    ]] \
@@ -20,27 +29,34 @@ cmd=(env)
 [[ " $@ " =~ " -dmag "    ]] \
   && cmd+=(DISABLE_MAGNETOMETER=true)
 
-cmd+=(docker compose -f docker/quac.docker-compose.yaml)
+cmd+=(docker compose -f docker-compose.yaml)
 
-([[ " $@ " =~ " -dlidar "  ]] || [ ! -e /dev/quac/lidar_uart ]) \
-  || cmd+=(--profile lidar_profile)
+[[ " $@ " =~ " -remote "    ]] \
+  && cmd+=(-f docker-compose-files.remote.yaml) \
+  || cmd+=(-f docker-compose-files.local.yaml)
 
-[[ " $@ " =~ " -dsen "  ]] \
-  || cmd+=(--profile sensors_profile)
+cmd+=(up rsp twist_mux control inverse_kinematics)
 
-([[ " $@ " =~ " -dvid " ]] || [[ " $@ " =~ " -dcamf " ]]) \
-  || cmd+=(--profile camera_front_profile)
+[[ $dlidar == false ]] \
+  && cmd+=(lidar)
 
-([[ " $@ " =~ " -dvid " ]] || [[ " $@ " =~ " -dcamb " ]]) \
-  || cmd+=(--profile camera_back_profile)
+[[ ! " $@ " =~ " -dsen "  ]] \
+  && cmd+=(sensors)
 
-[[ " $@ " =~ " -dnav " ]] \
-  || cmd+=(--profile nav2_profile)
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dcamf " ]]) \
+  && cmd+=(camera_front)
 
-[[ " $@ " =~ " -dslam " ]] \
-  || cmd+=(--profile slam_toolbox_profile)
+([[ ! " $@ " =~ " -dvid " ]] || [[ ! " $@ " =~ " -dcamb " ]]) \
+  && cmd+=(camera_back)
 
-cmd+=(up)
+([[ $dslam == false ]] && [[ ! " $@ " =~ " -dnav " ]]) \
+  && cmd+=(nav2)
+
+([[ $dslam == false ]] && [[ ! " $@ " =~ " -ohm " ]]) \
+  && cmd+=(slam_toolbox)
+
+([[ $dslam == false ]] && [[ " $@ " =~ " -ohm " ]]) \
+  && cmd+=(ohm_slam)
 
 echo "${cmd[@]}"
 "${cmd[@]}"

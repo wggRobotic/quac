@@ -21,7 +21,6 @@ services:
 
   camera_front:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-camera:latest
     runtime: nvidia
     ipc: host
     privileged: true
@@ -29,7 +28,6 @@ services:
 
   camera_back:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-camera:latest
     runtime: nvidia
     ipc: host
     privileged: true
@@ -37,7 +35,6 @@ services:
 
   control:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-control:latest
     devices:
       - ${WHEELS_DEVICE}:${WHEELS_DEVICE}
       - ${ARM_DEVICE}:${ARM_DEVICE}
@@ -45,48 +42,59 @@ services:
 
   inverse_kinematics:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-control:latest
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac inverse_kinematics.launch.py sim_mode:=${SIM_MODE}"
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac inverse_kinematics.launch.py sim_mode:=${SIM_MODE:-false}"
 
   rsp:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-rsp:latest
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false} sim_mode:=${SIM_MODE}"
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false} sim_mode:=${SIM_MODE:-false}"
 
   twist_mux:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-twist-mux:latest
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac twist_mux.launch.py sim_mode:=${SIM_MODE}"
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac twist_mux.launch.py sim_mode:=${SIM_MODE:-false}"
 
   lidar:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-lidar:latest
     devices:
       - /dev/quac/lidar_uart:/dev/quac/lidar_uart
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac lidar.launch.py"
 
   sensors:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-sensors:latest
     privileged: true
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac sensors.launch.py disable_thermal_cam:=${DISABLE_THERMAL_CAM:-false} disable_imu:=${DISABLE_IMU:-false} disable_magnetometer:=${DISABLE_MAGNETOMETER:-false}"
 
   nav2:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-nav2:latest
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac nav2.launch.py sim_mode:=${SIM_MODE}"
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac nav2.launch.py sim_mode:=${SIM_MODE:-false}"
 
   slam_toolbox:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-slam-toolbox:latest
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac slam_toolbox.launch.py sim_mode:=${SIM_MODE}"
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac slam_toolbox.launch.py sim_mode:=${SIM_MODE:-false}"
 
   ohm_slam:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-ohm-slam:latest
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac ohm_slam.launch.py sim_mode:=${SIM_MODE}"
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac ohm_slam.launch.py sim_mode:=${SIM_MODE:-false}"
 
   gazebo:
     <<: *defaults
-    image: ghcr.io/wggrobotic/quac-gazebo:latest
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - src/quac:/quac/src/quac:ro
+    devices:
+      - /dev/dri:/dev/dri
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac gazebo.launch.py"
+
+  rviz:
+    <<: *defaults
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - src/quac:/quac/src/quac:ro
+    devices:
+      - /dev/dri:/dev/dri
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rviz.launch.py"
