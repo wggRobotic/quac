@@ -111,12 +111,12 @@
         </xacro:inertial_cylinder>
     </link>
 
-    <joint name="camera_font_joint" type="fixed">
+    <joint name="camera_front_joint" type="fixed">
         <parent link="gripper_gear"/>
-        <child link="camera_font"/>
+        <child link="camera_front"/>
         <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
     </joint>
 
-    <link name="camera_font"/>
+    <link name="camera_front"/>
 
 </robot>

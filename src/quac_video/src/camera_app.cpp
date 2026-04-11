@@ -28,6 +28,12 @@ CameraApp::CameraApp() : Node("camera_app")
   declare_parameter<int>("fps", 30);
   fps = get_parameter("fps").as_int();
 
+  declare_parameter<int>("bitrate", 1000);
+  bitrate = get_parameter("bitrate").as_int();
+
+  declare_parameter<int>("key_int_max", 60);
+  key_int_max = get_parameter("key_int_max").as_int();
+
   declare_parameter<std::string>("engines_dir", "/null/");
   engines_dir = get_parameter("engines_dir").as_string();
 
@@ -238,7 +244,7 @@ void CameraApp::run()
     "appsrc name=appsrc format=time "
     "caps=video/x-raw,format=BGR,width=" + std::to_string(width) + 
     ",height=" + std::to_string(height) + ",framerate=" + std::to_string(fps) + "/1 "
-    "! videoconvert ! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=" + std::to_string(fps*2) + " "
+    "! videoconvert ! x264enc speed-preset=ultrafast tune=zerolatency bitrate=" + std::to_string(bitrate) + " key-int-max=" + std::to_string(key_int_max) + " "
     "! rtph264pay config-interval=1 ! udpsink host=" + ip + " port=" + std::to_string(port) + " sync=false";
 
 

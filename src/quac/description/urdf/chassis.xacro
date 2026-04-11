@@ -46,6 +46,14 @@
 
     <link name="laser"/>
 
+    <joint name="imu_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="imu"/>
+        <origin xyz="-0.02 0.04 0.145" rpy="0 0 0"/>
+    </joint>
+
+    <link name="imu"/>
+
     <joint name="camera_back_joint" type="fixed">
         <parent link="chassis"/>
         <child link="camera_back"/>

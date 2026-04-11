@@ -1,9 +1,11 @@
 quac:
   camera_front:
     ros__parameters:
-      width: 640
-      height: 480
+      width: 1920
+      height: 1080
       fps: 30
+      bitrate: 4000
+      key_int_max: 10
       
       port: 5000
       serial_number: "827312072798"
@@ -16,16 +18,13 @@ quac:
         enabled: true
         model: "paintroller_yolo11"
 
-      depth_detection:
-        range: [0.3, 3.0]
-        sample_diameter: 6
-        min_sample: 20
-
   camera_back:
     ros__parameters:
-      width: 640
-      height: 480
+      width: 1920
+      height: 1080
       fps: 30
+      bitrate: 4000
+      key_int_max: 10
       
       port: 5001
       serial_number: "938422071694"

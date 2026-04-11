@@ -46,7 +46,7 @@ public:
   bool ip_set;
   int port;
   std::string serial_number;
-  int width, height, fps;
+  int width, height, fps, bitrate, key_int_max;
 
   rs2::config rs_cfg;
   rs2::pipeline rs_pipeline;

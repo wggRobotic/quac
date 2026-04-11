@@ -31,6 +31,7 @@ find_package(CUDAToolkit REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs)
+find_package(std_msgs REQUIRED)
 find_package(tf2_msgs)
 find_package(image_transport REQUIRED)
 

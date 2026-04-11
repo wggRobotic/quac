@@ -14,11 +14,6 @@ sudo apt install ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-
 git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
 ```
 
-Set paths:
-```
-export NVINVER_YOLO_LIB_PATH=/home/pilot/DeepStream-Yolo/nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
-```
-
 ## udev rules
 ```
 sudo nano /etc/udev/rules.d/99-quac.rules
