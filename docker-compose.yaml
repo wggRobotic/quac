@@ -1,9 +1,9 @@
-defaults: &defaults
+x-defaults: &defaults
   stop_signal: SIGINT
   network_mode: "host"
   volumes:
     - quac_trt_engines:/quac_trt_engines
-    - ../src/quac:/quac/src/quac:ro
+    - ./src/quac:/quac/src/quac:ro
   environment:
     - DISABLE_WHEELS=${DISABLE_WHEELS}
     - DISABLE_ARM=${DISABLE_ARM}
@@ -82,7 +82,7 @@ services:
       - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - src/quac:/quac/src/quac:ro
+      - ./src/quac:/quac/src/quac:ro
     devices:
       - /dev/dri:/dev/dri
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac gazebo.launch.py"
@@ -94,7 +94,7 @@ services:
       - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - src/quac:/quac/src/quac:ro
+      - ./src/quac:/quac/src/quac:ro
     devices:
       - /dev/dri:/dev/dri
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rviz.launch.py"

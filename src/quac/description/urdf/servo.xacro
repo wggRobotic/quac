@@ -6,7 +6,9 @@
     <xacro:property name="servo_y" value="0.025"/>
     <xacro:property name="servo_z" value="0.035"/>
 
-    <xacro:macro name="servo_macro" params="name">
+
+    <xacro:macro name="servo" params="name flipped">
+
         <link name="${name}">
             <visual>
                 <origin xyz="-0.011375 0 0" rpy="0 0 0" />
@@ -31,40 +33,28 @@
                 <geometry>
                     <cylinder radius="0.002" length="0.08" />
                 </geometry>
-                <material name="red" />
+                <material name="yellow" />
             </visual>
             <xacro:inertial_cylinder mass="0.1" length="0.08" radius="0.002">
                 <origin xyz="0 0 0" rpy="0 0 0"/>
             </xacro:inertial_cylinder>
         </link>
 
-    </xacro:macro>
+        <joint name="${name}_joint" type="continuous">
 
-    <xacro:macro name="servo" params="name">
-
-        <xacro:servo_macro name="${name}"/>
-
-        <joint name="${name}_joint" type="revolute">
-            <parent link="${name}" />
-            <child link="${name}_axis" />
-            <axis xyz="0 0 -1" />
-            <limit lower="-1.57" upper="1.57" effort="1" velocity="1" />
+            <xacro:unless value="${flipped}">
+                <parent link="${name}" />
+                <child link="${name}_axis" />
+            </xacro:unless>
+            
+            <xacro:if value="${flipped}">
+                <parent link="${name}_axis" />
+                <child link="${name}" />
+            </xacro:if>
+            
+            <axis xyz="0 0 1" />
         </joint>
 
     </xacro:macro>
-
-    <xacro:macro name="servo_flipped" params="name">
-        
-        <joint name="${name}_joint" type="revolute">
-            <parent link="${name}_axis" />
-            <child link="${name}" />
-            <axis xyz="0 0 -1" />
-            <limit lower="-1.57" upper="1.57" effort="1" velocity="1" />
-        </joint>
-
-        <xacro:servo_macro name="${name}"/>
-
-    </xacro:macro>
-
 
 </robot>

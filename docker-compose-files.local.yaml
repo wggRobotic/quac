@@ -6,6 +6,8 @@ services:
     image: quac_camera:dev
 
   camera_back:
+    build:
+      dockerfile: dockerfiles/camera.dockerfile
     image: quac_camera:dev
 
   control:
@@ -14,6 +16,8 @@ services:
     image: quac_control:dev
 
   inverse_kinematics:
+    build:
+      dockerfile: dockerfiles/control.dockerfile
     image: quac_control:dev
 
   rsp:
@@ -59,4 +63,4 @@ services:
   rviz:
     build:
       dockerfile: dockerfiles/rviz.dockerfile
-    image: osrf/ros:humble-desktop-full
+    image: quac_rviz:dev

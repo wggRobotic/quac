@@ -3,7 +3,7 @@ cmd=(env)
 [[ " $@ " =~ " -sim "  ]] \
   && cmd+=(SIM_MODE=true)
 
-cmd=(docker compose -f docker-compose.yaml)
+cmd+=(docker compose -f docker-compose.yaml)
 
 [[ " $@ " =~ " -remote "    ]] \
   && cmd+=(-f docker-compose-files.remote.yaml) \

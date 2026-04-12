@@ -33,7 +33,7 @@ def generate_launch_description():
         arguments=[
             '--ros-args',
             '-p',
-            f'config_file:={os.path.join(package_dir,'config','gz_bridge.yaml')}',
+            f"config_file:={os.path.join(package_dir,'config','gz_bridge.yaml')}",
         ]
     )
 
@@ -53,28 +53,28 @@ def generate_launch_description():
         namespace='quac',
         output='screen',
         arguments=['joint_state_broadcaster'],
-    ),
+    )
     diff_drive_controller = Node(
         package='controller_manager',
         executable='spawner',
         namespace='quac',
         output='screen',
         arguments=['diff_drive_controller'],
-    ),
+    )
     arm_position_controller = Node(
         package="controller_manager",
         executable="spawner",
         namespace='quac',
         output='screen',
         arguments=["arm_position_controller"],
-    ),
+    )
 
     return LaunchDescription([
         generate_sdf,
         gazebo,
         ros_gz_bridge,
         spawn_entity,
-        arm_position_controller,
+        joint_state_broadcaster,
         diff_drive_controller,
         arm_position_controller
     ])

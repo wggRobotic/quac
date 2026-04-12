@@ -63,14 +63,12 @@ private:
     // ===== First angle =====
     const double cos_alpha = (l12*l12 + r*r - l3 * l3) / (2.0 * l12 * r);
 
-    theta[0] = std::atan2(z, x) + safeAcos(cos_alpha) + std::atan2(l2, l1);
-    theta[0] = -(theta[0] - M_PI / 2);
+    theta[0] = std::atan2(z, x) + safeAcos(cos_alpha) + std::atan2(l2, l1) - M_PI;
 
     // ===== Second angle =====
     const double cos_beta = (l3 * l3 + l12 * l12 - r * r) / (2.0 * l3 * l12);
 
-    theta[1] = safeAcos(cos_beta) + std::atan2(l1, l2);
-    theta[1] = - (theta[1] - M_PI);
+    theta[1] = safeAcos(cos_beta) + std::atan2(l1, l2) - M_PI / 2.0;
 
     return theta;
   }

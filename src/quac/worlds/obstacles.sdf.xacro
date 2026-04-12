@@ -1,5 +1,5 @@
 <sdf version='1.9' xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <world name='empty'>
+  <world name='obstacles'>
     <physics name='1ßms' type='ignored'>
       <max_step_size>0.01</max_step_size>
       <real_time_factor>1</real_time_factor>
@@ -11,6 +11,7 @@
     <plugin name='gz::sim::systems::Sensors' filename='gz-sim-sensors-system'>
       <render_engine>ogre2</render_engine>
     </plugin>
+    <plugin name='gz::sim::systems::Imu' filename='gz-sim-imu-system'></plugin>
     <plugin name='gz::sim::systems::Contact' filename='gz-sim-contact-system'/>
     <gravity>0 0 -9.8000000000000007</gravity>
     <magnetic_field>5.5644999999999998e-06 2.2875799999999999e-05 -4.2388400000000002e-05</magnetic_field>

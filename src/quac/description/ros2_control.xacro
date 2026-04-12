@@ -84,3 +84,4 @@
         <xacro:arm_joint name="gripper_servo_joint" id="1" inverted="true"  offset="1.75"  pos_min="0"        pos_max="1.7" />
 
     </ros2_control>     
+</robot>
