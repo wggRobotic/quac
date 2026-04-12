@@ -75,6 +75,10 @@ services:
     <<: *defaults
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac ohm_slam.launch.py sim_mode:=${SIM_MODE:-false}"
 
+  rtabmap:
+    <<: *defaults
+    #command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rtabmap.launch.py sim_mode:=${SIM_MODE:-false}"
+
   gazebo:
     <<: *defaults
     environment:

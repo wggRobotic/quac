@@ -28,7 +28,7 @@ services:
   twist_mux:
     build:
       dockerfile: dockerfiles/twist_mux.dockerfile
-    image: quac-twist-mux:dev
+    image: quac_twist_mux:dev
 
   lidar:
     build:
@@ -48,12 +48,17 @@ services:
   slam_toolbox:
     build:
       dockerfile: dockerfiles/slam_toolbox.dockerfile
-    image: quac_slam-toolbox:dev
+    image: quac_slam_toolbox:dev
 
   ohm_slam:
     build:
       dockerfile: dockerfiles/ohm_slam.dockerfile
-    image: quac_ohm-slam:dev
+    image: quac_ohm_slam:dev
+
+  rtabmap:
+    build:
+      dockerfile: dockerfiles/rtabmap.dockerfile
+    image: quac_rtabmap:dev
 
   gazebo:
     build:
