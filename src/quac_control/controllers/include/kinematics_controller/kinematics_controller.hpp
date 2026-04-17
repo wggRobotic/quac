@@ -41,7 +41,7 @@ public:
   controller_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
 
 private:
-  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr ee_pos_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_EE;
   rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr gripper_sub_;
 };
 

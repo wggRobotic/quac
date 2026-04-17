@@ -1,3 +1,5 @@
+xhost +local:docker
+
 cmd=(env)
 
 [[ " $@ " =~ " -sim "  ]] \

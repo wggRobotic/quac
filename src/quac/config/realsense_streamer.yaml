@@ -1,0 +1,35 @@
+quac:
+  camera_front:
+    ros__parameters:
+
+      capture:
+        serial_number: "827312072798"
+
+        fps: 30
+        color:
+          width: 640
+          height: 480
+        depth:
+          width: 640
+          height: 480
+
+      gst:
+        port: 5000
+        width: 640 #1920
+        height: 480 #1080
+
+        #compression: "jpeg"
+        compression: "h264"
+        jpeg:
+          quality: 80
+        h264:
+          bitrate: 5000
+          key_int_max: 10
+
+      pointcloud:
+        interval: 6
+      image:
+        interval: 10
+        
+
+      

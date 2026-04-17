@@ -2,37 +2,26 @@
 #include <string.h>
 #include <stdarg.h>
 #include <ddsm115/DDSM115CMD.h>
+#include <unistd.h>
 
-int in_list(char* str, ...)
-{
-    int ret = 0;
-
-    va_list args;
-    va_start(args, str);
-
-    for (char* s = va_arg(args, char*); s != NULL; s = va_arg(args, char*))
-        if (strcmp(str, s) == 0) { ret = 1; break;}
-
-    va_end(args);
-
-    return ret;
-}
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)  { printf("Usage: ros2 run quac ddsm_cmd <cmd> [<options>]\n"); return 0; }
+    if (argc < 2)  { printf("Usage: ros2 run quac ddsm_cmd <cmd> [<options>]\n"); return 0; }
 
-    if (in_list(argv[1], "-h", "--help", NULL))
+    DDSM115CMD cmd;
+    if (cmd.connect("/dev/ttyTHS1") == false) {printf("error connecting\n"); return 1;}
+    
+
+    if (strcmp(argv[1], "cmd") ==0)
     {
-        printf(
-            "Usage: ros2 run quac ddsm_cmd\n"
-            "  setid <id: int>\n"
-            "  vc <id: int> <velocity: int>\n"
-            "  info <id: int>\n"
-            "\n"
-        );
-        return 0;
+        uint8_t id, mode, err;
+        double cur, vel, pos;
+        cmd.drive(4, 0, 1, 0);
+        sleep(1);
+        cmd.drive_feedback(&id, &mode, &cur, &vel, &pos, &err);
+        printf("cur %f vel %f pos %f\n", cur, vel ,pos);
     }
 
-
+    cmd.disconnect();
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.18)
 project(quac_video LANGUAGES C CXX CUDA)
 
 set(CMAKE_C_STANDARD 99)
@@ -34,6 +34,7 @@ find_package(sensor_msgs)
 find_package(std_msgs REQUIRED)
 find_package(tf2_msgs)
 find_package(image_transport REQUIRED)
+find_package(quac_interfaces REQUIRED)
 
 
 if(NOT DEFINED TENSORRT_DIR)
@@ -106,51 +107,26 @@ include_directories(
   quirc/lib
 )
 
-add_executable(camera_app
-  src/camera_app.cpp
+# realsense_streamer
+add_executable(realsense_streamer
+  src/realsense_streamer.cpp
 )
 
-target_link_libraries(camera_app
+target_link_libraries(realsense_streamer
   ${GST_LIBRARIES}
   ${GST_APP_LIBRARIES}
   ${realsense2_LIBRARY}
-  ${CUDA_LIBRARIES}
-  ${OpenCV_LIBS}
-  nvinfer
-  CUDA::cudart
-  cuda_preprocessing
-  quirc
 )
 
-if(NVONNXPARSER_LIB)
-  target_link_libraries(camera_app ${NVONNXPARSER_LIB})
-endif()
-
-ament_target_dependencies(camera_app
+ament_target_dependencies(realsense_streamer
   rclcpp
+  std_msgs
   sensor_msgs
-  image_transport
+  quac_interfaces
 )
-
-target_link_options(camera_app PRIVATE
-  -Wl,--allow-shlib-undefined
-)
-
-# Detection server
-
-# add_executable(detection_server
-#   src/detection_server.cpp
-# )
-
-# ament_target_dependencies(detection_server
-#   rclcpp
-#   sensor_msgs
-#   tf2_msgs
-#   image_transport
-# )
 
 install(
-  TARGETS camera_app #detection_server
+  TARGETS realsense_streamer
   DESTINATION lib/${PROJECT_NAME}
 )
 

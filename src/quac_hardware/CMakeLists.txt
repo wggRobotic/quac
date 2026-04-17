@@ -42,6 +42,8 @@ add_executable(set_id src/waveshare_servos/set_id.cpp)
 target_link_libraries(set_id quac_hardware)
 ament_target_dependencies(set_id rclcpp)
 
+add_executable(ddsm_cmd src/ddsm115/DDSM115CMD.cpp src/ddsm115/ddsm_cmd.cpp)
+
 add_executable(calibrate_midpoint src/waveshare_servos/calibrate_midpoint.cpp)
 target_link_libraries(calibrate_midpoint quac_hardware)
 ament_target_dependencies(calibrate_midpoint rclcpp)
@@ -57,7 +59,7 @@ install(TARGETS quac_hardware
 )
 
 install(
-  TARGETS set_id calibrate_midpoint
+  TARGETS set_id calibrate_midpoint ddsm_cmd
   DESTINATION lib/${PROJECT_NAME}
 )
 

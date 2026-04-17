@@ -20,8 +20,8 @@ quac:
 
   camera_back:
     ros__parameters:
-      width: 1920
-      height: 1080
+      width: 640
+      height: 480
       fps: 30
       bitrate: 4000
       key_int_max: 10

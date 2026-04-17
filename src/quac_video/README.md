@@ -15,4 +15,10 @@ gst-launch-1.0 udpsrc port=5000 caps="application/x-rtp, media=video, encoding-n
 
 # H264
 ```
+gst-launch-1.0 -v udpsrc port=5000 buffer-size=1048576 caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse config-interval=1 ! avdec_h264 ! videoconvert ! autovideosink sync=false
+```
+
+# set ip
+```
+ros2 topic pub /quac/video_target_ip std_msgs/msg/String "{data: '192.168.1.136'}" -1
 ```
