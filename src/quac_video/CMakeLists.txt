@@ -32,8 +32,10 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs)
 find_package(std_msgs REQUIRED)
-find_package(tf2_msgs)
-find_package(image_transport REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(quac_interfaces REQUIRED)
 
 
@@ -125,8 +127,58 @@ ament_target_dependencies(realsense_streamer
   quac_interfaces
 )
 
+# qrcode_detection_server
+
+# add_executable(qrcode_detection_server
+#   src/hazmat_detection_server.cpp
+# )
+
+# target_link_libraries(qrcode_detection_server
+#   quirc
+#   ${OpenCV_LIBS}
+# )
+
+# ament_target_dependencies(qrcode_detection_server
+#   rclcpp
+#   std_msgs
+#   quac_interfaces
+# )
+
+# hazmat_detection_server
+
+add_executable(hazmat_detection_server
+  src/hazmat_detection_server.cpp
+)
+
+target_link_libraries(hazmat_detection_server
+  ${CUDA_LIBRARIES}
+  ${OpenCV_LIBS}
+  nvinfer
+  CUDA::cudart
+  cuda_preprocessing
+)
+
+ament_target_dependencies(hazmat_detection_server
+  rclcpp
+  std_msgs
+  quac_interfaces
+  sensor_msgs
+  geometry_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+)
+
+if(NVONNXPARSER_LIB)
+  target_link_libraries(hazmat_detection_server ${NVONNXPARSER_LIB})
+endif()
+
+target_link_options(hazmat_detection_server PRIVATE
+  -Wl,--allow-shlib-undefined
+)
+
 install(
-  TARGETS realsense_streamer
+  TARGETS realsense_streamer hazmat_detection_server
   DESTINATION lib/${PROJECT_NAME}
 )
 

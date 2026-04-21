@@ -1,0 +1,5 @@
+<library path="quac_interface_displays">
+  <class type="quac_rviz_plugins::DetectedObjectArrayDisplay" base_class_type="rviz_common::Display">
+    <description></description>
+  </class>
+</library>

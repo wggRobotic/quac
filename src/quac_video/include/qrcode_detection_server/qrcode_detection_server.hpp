@@ -6,4 +6,5 @@ class QRCodeDetectionServer : public rclcpp::Node
 public:
   QRCodeDetectionServer();
 
+  void run();
 };

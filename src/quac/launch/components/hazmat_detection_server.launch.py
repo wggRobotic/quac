@@ -13,10 +13,16 @@ def generate_launch_description():
             executable='hazmat_detection_server',
             namespace='quac',
             output='screen',
-            parameters=[os.path.join(package_dir, 'config', 'detection_servers.yaml')],
-            {
-                'engines_dir': os.environ.get('QUAC_ENGINES_DIR', '/null/'),
-                'models_dir': os.path.join(package_dir, 'models/')
-            },
+            remappings=[
+                ('/tf', 'tf'),
+            ],
+            parameters=[
+                os.path.join(package_dir, 'config', 'detection_servers.yaml'),
+                {
+                    'engine_path': os.path.join(os.environ.get('QUAC_ENGINES_DIR', '/null/'), 'hazmat_yolo26.engine'),
+                    'model_path': os.path.join(package_dir, 'models/hazmat_yolo26.onnx'),
+                    'labels_path': os.path.join(package_dir, 'models/hazmat_yolo26.labels.txt'),
+                },
+            ]
         )
     ])

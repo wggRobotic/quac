@@ -2,10 +2,16 @@ quac:
   hazmat_detection_server:
     ros__parameters:
       topics: [camera_front/bgrd, camera_back/bgrd]
+      camera_frames: [camera_front, camera_back]
+      publish_rate: 5
+      reference_frame: "map"
 
   qrcode_detection_server:
     ros__parameters:
       topics: [camera_front/bgrd, camera_back/bgrd]
+      camera_frames: [camera_front, camera_back]
+      publish_rate: 5
+      reference_frame: "map"
 
 
       

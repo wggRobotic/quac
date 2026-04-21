@@ -119,6 +119,93 @@ void RealsenseStreamer::ip_callback(const std_msgs::msg::String::SharedPtr msg)
   gst.ip_set = true;
 }
 
+void RealsenseStreamer::pointcloud_loop()
+{
+  rs2::align align_to_depth(RS2_STREAM_DEPTH);
+
+  while (keep_running.load())
+  {
+    pointcloud.mutex.lock();
+    if (pointcloud.available) pointcloud.working = true;
+    pointcloud.mutex.unlock();
+
+    if (pointcloud.working)
+    {
+      rs2::frameset aligned_frames = align_to_depth.process(pointcloud.frameset);
+
+      rs2::depth_frame depth_frame = aligned_frames.get_depth_frame();
+      rs2::video_frame color_frame = aligned_frames.get_color_frame();
+
+      pointcloud.points = pointcloud.pc.calculate(depth_frame);
+      pointcloud.pc.map_to(color_frame);
+
+      auto vertices = pointcloud.points.get_vertices();
+      auto tex_coords = pointcloud.points.get_texture_coordinates();
+
+      const uint8_t* color_data = static_cast<const uint8_t*>(color_frame.get_data());
+
+      size_t num_points = pointcloud.points.size();
+
+      pointcloud.msg.header.stamp = now();
+      pointcloud.msg.header.frame_id = get_name();
+
+      pointcloud.msg.height = 1;
+      pointcloud.msg.width = num_points;
+      pointcloud.msg.is_dense = false;
+      pointcloud.msg.is_bigendian = false;
+
+      sensor_msgs::PointCloud2Modifier modifier(pointcloud.msg);
+      modifier.setPointCloud2FieldsByString(2, "xyz", "rgb");
+      modifier.resize(num_points);
+
+      sensor_msgs::PointCloud2Iterator<float> iter_x(pointcloud.msg, "x");
+      sensor_msgs::PointCloud2Iterator<float> iter_y(pointcloud.msg, "y");
+      sensor_msgs::PointCloud2Iterator<float> iter_z(pointcloud.msg, "z");
+
+      sensor_msgs::PointCloud2Iterator<uint8_t> iter_r(pointcloud.msg, "r");
+      sensor_msgs::PointCloud2Iterator<uint8_t> iter_g(pointcloud.msg, "g");
+      sensor_msgs::PointCloud2Iterator<uint8_t> iter_b(pointcloud.msg, "b");
+
+      for (size_t i = 0; i < num_points; ++i)
+      {
+        const rs2::vertex& v = vertices[i];
+        const rs2::texture_coordinate& t = tex_coords[i];
+
+        if (v.z <= 0.f || !std::isfinite(v.z))
+        {
+          *iter_x = *iter_y = *iter_z = std::numeric_limits<float>::quiet_NaN();
+          *iter_r = *iter_g = *iter_b = 0;
+        }
+        else
+        {
+          *iter_x = v.x;
+          *iter_y = v.y;
+          *iter_z = v.z;
+
+          int u = std::min(std::max(int(t.u * (float)capture.depth.width), 0), capture.depth.width - 1);
+          int v_px = std::min(std::max(int(t.v * (float)capture.depth.height), 0), capture.depth.height - 1);
+
+          int idx = (v_px * capture.depth.width + u) * 3;
+
+          *iter_b = color_data[idx + 0];
+          *iter_g = color_data[idx + 1];
+          *iter_r = color_data[idx + 2];
+        }
+
+        ++iter_x; ++iter_y; ++iter_z;
+        ++iter_r; ++iter_g; ++iter_b;
+      }
+
+      pointcloud.publisher->publish(pointcloud.msg);
+      pointcloud.mutex.lock();
+      pointcloud.working = false;
+      pointcloud.available = false;
+      pointcloud.mutex.unlock();
+    }
+    else std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+}
+
 void RealsenseStreamer::run()
 {
   // make sure camera is connected
@@ -133,13 +220,16 @@ void RealsenseStreamer::run()
   capture.cfg.enable_stream(RS2_STREAM_DEPTH, capture.depth.width, capture.depth.height, RS2_FORMAT_Z16, capture.fps);
 
   rs2::align align_to_color(RS2_STREAM_COLOR);
-  rs2::align align_to_depth(RS2_STREAM_DEPTH);
 
   capture.pipeline.start(capture.cfg);
 
   signal(SIGTERM, handle_signal);
   signal(SIGINT, handle_signal);
   
+  pointcloud.working = false;
+  pointcloud.available = false;
+  pointcloud.thread = std::thread([this](){ pointcloud_loop();});
+
   RCLCPP_INFO(get_logger(), "Camera opened");
   while (keep_running.load())
   {
@@ -257,87 +347,21 @@ void RealsenseStreamer::run()
     image.interval_i = (image.interval_i + 1) % image.interval;
 
     // pointcloud
-    if (pointcloud.interval_i == 0)
+    pointcloud.interval_i++;
+    if (pointcloud.interval_i >= pointcloud.interval)
     {
-        rs2::frameset aligned_frames = align_to_depth.process(frames);
-
-        rs2::depth_frame depth_frame = aligned_frames.get_depth_frame();
-        rs2::video_frame color_frame = aligned_frames.get_color_frame();
-
-        // Generate point cloud (THIS replaces your entire loop)
-        pointcloud.points = pointcloud.pc.calculate(depth_frame);
-
-        // Map texture (RGB)
-        pointcloud.pc.map_to(color_frame);
-
-        auto vertices = pointcloud.points.get_vertices();
-        auto tex_coords = pointcloud.points.get_texture_coordinates();
-
-        const uint8_t* color_data =
-            static_cast<const uint8_t*>(color_frame.get_data());
-
-        int width  = depth_frame.get_width();
-        int height = depth_frame.get_height();
-        size_t num_points = pointcloud.points.size();
-
-        pointcloud.msg.header.stamp = now();
-        pointcloud.msg.header.frame_id = get_name();
-
-        pointcloud.msg.height = 1;
-        pointcloud.msg.width = num_points;
-        pointcloud.msg.is_dense = false;
-        pointcloud.msg.is_bigendian = false;
-
-        sensor_msgs::PointCloud2Modifier modifier(pointcloud.msg);
-        modifier.setPointCloud2FieldsByString(2, "xyz", "rgb");
-        modifier.resize(num_points);
-
-        sensor_msgs::PointCloud2Iterator<float> iter_x(pointcloud.msg, "x");
-        sensor_msgs::PointCloud2Iterator<float> iter_y(pointcloud.msg, "y");
-        sensor_msgs::PointCloud2Iterator<float> iter_z(pointcloud.msg, "z");
-
-        sensor_msgs::PointCloud2Iterator<uint8_t> iter_r(pointcloud.msg, "r");
-        sensor_msgs::PointCloud2Iterator<uint8_t> iter_g(pointcloud.msg, "g");
-        sensor_msgs::PointCloud2Iterator<uint8_t> iter_b(pointcloud.msg, "b");
-
-        for (size_t i = 0; i < num_points; ++i)
-        {
-          const rs2::vertex& v = vertices[i];
-          const rs2::texture_coordinate& t = tex_coords[i];
-
-          if (v.z <= 0.f || !std::isfinite(v.z))
-          {
-            *iter_x = *iter_y = *iter_z = std::numeric_limits<float>::quiet_NaN();
-            *iter_r = *iter_g = *iter_b = 0;
-          }
-          else
-          {
-            *iter_x = v.x;
-            *iter_y = v.y;
-            *iter_z = v.z;
-
-            int u = std::min(std::max(int(t.u * color_frame.get_width()), 0),
-                            (int)color_frame.get_width() - 1);
-            int v_px = std::min(std::max(int(t.v * color_frame.get_height()), 0),
-                                (int)color_frame.get_height() - 1);
-
-            int idx = (v_px * color_frame.get_width() + u) * 3;
-
-            *iter_b = color_data[idx + 0];
-            *iter_g = color_data[idx + 1];
-            *iter_r = color_data[idx + 2];
-          }
-
-          ++iter_x; ++iter_y; ++iter_z;
-          ++iter_r; ++iter_g; ++iter_b;
+      pointcloud.mutex.lock();
+      if (pointcloud.working == false)
+      {
+        pointcloud.available = true;
+        pointcloud.frameset = frames;
+        pointcloud.interval_i = 0;
       }
-
-      pointcloud.publisher->publish(pointcloud.msg);
+      pointcloud.mutex.unlock();
     }
-
-    pointcloud.interval_i = (pointcloud.interval_i + 1) % pointcloud.interval;
   }
 
+  pointcloud.thread.join();
   capture.pipeline.stop();
   RCLCPP_INFO(get_logger(), "Closed camera");
 

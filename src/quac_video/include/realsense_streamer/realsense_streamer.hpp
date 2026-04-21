@@ -6,6 +6,8 @@
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <gst/gst.h>
 #include <gst/app/gstappsrc.h>
+#include <thread>
+#include <mutex>
 
 class RealsenseStreamer : public rclcpp::Node
 {
@@ -14,6 +16,8 @@ public:
 
   void ip_callback(const std_msgs::msg::String::SharedPtr msg);
   void run();
+
+  void pointcloud_loop();
 
   struct
   {
@@ -55,6 +59,13 @@ public:
 
   struct
   {
+    std::thread thread;
+    
+    std::mutex mutex;
+    rs2::frameset frameset;
+    bool available;
+    bool working;
+
     int interval;
     int interval_i;
 
