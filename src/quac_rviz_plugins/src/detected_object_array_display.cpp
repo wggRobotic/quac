@@ -1,58 +1,103 @@
 #include <quac_rviz_plugins/detected_object_array_display.hpp>
-#include <rviz_common/properties/parse_color.hpp>
 #include <rviz_common/logging.hpp>
+#include <rviz_common/properties/parse_color.hpp>
 
 namespace quac_rviz_plugins
 {
 
-using rviz_common::properties::StatusProperty;
-
 void DetectedObjectArrayDisplay::onInitialize()
 {
   MFDClass::onInitialize();
-  point_shape =
-    std::make_unique<rviz_rendering::Shape>(rviz_rendering::Shape::Type::Cube, scene_manager_,
-      scene_node_);
+  size_property = std::make_unique<rviz_common::properties::FloatProperty>(
+    "size",
+    0.2f,
+    "Size of the spheres",
+    this,
+    SLOT(updateStyle())
+  );
+  color_property = std::make_unique<rviz_common::properties::ColorProperty>("color", QColor(36, 64, 142), "Color to draw the sqheres.", this, SLOT(updateStyle()));
+}
 
-  color_property = std::make_unique<rviz_common::properties::ColorProperty>(
-      "Point Color", QColor(36, 64, 142), "Color to draw the point.", this, SLOT(updateStyle()));
-  updateStyle();
+void DetectedObjectArrayDisplay::clearVisuals()
+{
+
+  for (auto & vis : visuals) {
+    if (vis.label && vis.label_node) {
+      vis.label_node->detachObject(vis.label.get());
+    }
+  }
+  visuals.clear();
+  scene_node_->removeAndDestroyAllChildren();
+}
+
+void DetectedObjectArrayDisplay::onDisable()
+{
+  clearVisuals();
+  MFDClass::onDisable();
+}
+
+DetectedObjectArrayDisplay::~DetectedObjectArrayDisplay()
+{
+  if (scene_manager_) {
+    clearVisuals();
+  }
 }
 
 void DetectedObjectArrayDisplay::processMessage(const quac_interfaces::msg::DetectedObjectArray::ConstSharedPtr msg)
 {
-  RVIZ_COMMON_LOG_INFO_STREAM("We got a message with frame " << msg->header.frame_id);
+  clearVisuals();
 
-  Ogre::Vector3 position;
-  Ogre::Quaternion orientation;
-  if (!context_->getFrameManager()->getTransform(msg->header, position, orientation)) {
-    RVIZ_COMMON_LOG_DEBUG_STREAM("Error transforming from frame '" << msg->header.frame_id <<
-        "' to frame '" << qPrintable(fixed_frame_) << "'");
+  for (const auto & obj : msg->objects) {
+    Ogre::Vector3 position;
+    Ogre::Quaternion orientation;
+
+    if (!context_->getFrameManager()->transform(
+        msg->header, obj.pose, position, orientation))
+    {
+      continue;
+    }
+
+    ObjectVisual vis;
+
+    vis.node = scene_node_->createChildSceneNode();
+    vis.node->setPosition(position);
+    vis.node->setOrientation(orientation);
+    
+    vis.sphere = std::make_unique<rviz_rendering::Shape>(
+      rviz_rendering::Shape::Type::Sphere,
+      scene_manager_,
+      vis.node);
+
+    vis.label_node = vis.node->createChildSceneNode();
+    vis.label = std::make_unique<rviz_rendering::MovableText>(obj.name);
+    vis.label_node->attachObject(vis.label.get());
+
+    visuals.push_back(std::move(vis));
   }
 
-  scene_node_->setPosition(position);
-  scene_node_->setOrientation(orientation);
-
-  if (msg->objects[0].pose.position.x < 0) {
-    setStatus(StatusProperty::Warn, "Message",
-        "I will complain about points with negative x values.");
-  } else {
-    setStatus(StatusProperty::Ok, "Message", "OK");
-  }
-
-  Ogre::Vector3 point_pos;
-  point_pos.x = msg->objects[0].pose.position.x;
-  point_pos.y = msg->objects[0].pose.position.y;
-  point_shape->setPosition(point_pos);
+  updateStyle();
 }
 
 void DetectedObjectArrayDisplay::updateStyle()
 {
+  if (!size_property || !color_property) return;
+
+  float size = size_property->getFloat();
   Ogre::ColourValue color = rviz_common::properties::qtToOgre(color_property->getColor());
-  point_shape->setColor(color);
+
+  for (auto & vis : visuals) {
+    if (vis.sphere) {
+      vis.sphere->setScale(Ogre::Vector3(size, size, size));
+      vis.sphere->setColor(color);
+      vis.label_node->setPosition(Ogre::Vector3(0.0f, 0.0f, size));
+      vis.label->setCharacterHeight(size);
+    }
+  }
 }
 
 }
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(quac_rviz_plugins::DetectedObjectArrayDisplay, rviz_common::Display)
+PLUGINLIB_EXPORT_CLASS(
+  quac_rviz_plugins::DetectedObjectArrayDisplay,
+  rviz_common::Display)
