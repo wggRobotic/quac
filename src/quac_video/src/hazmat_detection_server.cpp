@@ -83,9 +83,9 @@ void HazmatDetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::Shar
     int u = results[j].box.x + results[j].box.width / 2;
     int v = results[j].box.y + results[j].box.height / 2;
 
-    object.pose.position.x = ((float)msg->depth_data[v * msg->width + u]) * msg->depth_scale;
-    object.pose.position.y = (u - msg->ppx) * object.pose.position.x / msg->fx;
-    object.pose.position.z = (v - msg->ppy) * object.pose.position.x / msg->fy;
+    object.pose.position.z = ((float)msg->depth_data[v * msg->width + u]) * msg->depth_scale;
+    object.pose.position.x = (u - msg->ppx) * object.pose.position.z / msg->fx;
+    object.pose.position.y = (v - msg->ppy) * object.pose.position.z / msg->fy;
 
     object_msg.objects.push_back(object);
   }

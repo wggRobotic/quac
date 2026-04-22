@@ -27,9 +27,9 @@ quac:
           key_int_max: 10
 
       pointcloud:
-        interval: 6
-      image:
         interval: 10
+      image:
+        interval: 6
         
 
       
