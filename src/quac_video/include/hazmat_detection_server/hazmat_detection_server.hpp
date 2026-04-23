@@ -1,5 +1,6 @@
 #include "detection_server/detection_server.hpp"
 
+#include <filesystem>
 #include "yolos/tasks/detection.hpp"
 
 class HazmatDetectionServer : public DetectionServer

@@ -1,10 +1,17 @@
-#include <rclcpp/rclcpp.hpp>
-#include <cstdlib>
+#include "detection_server/detection_server.hpp"
 
-class QRCodeDetectionServer : public rclcpp::Node
+#include <opencv2/opencv.hpp>
+#include "quirc.h"
+
+class QRCodeDetectionServer : public DetectionServer
 {
 public:
   QRCodeDetectionServer();
 
-  void run();
+  void qrcode_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<detection>& detections);
+  int init();
+  void deinit();
+
+private:
+  std::vector<struct quirc*> detectors;
 };

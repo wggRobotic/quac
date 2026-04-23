@@ -10,58 +10,75 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(pluginlib REQUIRED)
-find_package(controller_interface REQUIRED)
-find_package(hardware_interface REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(trajectory_msgs REQUIRED)
+option(BUILD_CONTROLLERS "Build controllers" OFF)
+option(BUILD_INVERSE_KINEMATICS "Build inverse_kinematics" OFF)
 
-#-----------------------------------------------
-#----------------- controllers -----------------
-#-----------------------------------------------
+if(NOT BUILD_CONTROLLERS AND NOT BUILD_INVERSE_KINEMATICS)
+  set(BUILD_CONTROLLERS ON)
+  set(BUILD_INVERSE_KINEMATICS ON)
+endif()
 
-include_directories(controllers/include controllers/src)
+##################################################
+# controllers
+##################################################
 
-add_library(quac_controllers SHARED
-  controllers/src/wheel_monitor/wheel_monitor.cpp
-)
+if(BUILD_CONTROLLERS)
 
-ament_target_dependencies(quac_controllers
-  rclcpp
-  pluginlib
-  std_msgs
-  controller_interface
-)
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(std_msgs REQUIRED)
+  find_package(pluginlib REQUIRED)
+  find_package(controller_interface REQUIRED)
 
-ament_export_libraries(
-  quac_controllers
-)
+  include_directories(controllers/include controllers/src)
 
-install(TARGETS quac_controllers
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
+  add_library(quac_controllers SHARED
+    controllers/src/wheel_monitor/wheel_monitor.cpp
+  )
 
-install(FILES controllers/quac_controllers.xml
-  DESTINATION share/${PROJECT_NAME}
-)
+  ament_target_dependencies(quac_controllers
+    rclcpp
+    pluginlib
+    std_msgs
+    controller_interface
+  )
 
-pluginlib_export_plugin_description_file(controller_interface controllers/quac_controllers.xml)
+  ament_export_libraries(
+    quac_controllers
+  )
 
-#-----------------------------------------
-#----------------- nodes -----------------
-#--------------------------------------------
+  install(TARGETS quac_controllers
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
 
-add_executable(ik_node nodes/src/ik_node.cpp)
-ament_target_dependencies(ik_node rclcpp geometry_msgs trajectory_msgs std_msgs)
+  install(FILES controllers/quac_controllers.xml
+    DESTINATION share/${PROJECT_NAME}
+  )
 
-install(TARGETS
-  ik_node
-  DESTINATION lib/${PROJECT_NAME})
+  pluginlib_export_plugin_description_file(controller_interface controllers/quac_controllers.xml)
 
-# amen_package
+endif()
+
+##################################################
+# inverse_kinematics
+##################################################
+
+if(BUILD_CONTROLLERS)
+
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(std_msgs REQUIRED)
+  find_package(geometry_msgs REQUIRED)
+  find_package(trajectory_msgs REQUIRED)
+
+  add_executable(ik_node nodes/src/ik_node.cpp)
+  ament_target_dependencies(ik_node rclcpp geometry_msgs trajectory_msgs std_msgs)
+
+  install(TARGETS
+    ik_node
+    DESTINATION lib/${PROJECT_NAME})
+endif()
+
 ament_package()

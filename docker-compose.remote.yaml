@@ -1,0 +1,62 @@
+services:
+
+#video
+  realsense_streamer_front:
+    image: ghcr.io/wggrobotic/realsense-streamer:stable
+    build: null
+
+  realsense_streamer_back:
+    image: ghcr.io/wggrobotic/realsense-streamer:stable
+    build: null
+
+  qrcode_detection_server:
+    image: ghcr.io/wggrobotic/qrcode-detection-server:stable
+    build: null
+
+  hazmat_detection_server:
+    image: ghcr.io/wggrobotic/hazmat-detection-server:stable
+    build: null
+
+  control:
+    image: ghcr.io/wggrobotic/quac-control:stable
+    build: null
+
+  inverse_kinematics:
+    image: ghcr.io/wggrobotic/quac_control:stable
+    build: null
+
+  rsp:
+    image: ghcr.io/wggrobotic/quac_rsp:stable
+    build: null
+
+  twist_mux:
+    image: ghcr.io/wggrobotic/quac_twist-mux:stable
+    build: null
+
+  lidar:
+    image: ghcr.io/wggrobotic/quac_lidar:stable
+    build: null
+
+  sensors:
+    image: ghcr.io/wggrobotic/quac_sensors:stable
+    build: null
+
+  nav2:
+    image: ghcr.io/wggrobotic/quac_nav2:stable
+    build: null
+
+  slam_toolbox:
+    image: ghcr.io/wggrobotic/quac_slam_toolbox:stable
+    build: null
+
+  ohm_slam:
+    image: ghcr.io/wggrobotic/quac_ohm_slam:stable
+    build: null
+
+  gazebo:
+    image: ghcr.io/wggrobotic/quac_gazebo:stable
+    build: null
+
+  rviz:
+    image: ghcr.io/wggrobotic/quac_rviz:stable
+    build: null

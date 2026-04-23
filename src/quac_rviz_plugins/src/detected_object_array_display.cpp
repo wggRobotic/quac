@@ -69,7 +69,7 @@ void DetectedObjectArrayDisplay::processMessage(const quac_interfaces::msg::Dete
       vis.node);
 
     vis.label_node = vis.node->createChildSceneNode();
-    vis.label = std::make_unique<rviz_rendering::MovableText>(obj.name);
+    vis.label = std::make_unique<rviz_rendering::MovableText>(obj.name + "\n" + obj.data);
     vis.label_node->attachObject(vis.label.get());
 
     visuals.push_back(std::move(vis));
@@ -89,7 +89,7 @@ void DetectedObjectArrayDisplay::updateStyle()
     if (vis.sphere) {
       vis.sphere->setScale(Ogre::Vector3(size, size, size));
       vis.sphere->setColor(color);
-      vis.label_node->setPosition(Ogre::Vector3(0.0f, 0.0f, size));
+      vis.label_node->setPosition(Ogre::Vector3(0.0f, 0.0f, 2.5f * size));
       vis.label->setCharacterHeight(size);
     }
   }

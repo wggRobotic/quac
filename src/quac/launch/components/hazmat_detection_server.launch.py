@@ -15,6 +15,7 @@ def generate_launch_description():
             output='screen',
             remappings=[
                 ('/tf', 'tf'),
+                ('/tf_static', 'tf_static'),
             ],
             parameters=[
                 os.path.join(package_dir, 'config', 'detection_servers.yaml'),

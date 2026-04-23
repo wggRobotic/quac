@@ -1,7 +1,11 @@
 #include "hazmat_detection_server/hazmat_detection_server.hpp"
 #include <mutex>
 
-HazmatDetectionServer::HazmatDetectionServer() : DetectionServer("hazmat_detection_server")
+HazmatDetectionServer::HazmatDetectionServer() : DetectionServer(
+  "hazmat_detection_server", 
+  "hazmat_signs",
+  std::bind(&HazmatDetectionServer::hazmat_detection_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
+)
 {
   declare_parameter<std::string>("model_path", "model");
   model_path = get_parameter("model_path").as_string();
@@ -47,10 +51,15 @@ void HazmatDetectionServer::hazmat_detection_callback(const quac_interfaces::msg
   for (int j = 0; j < results.size(); j++)
   {
     detection d;
-    d.x = results[j].box.x;
-    d.y = results[j].box.y;
-    d.width = results[j].box.width;
-    d.height = results[j].box.height;
+    d.corners[0].x = results[j].box.x;
+    d.corners[0].y = results[j].box.y;
+    d.corners[1].x = results[j].box.x + results[j].box.width;
+    d.corners[1].y = results[j].box.y;
+    d.corners[2].x = results[j].box.x + results[j].box.width;
+    d.corners[2].y = results[j].box.y + results[j].box.height;
+    d.corners[3].x = results[j].box.x;
+    d.corners[3].y = results[j].box.y + results[j].box.height;
+    
     d.data = detectors[i]->getClassNames()[results[j].classId];
 
     detections.push_back(d);
