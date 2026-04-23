@@ -147,6 +147,7 @@ ament_target_dependencies(realsense_streamer
 # hazmat_detection_server
 
 add_executable(hazmat_detection_server
+  src/detection_server.cpp
   src/hazmat_detection_server.cpp
 )
 
