@@ -132,7 +132,7 @@ endif()
 # hazmat_detection_server
 ##################################################
 
-if(BUILD_QRCODE_DETECTION_SERVER)
+if(BUILD_HAZMAT_DETECTION_SERVER)
 
   enable_language(CUDA)
   set(CMAKE_CUDA_STANDARD 17)

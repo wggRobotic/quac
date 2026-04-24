@@ -10,4 +10,4 @@ COPY ./src/quac_hardware src/quac_hardware
 RUN . /opt/ros/humble/setup.bash && colcon build
 
 COPY ./src/quac_control src/quac_control
-RUN . /opt/ros/humble/setup.bash && colcon build  --cmake-args -DBUILD_CONTROLLERS
+RUN . /opt/ros/humble/setup.bash && colcon build --cmake-args -DBUILD_CONTROLLERS=ON

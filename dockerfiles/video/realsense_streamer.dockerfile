@@ -9,6 +9,7 @@ RUN apt update && apt-get install -y \
     libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev \
     libxcursor-dev libxi-dev libudev-dev libv4l-dev \
     libusb-1.0-0-dev libssl-dev freeglut3-dev mesa-utils mesa-common-dev
+RUN apt install libopencv-dev build-essential -y
 
 RUN git clone https://github.com/realsenseai/librealsense.git
 WORKDIR /workspace/librealsense/build
@@ -40,5 +41,6 @@ RUN apt install -y ros-humble-rmw-cyclonedds-cpp
 WORKDIR /quac
 
 COPY ./src/quac_interfaces /quac/src/quac_interfaces
+RUN . /opt/ros/humble/setup.bash && colcon build
 COPY ./src/quac_video /quac/src/quac_video
-RUN . /opt/ros/humble/setup.bash && colcon build --cmake-args -DBUILD_REALSENSE_STREAMER=ON
+RUN . /opt/ros/humble/setup.bash && . /quac/install/setup.bash && colcon build --cmake-args -DBUILD_REALSENSE_STREAMER=ON

@@ -10,4 +10,4 @@ RUN apt install -y ros-humble-ros2-controllers ros-humble-xacro
 WORKDIR /quac
 
 COPY ./src/quac_control /quac/src/quac_control
-RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_control
+RUN . /opt/ros/humble/setup.bash && colcon build --cmake-args -DBUILD_CONTROLLERS=ON

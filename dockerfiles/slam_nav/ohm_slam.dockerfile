@@ -3,6 +3,7 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /quac
 
 RUN apt update
+RUN apt update
 RUN apt install -y ros-humble-rmw-cyclonedds-cpp
 RUN apt install -y git libgsl-dev libann-dev libflann-dev libboost-thread-dev liblz4-dev
 RUN apt install -y ros-humble-opennav-docking

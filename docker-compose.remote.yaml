@@ -1,73 +1,55 @@
 services:
 
   realsense_streamer_front:
-    build: null
     image: ghcr.io/wggrobotic/quac-realsense-streamer:stable
 
   realsense_streamer_back:
-    build: null
     image: ghcr.io/wggrobotic/quac-realsense-streamer:stable
 
   qrcode_detection_server:
-    build: null
     image: ghcr.io/wggrobotic/quac-qrcode-detection_server:stable
 
   hazmat_detection_server:
-    build: null
     image: ghcr.io/wggrobotic/quac-hazmat-detection_server:stable
 
   control:
-    build: null
     image: ghcr.io/wggrobotic/quac-control:stable
 
   inverse_kinematics:
-    build: null
     image: ghcr.io/wggrobotic/quac-inverse-kinematics:stable
 
   rsp:
-    build: null
     image: ghcr.io/wggrobotic/quac-rsp:stable
 
   twist_mux:
-    build: null
     image: ghcr.io/wggrobotic/quac-twist-mux:stable
 
   lidar:
-    build: null
     image: ghcr.io/wggrobotic/quac-lidar:stable
 
   sensors:
-    build: null
     image: ghcr.io/wggrobotic/quac-sensors:stable
 
   nav2:
-    build: null
     image: ghcr.io/wggrobotic/quac-nav2:stable
 
   slam_toolbox:
-    build: null
     image: ghcr.io/wggrobotic/quac-slam-toolbox:stable
 
   ohm_slam:
-    build: null
     image: ghcr.io/wggrobotic/quac-ohm-slam:stable
  
   rtabmap:
-    build: null
     image: ghcr.io/wggrobotic/quac-rtabmap:stable
 
   gazebo:
-    build: null
     image: ghcr.io/wggrobotic/quac-gazebo:stable
 
   rviz:
-    build: null
     image: ghcr.io/wggrobotic/quac-rviz:stable
 
   desktop:
-    build: null
     image: ghcr.io/wggrobotic/quac-desktop:stable
 
   debug_shell:
-    build: null
     image: ghcr.io/wggrobotic/quac-debug-shell:stable

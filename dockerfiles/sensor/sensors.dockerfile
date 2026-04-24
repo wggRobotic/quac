@@ -14,4 +14,4 @@ RUN pip3 install 'numpy<2'
 RUN pip3 install Jetson.GPIO
 
 COPY ./src/quac_sensor src/quac_sensor
-RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_sensor
+RUN . /opt/ros/humble/setup.bash && colcon build
