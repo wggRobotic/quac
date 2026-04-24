@@ -5,11 +5,10 @@ cmd=(env)
 [[ " $@ " =~ " -sim "  ]] \
   && cmd+=(SIM_MODE=true)
 
-cmd+=(docker compose -f docker-compose.yaml)
+cmd+=(docker compose)
 
 [[ " $@ " =~ " -remote "    ]] \
-  && cmd+=(-f docker-compose-files.remote.yaml) \
-  || cmd+=(-f docker-compose-files.local.yaml)
+  && cmd+=(-f docker-compose.yaml -f docker-compose.remote.yaml)
 
 cmd+=(up rviz)
 

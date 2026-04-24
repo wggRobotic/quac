@@ -29,11 +29,10 @@ dslam=false
 [[ " $@ " =~ " -dmag "    ]] \
   && cmd+=(DISABLE_MAGNETOMETER=true)
 
-cmd+=(docker compose -f docker-compose.yaml)
+cmd+=(docker compose )
 
 [[ " $@ " =~ " -remote "    ]] \
-  && cmd+=(-f docker-compose-files.remote.yaml) \
-  || cmd+=(-f docker-compose-files.local.yaml)
+  && cmd+=(-f docker-compose.yaml -f docker-compose.remote.yaml)
 
 cmd+=(up rsp twist_mux control inverse_kinematics)
 
@@ -43,11 +42,17 @@ cmd+=(up rsp twist_mux control inverse_kinematics)
 [[ ! " $@ " =~ " -dsen "  ]] \
   && cmd+=(sensors)
 
-([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dcamf " ]]) \
-  && cmd+=(camera_front)
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -drsf " ]]) \
+  && cmd+=(realsense_streamer_front)
 
-([[ ! " $@ " =~ " -dvid " ]] || [[ ! " $@ " =~ " -dcamb " ]]) \
-  && cmd+=(camera_back)
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -drsb " ]]) \
+  && cmd+=(realsense_streamer_back)
+
+  ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dhazmat " ]]) \
+  && cmd+=(hazmat_detection_server)
+
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dqrcode " ]]) \
+  && cmd+=(qrcode_detection_server)
 
 ([[ $dslam == false ]] && [[ ! " $@ " =~ " -dnav " ]]) \
   && cmd+=(nav2)
