@@ -1,62 +1,73 @@
 services:
 
-#video
   realsense_streamer_front:
-    image: ghcr.io/wggrobotic/realsense-streamer:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-realsense-streamer:stable
 
   realsense_streamer_back:
-    image: ghcr.io/wggrobotic/realsense-streamer:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-realsense-streamer:stable
 
   qrcode_detection_server:
-    image: ghcr.io/wggrobotic/qrcode-detection-server:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-qrcode-detection_server:stable
 
   hazmat_detection_server:
-    image: ghcr.io/wggrobotic/hazmat-detection-server:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-hazmat-detection_server:stable
 
   control:
-    image: ghcr.io/wggrobotic/quac-control:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-control:stable
 
   inverse_kinematics:
-    image: ghcr.io/wggrobotic/quac_control:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-inverse-kinematics:stable
 
   rsp:
-    image: ghcr.io/wggrobotic/quac_rsp:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-rsp:stable
 
   twist_mux:
-    image: ghcr.io/wggrobotic/quac_twist-mux:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-twist-mux:stable
 
   lidar:
-    image: ghcr.io/wggrobotic/quac_lidar:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-lidar:stable
 
   sensors:
-    image: ghcr.io/wggrobotic/quac_sensors:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-sensors:stable
 
   nav2:
-    image: ghcr.io/wggrobotic/quac_nav2:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-nav2:stable
 
   slam_toolbox:
-    image: ghcr.io/wggrobotic/quac_slam_toolbox:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-slam-toolbox:stable
 
   ohm_slam:
-    image: ghcr.io/wggrobotic/quac_ohm_slam:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-ohm-slam:stable
+ 
+  rtabmap:
+    build: null
+    image: ghcr.io/wggrobotic/quac-rtabmap:stable
 
   gazebo:
-    image: ghcr.io/wggrobotic/quac_gazebo:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-gazebo:stable
 
   rviz:
-    image: ghcr.io/wggrobotic/quac_rviz:stable
     build: null
+    image: ghcr.io/wggrobotic/quac-rviz:stable
+
+  desktop:
+    build: null
+    image: ghcr.io/wggrobotic/quac-desktop:stable
+
+  debug_shell:
+    build: null
+    image: ghcr.io/wggrobotic/quac-debug-shell:stable

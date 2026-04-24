@@ -19,7 +19,7 @@ class SensorPublisher(Node):
     def __init__(self):
         super().__init__('sensor_publisher')
 
-        i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
+        i2c = busio.I2C(board.SCL, board.SDA)
         self.timer = self.create_timer(0.1, self.publish_sensor)
 
         # imu
@@ -82,7 +82,7 @@ class SensorPublisher(Node):
 
     def publish_thermal_cam(self):
         frame = np.zeros((24*32,), dtype=np.float32)
-        self.sensor.getFrame(frame)
+        self.mlx.getFrame(frame)
         frame = np.reshape(frame, (24, 32))
 
         thermal_image = cv2.normalize(frame, None, 0, 255, cv2.NORM_MINMAX)
@@ -98,11 +98,11 @@ class SensorPublisher(Node):
 
         try:
             if not self.disable_imu:
-                publish_imu()
+                self.publish_imu()
             if not self.disable_magnetometer:
-                publish_magnetometer()
+                self.publish_magnetometer()
             if not self.disable_thermal_cam:
-                publish_thermal_cam()
+                self.publish_thermal_cam()
 
         except OSError as e:
             self.get_logger().error(f'OSError: {e}')
