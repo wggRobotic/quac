@@ -18,14 +18,13 @@ if(NOT BUILD_CONTROLLERS AND NOT BUILD_INVERSE_KINEMATICS)
   set(BUILD_INVERSE_KINEMATICS ON)
 endif()
 
-find_package(ament_cmake REQUIRED)
-
 ##################################################
 # controllers
 ##################################################
 
 if(BUILD_CONTROLLERS)
 
+  find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(std_msgs REQUIRED)
   find_package(pluginlib REQUIRED)
@@ -66,8 +65,9 @@ endif()
 # inverse_kinematics
 ##################################################
 
-if(BUILD_CONTROLLERS)
+if(BUILD_INVERSE_KINEMATICS)
 
+  find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(std_msgs REQUIRED)
   find_package(geometry_msgs REQUIRED)
