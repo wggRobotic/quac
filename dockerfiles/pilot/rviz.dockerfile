@@ -14,4 +14,4 @@ RUN . /opt/ros/humble/setup.bash && colcon build --packages-select realsense2_ca
 
 COPY ./src/quac_interfaces /quac/src/quac_interfaces
 COPY ./src/quac_rviz_plugins /quac/src/quac_rviz_plugins
-RUN . /opt/ros/humble/setup.bash && colcon build
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_interfaces quac_rviz_plugins
