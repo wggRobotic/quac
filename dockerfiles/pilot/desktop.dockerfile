@@ -22,3 +22,6 @@ RUN apt install -y libgstreamer1.0-dev \
     gstreamer1.0-plugins-ugly \
     gstreamer1.0-libav \
     gstreamer1.0-tools
+
+COPY ./src/quac_interfaces /quac/src/quac_interfaces
+RUN . /opt/ros/humble/setup.bash && colcon build

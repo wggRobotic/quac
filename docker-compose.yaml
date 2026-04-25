@@ -4,6 +4,7 @@ x-defaults: &defaults
   volumes:
     - ./quac_trt_engines/docker:/quac_trt_engines
     - ./src/quac:/quac/src/quac:ro
+    - ./docker_setup.sh:/docker_setup.sh:ro
   environment:
     - DISABLE_WHEELS=${DISABLE_WHEELS:-false}
     - DISABLE_ARM=${DISABLE_ARM:-false}
@@ -13,6 +14,8 @@ x-defaults: &defaults
     - SIM_MODE=${SIM_MODE:-false}
     - NVIDIA_VISIBLE_DEVICES=all
     - QUAC_ENGINES_DIR=/quac_trt_engines/
+    - ROS_DOMAIN_ID=187
+    - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 services:
 
@@ -22,20 +25,20 @@ services:
       dockerfile: dockerfiles/video/realsense_streamer.dockerfile
     image: quac_realsense_streamer:dev
     privileged: true
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac realsense_streamer.launch.py camera_name:=camera_front"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac realsense_streamer.launch.py camera_name:=camera_front"
 
   realsense_streamer_back:
     <<: *defaults
     image: quac_realsense_streamer:dev
     privileged: true
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac realsense_streamer.launch.py camera_name:=camera_back"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac realsense_streamer.launch.py camera_name:=camera_back"
 
   qrcode_detection_server:
     <<: *defaults
     build:
       dockerfile: dockerfiles/video/qrcode_detection_server.dockerfile
     image: quac_qrcode_detection_server:dev
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac qrcode_detection_server.launch.py"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac qrcode_detection_server.launch.py"
   
   hazmat_detection_server:
     <<: *defaults
@@ -45,7 +48,7 @@ services:
     runtime: nvidia
     ipc: host
     privileged: true
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac hazmat_detection_server.launch.py"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac hazmat_detection_server.launch.py"
 
   paintroller_detection_server:
     <<: *defaults
@@ -53,7 +56,7 @@ services:
     runtime: nvidia
     ipc: host
     privileged: true
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac paintroller_detection_server.launch.py"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac paintroller_detection_server.launch.py"
 
   control:
     <<: *defaults
@@ -63,28 +66,28 @@ services:
     devices:
       - ${WHEELS_DEVICE:-/dev/null}:${WHEELS_DEVICE:-/dev/null}
       - ${ARM_DEVICE:-/dev/null}:${ARM_DEVICE:-/dev/null}
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac control.launch.py"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac control.launch.py"
 
   inverse_kinematics:
     <<: *defaults
     build:
       dockerfile: dockerfiles/control/inverse_kinematics.dockerfile
     image: quac_inverse_kinematics:dev
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac inverse_kinematics.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac inverse_kinematics.launch.py sim_mode:=${SIM_MODE:-false}"
 
   rsp:
     <<: *defaults
     build:
       dockerfile: dockerfiles/control/rsp.dockerfile
     image: quac_rsp:dev
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false} sim_mode:=${SIM_MODE:-false}"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false} sim_mode:=${SIM_MODE:-false}"
 
   twist_mux:
     <<: *defaults
     build:
       dockerfile: dockerfiles/control/twist_mux.dockerfile
     image: quac_twist_mux:dev
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac twist_mux.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac twist_mux.launch.py sim_mode:=${SIM_MODE:-false}"
 
   lidar:
     <<: *defaults
@@ -93,7 +96,7 @@ services:
     image: quac_lidar:dev
     devices:
       - /dev/quac/lidar_uart:/dev/quac/lidar_uart
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac lidar.launch.py"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac lidar.launch.py"
 
   sensors:
     <<: *defaults
@@ -101,35 +104,35 @@ services:
       dockerfile: dockerfiles/sensor/sensors.dockerfile
     image: quac_sensors:dev
     privileged: true
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac sensors.launch.py disable_thermal_cam:=${DISABLE_THERMAL_CAM:-false} disable_imu:=${DISABLE_IMU:-false} disable_magnetometer:=${DISABLE_MAGNETOMETER:-false}"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac sensors.launch.py disable_thermal_cam:=${DISABLE_THERMAL_CAM:-false} disable_imu:=${DISABLE_IMU:-false} disable_magnetometer:=${DISABLE_MAGNETOMETER:-false}"
 
   nav2:
     <<: *defaults
     build:
       dockerfile: dockerfiles/slam_nav/nav2.dockerfile
     image: quac_nav2:dev
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac nav2.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac nav2.launch.py sim_mode:=${SIM_MODE:-false}"
 
   slam_toolbox:
     <<: *defaults
     build:
       dockerfile: dockerfiles/slam_nav/slam_toolbox.dockerfile
     image: quac_slam_toolbox:dev
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac slam_toolbox.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac slam_toolbox.launch.py sim_mode:=${SIM_MODE:-false}"
 
   ohm_slam:
     <<: *defaults
     build:
       dockerfile: dockerfiles/slam_nav/ohm_slam.dockerfile
     image: quac_ohm_slam:dev
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac ohm_slam.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac ohm_slam.launch.py sim_mode:=${SIM_MODE:-false}"
 
   rtabmap:
     <<: *defaults
     build:
       dockerfile: dockerfiles/slam_nav/rtabmap.dockerfile
     image: quac_rtabmap:dev
-    #command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rtabmap.launch.py sim_mode:=${SIM_MODE:-false}"
+    #command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac rtabmap.launch.py sim_mode:=${SIM_MODE:-false}"
 
   gazebo:
     <<: *defaults
@@ -139,12 +142,14 @@ services:
     environment:
       - DISPLAY=${DISPLAY:-null}
       - QT_X11_NO_MITSHM=1
+      - ROS_DOMAIN_ID=187
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
     devices:
       - /dev/dri:/dev/dri
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac gazebo.launch.py"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac gazebo.launch.py"
 
   rviz:
     <<: *defaults
@@ -154,12 +159,14 @@ services:
     environment:
       - DISPLAY=${DISPLAY:-null}
       - QT_X11_NO_MITSHM=1
+      - ROS_DOMAIN_ID=187
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
     devices:
       - /dev/dri:/dev/dri
-    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac rviz.launch.py"
+    command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac rviz.launch.py"
 
   desktop:
     <<: *defaults
@@ -169,14 +176,18 @@ services:
     environment:
       - DISPLAY=${DISPLAY:-null}
       - QT_X11_NO_MITSHM=1
+      - ROS_DOMAIN_ID=187
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
     devices:
       - /dev/dri:/dev/dri
+    entrypoint: /bin/bash -c ". /docker_setup.sh"
 
   debug_shell:
     <<: *defaults
     build:
       dockerfile: dockerfiles/control/debug_shell.dockerfile
     image: quac_debug_shell:dev
+    entrypoint: /bin/bash -c ". /docker_setup.sh"
