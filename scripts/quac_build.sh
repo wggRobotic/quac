@@ -9,6 +9,7 @@ realsense_streamer_front \
 realsense_streamer_back \
 qrcode_detection_server \
 hazmat_detection_server \
+paintroller_detection_server \
 control \
 inverse_kinematics \
 rsp \

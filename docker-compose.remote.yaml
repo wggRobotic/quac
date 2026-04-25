@@ -10,7 +10,10 @@ services:
     image: ghcr.io/wggrobotic/quac-qrcode-detection_server:stable
 
   hazmat_detection_server:
-    image: ghcr.io/wggrobotic/quac-hazmat-detection_server:stable
+    image: ghcr.io/wggrobotic/quac-yolo-detection_server:stable
+
+  paintroller_detection_server:
+    image: ghcr.io/wggrobotic/quac-yolo-detection_server:stable
 
   control:
     image: ghcr.io/wggrobotic/quac-control:stable
@@ -41,15 +44,6 @@ services:
  
   rtabmap:
     image: ghcr.io/wggrobotic/quac-rtabmap:stable
-
-  gazebo:
-    image: ghcr.io/wggrobotic/quac-gazebo:stable
-
-  rviz:
-    image: ghcr.io/wggrobotic/quac-rviz:stable
-
-  desktop:
-    image: ghcr.io/wggrobotic/quac-desktop:stable
 
   debug_shell:
     image: ghcr.io/wggrobotic/quac-debug-shell:stable

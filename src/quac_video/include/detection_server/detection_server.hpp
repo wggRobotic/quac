@@ -36,7 +36,7 @@ using DetectionCallback = std::function<void(
 class DetectionServer : public rclcpp::Node
 {
 public:
-  DetectionServer(const std::string& name, const std::string& topic_name, DetectionCallback callback);
+  DetectionServer(const std::string& name, DetectionCallback callback);
 
   void run();
   void image_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i);
@@ -60,6 +60,6 @@ protected:
     std::string reference_frame;
   } mapping;
 
-  std::vector<std::string> topics;
   std::vector<std::string> camera_frames;
+  std::string topic_name;
 };

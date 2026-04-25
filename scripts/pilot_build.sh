@@ -1,10 +1,4 @@
-cmd=(docker compose)
-
-[[ " $@ " =~ " -remote "    ]] \
-  && cmd+=(-f docker-compose.yaml -f docker-compose.remote.yaml)
-
-cmd+=(
-build \
+cmd=(docker compose build \
 inverse_kinematics \
 rsp \
 twist_mux \
@@ -14,6 +8,5 @@ ohm_slam \
 gazebo \
 rviz
 )
-
 
 "${cmd[@]}"

@@ -14,12 +14,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(BUILD_REALSENSE_STREAMER "Build realsense_streamer" OFF)
 option(BUILD_QRCODE_DETECTION_SERVER "Build qrcode_detection_server" OFF)
-option(BUILD_HAZMAT_DETECTION_SERVER "Build hazmat_detection_server" OFF)
+option(BUILD_YOLO_DETECTION_SERVER "Build yolo_detection_server" OFF)
 
-if(NOT BUILD_REALSENSE_STREAMER AND NOT BUILD_QRCODE_DETECTION_SERVER AND NOT BUILD_HAZMAT_DETECTION_SERVER)
+if(NOT BUILD_REALSENSE_STREAMER AND NOT BUILD_QRCODE_DETECTION_SERVER AND NOT BUILD_YOLO_DETECTION_SERVER)
   set(BUILD_REALSENSE_STREAMER ON)
   set(BUILD_QRCODE_DETECTION_SERVER ON)
-  set(BUILD_HAZMAT_DETECTION_SERVER ON)
+  set(BUILD_YOLO_DETECTION_SERVER ON)
 endif()
 
 ##################################################
@@ -129,10 +129,10 @@ if(BUILD_QRCODE_DETECTION_SERVER)
 endif()
 
 ##################################################
-# hazmat_detection_server
+# yolo_detection_server
 ##################################################
 
-if(BUILD_HAZMAT_DETECTION_SERVER)
+if(BUILD_YOLO_DETECTION_SERVER)
 
   enable_language(CUDA)
   set(CMAKE_CUDA_STANDARD 17)
@@ -199,12 +199,12 @@ if(BUILD_HAZMAT_DETECTION_SERVER)
   find_package(tf2_geometry_msgs REQUIRED)
   find_package(quac_interfaces REQUIRED)
 
-  add_executable(hazmat_detection_server
+  add_executable(yolo_detection_server
     src/detection_server.cpp
-    src/hazmat_detection_server.cpp
+    src/yolo_detection_server.cpp
   )
 
-  target_include_directories(hazmat_detection_server PRIVATE
+  target_include_directories(yolo_detection_server PRIVATE
     ${CUDA_INCLUDE_DIRS}
     ${OPENCV_INCLUDE_DIRS}
     ${TENSORRT_INCLUDE_DIR}
@@ -212,7 +212,7 @@ if(BUILD_HAZMAT_DETECTION_SERVER)
     YOLOs-CPP-TensorRT/include
   )
 
-  target_link_libraries(hazmat_detection_server
+  target_link_libraries(yolo_detection_server
     ${CUDA_LIBRARIES}
     ${OpenCV_LIBS}
     nvinfer
@@ -220,7 +220,7 @@ if(BUILD_HAZMAT_DETECTION_SERVER)
     cuda_preprocessing
   )
 
-  ament_target_dependencies(hazmat_detection_server
+  ament_target_dependencies(yolo_detection_server
     rclcpp
     quac_interfaces
     geometry_msgs
@@ -230,15 +230,15 @@ if(BUILD_HAZMAT_DETECTION_SERVER)
   )
 
   if(NVONNXPARSER_LIB)
-    target_link_libraries(hazmat_detection_server ${NVONNXPARSER_LIB})
+    target_link_libraries(yolo_detection_server ${NVONNXPARSER_LIB})
   endif()
 
-  target_link_options(hazmat_detection_server PRIVATE
+  target_link_options(yolo_detection_server PRIVATE
     -Wl,--allow-shlib-undefined
   )
 
   install(
-    TARGETS hazmat_detection_server
+    TARGETS yolo_detection_server
     DESTINATION lib/${PROJECT_NAME}
   )
 

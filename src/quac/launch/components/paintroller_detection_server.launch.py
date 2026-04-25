@@ -11,7 +11,7 @@ def generate_launch_description():
         Node(
             package='quac_video',
             executable='yolo_detection_server',
-            name='hazmat_detection_server',
+            name='paintroller_detection_server',
             namespace='quac',
             output='screen',
             remappings=[
@@ -21,9 +21,9 @@ def generate_launch_description():
             parameters=[
                 os.path.join(package_dir, 'config', 'detection_servers.yaml'),
                 {
-                    'engine_path': os.path.join(os.environ.get('QUAC_ENGINES_DIR', '/null/'), 'hazmat_yolo26.engine'),
-                    'model_path': os.path.join(package_dir, 'models/hazmat_yolo26.onnx'),
-                    'labels_path': os.path.join(package_dir, 'models/hazmat_yolo26.labels.txt'),
+                    'engine_path': os.path.join(os.environ.get('QUAC_ENGINES_DIR', '/null/'), 'paintroller_yolo11.engine'),
+                    'model_path': os.path.join(package_dir, 'models/paintroller_yolo11.onnx'),
+                    'labels_path': os.path.join(package_dir, 'models/paintroller_yolo11.labels.txt'),
                 },
             ]
         )

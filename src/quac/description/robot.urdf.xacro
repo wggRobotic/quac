@@ -5,6 +5,7 @@
 
     <xacro:include filename="urdf/inertial_macros.xacro" />
     <xacro:include filename="urdf/servo.xacro" />
+    <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro" />
 
     <xacro:include filename="urdf/chassis.xacro" />
     <xacro:include filename="urdf/wheels.xacro" />

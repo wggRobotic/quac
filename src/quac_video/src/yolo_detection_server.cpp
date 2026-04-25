@@ -1,10 +1,9 @@
-#include "hazmat_detection_server/hazmat_detection_server.hpp"
+#include "yolo_detection_server/yolo_detection_server.hpp"
 #include <mutex>
 
-HazmatDetectionServer::HazmatDetectionServer() : DetectionServer(
-  "hazmat_detection_server", 
-  "hazmat_signs",
-  std::bind(&HazmatDetectionServer::hazmat_detection_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
+YOLODetectionServer::YOLODetectionServer() : DetectionServer(
+  "yolo_detection_server", 
+  std::bind(&YOLODetectionServer::yolo_detection_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
 )
 {
   declare_parameter<std::string>("model_path", "model");
@@ -15,9 +14,10 @@ HazmatDetectionServer::HazmatDetectionServer() : DetectionServer(
 
   declare_parameter<std::string>("labels_path", "labels");
   labels_path = get_parameter("labels_path").as_string();
+
 }
 
-int HazmatDetectionServer::init()
+int YOLODetectionServer::init()
 {
   if (std::filesystem::exists(engine_path) == false)
   {
@@ -42,7 +42,7 @@ int HazmatDetectionServer::init()
   return 0;
 }
 
-void HazmatDetectionServer::hazmat_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<detection>& detections)
+void YOLODetectionServer::yolo_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<detection>& detections)
 {
   cv::Mat image(msg->height, msg->width, CV_8UC3, (void*)msg->bgr_data.data());
   std::vector<yolos::det::Detection> results = detectors[i]->detect(image);
@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
 
-  auto node = std::make_shared<HazmatDetectionServer>();
+  auto node = std::make_shared<YOLODetectionServer>();
   if (node->init() == 0) rclcpp::spin(node);
   
   rclcpp::shutdown();

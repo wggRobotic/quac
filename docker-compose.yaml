@@ -2,20 +2,17 @@ x-defaults: &defaults
   stop_signal: SIGINT
   network_mode: "host"
   volumes:
-    - quac_trt_engines:/quac_trt_engines
+    - ./quac_trt_engines/docker:/quac_trt_engines
     - ./src/quac:/quac/src/quac:ro
   environment:
-    - DISABLE_WHEELS=${DISABLE_WHEELS}
-    - DISABLE_ARM=${DISABLE_ARM}
-    - DISABLE_THERMAL_CAM=${DISABLE_THERMAL_CAM}
-    - DISABLE_IMU=${DISABLE_IMU}
-    - DISABLE_MAGNETOMETER=${DISABLE_MAGNETOMETER}
+    - DISABLE_WHEELS=${DISABLE_WHEELS:-false}
+    - DISABLE_ARM=${DISABLE_ARM:-false}
+    - DISABLE_THERMAL_CAM=${DISABLE_THERMAL_CAM:-false}
+    - DISABLE_IMU=${DISABLE_IMU:-false}
+    - DISABLE_MAGNETOMETER=${DISABLE_MAGNETOMETER:-false}
+    - SIM_MODE=${SIM_MODE:-false}
     - NVIDIA_VISIBLE_DEVICES=all
     - QUAC_ENGINES_DIR=/quac_trt_engines/
-    - SIM_MODE=${SIM_MODE}
-
-volumes:
-  quac_trt_engines:
 
 services:
 
@@ -43,9 +40,20 @@ services:
   hazmat_detection_server:
     <<: *defaults
     build:
-      dockerfile: dockerfiles/video/hazmat_detection_server.dockerfile
-    image: quac_hazmat_detection_server:dev
+      dockerfile: dockerfiles/video/yolo_detection_server.dockerfile
+    image: quac_yolo_detection_server:dev
+    runtime: nvidia
+    ipc: host
+    privileged: true
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac hazmat_detection_server.launch.py"
+
+  paintroller_detection_server:
+    <<: *defaults
+    image: quac_yolo_detection_server:dev
+    runtime: nvidia
+    ipc: host
+    privileged: true
+    command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac paintroller_detection_server.launch.py"
 
   control:
     <<: *defaults
@@ -53,8 +61,8 @@ services:
       dockerfile: dockerfiles/control/control.dockerfile
     image: quac_control:dev
     devices:
-      - ${WHEELS_DEVICE}:${WHEELS_DEVICE}
-      - ${ARM_DEVICE}:${ARM_DEVICE}
+      - ${WHEELS_DEVICE:-/dev/null}:${WHEELS_DEVICE:-/dev/null}
+      - ${ARM_DEVICE:-/dev/null}:${ARM_DEVICE:-/dev/null}
     command: /bin/bash -c ". /quac/src/quac/docker_setup.sh && ros2 launch quac control.launch.py"
 
   inverse_kinematics:
@@ -129,7 +137,7 @@ services:
       dockerfile: dockerfiles/pilot/gazebo.dockerfile
     image: quac_gazebo:dev
     environment:
-      - DISPLAY=${DISPLAY}
+      - DISPLAY=${DISPLAY:-null}
       - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
@@ -144,7 +152,7 @@ services:
       dockerfile: dockerfiles/pilot/rviz.dockerfile
     image: quac_rviz:dev
     environment:
-      - DISPLAY=${DISPLAY}
+      - DISPLAY=${DISPLAY:-null}
       - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
@@ -159,7 +167,7 @@ services:
       dockerfile: dockerfiles/pilot/desktop.dockerfile
     image: quac_desktop:dev
     environment:
-      - DISPLAY=${DISPLAY}
+      - DISPLAY=${DISPLAY:-null}
       - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix

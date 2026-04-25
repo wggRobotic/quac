@@ -48,14 +48,26 @@ def generate_launch_description():
     video = GroupAction(
         actions=[
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'camera_app.launch.py')]),
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'realsense_streamer.launch.py')]),
                 launch_arguments={ 'camera_name': 'camera_front'}.items(),
-                condition=UnlessCondition(LaunchConfiguration('disable_camera_front'))
+                condition=UnlessCondition(LaunchConfiguration('disable_realsense_front'))
             ),
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'camera_app.launch.py')]),
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'realsense_streamer.launch.py')]),
                 launch_arguments={'camera_name': 'camera_back'}.items(),
-                condition=UnlessCondition(LaunchConfiguration('disable_camera_back'))
+                condition=UnlessCondition(LaunchConfiguration('disable_realsense_back'))
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'qrcode_detection_server.launch.py')]),
+                condition=UnlessCondition(LaunchConfiguration('disable_qrcode_detection'))
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'hazmat_detection_server.launch.py')]),
+                condition=UnlessCondition(LaunchConfiguration('disable_hazmat_detection'))
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'paintroller_detection_server.launch.py')]),
+                condition=UnlessCondition(LaunchConfiguration('disable_paintroller_detection'))
             )
         ],
         condition=UnlessCondition(LaunchConfiguration('disable_video'))
@@ -102,14 +114,29 @@ def generate_launch_description():
             description='Whether to disable all video streaming and processing'
         ),
         DeclareLaunchArgument(
-            'disable_camera_front',
+            'disable_realsense_front',
             default_value='false',
             description='Whether to disable the front camera'
         ),
         DeclareLaunchArgument(
-            'disable_camera_back',
+            'disable_realsense_back',
             default_value='false',
             description='Whether to disable the back camera'
+        ),
+        DeclareLaunchArgument(
+            'disable_qrcode_detection',
+            default_value='false',
+            description='Whether to disable qrcode detection'
+        ),
+        DeclareLaunchArgument(
+            'disable_hazmat_detection',
+            default_value='false',
+            description='Whether to disable hazmat detection'
+        ),
+        DeclareLaunchArgument(
+            'disable_paintroller_detection',
+            default_value='false',
+            description='Whether to disable paintroller detection'
         ),
         DeclareLaunchArgument(
             'disable_nav',

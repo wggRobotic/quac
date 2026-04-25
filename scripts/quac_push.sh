@@ -1,0 +1,12 @@
+docker push ghcr.io/wggrobotic/quac-qrcode-detection_server:stable
+docker push ghcr.io/wggrobotic/quac-lidar:stable
+docker push ghcr.io/wggrobotic/quac-inverse-kinematics:stable
+docker push ghcr.io/wggrobotic/quac-ohm-slam:stable
+docker push ghcr.io/wggrobotic/quac-rsp:stable
+docker push ghcr.io/wggrobotic/quac-slam-toolbox:stable
+docker push ghcr.io/wggrobotic/quac-realsense-streamer:stable
+docker push ghcr.io/wggrobotic/quac-control:stable
+docker push ghcr.io/wggrobotic/quac-nav2:stable
+docker push ghcr.io/wggrobotic/quac-yolo-detection_server:stable
+docker push ghcr.io/wggrobotic/quac-twist-mux:stable
+docker push ghcr.io/wggrobotic/quac-sensors:stable

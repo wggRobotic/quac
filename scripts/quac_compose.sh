@@ -10,7 +10,7 @@ dlidar=false
 ([[ " $@ " =~ " -dlidar "  ]] || [ ! -e /dev/quac/lidar_uart ]) && dlidar=true
 
 dslam=false
-([[ " $@ " =~ " -dslam " ]] || [[ $dwheels == true ]] || [[ $dlidar == true ]]) dslam=true
+([[ " $@ " =~ " -dslam " ]] || [[ $dwheels == true ]] || [[ $dlidar == true ]]) && dslam=true
 
 [[ $dwheels == true ]] \
   && cmd+=(WHEELS_DEVICE=/dev/null DISABLE_WHEELS=true) \
@@ -48,8 +48,11 @@ cmd+=(up rsp twist_mux control inverse_kinematics)
 ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -drsb " ]]) \
   && cmd+=(realsense_streamer_back)
 
-  ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dhazmat " ]]) \
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dhazmat " ]]) \
   && cmd+=(hazmat_detection_server)
+
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dpaint " ]]) \
+  && cmd+=(paintroller_detection_server)
 
 ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dqrcode " ]]) \
   && cmd+=(qrcode_detection_server)
@@ -65,3 +68,5 @@ cmd+=(up rsp twist_mux control inverse_kinematics)
 
 echo "${cmd[@]}"
 "${cmd[@]}"
+
+docker compose down

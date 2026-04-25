@@ -17,6 +17,7 @@ def generate_launch_description():
         parameters=[os.path.join(package_dir,'config','controllers.yaml')],
         remappings=[
             ('/tf', 'tf'),
+            ('/tf_static', 'tf_static'),
             ('/trajectories', 'trajectories'),
             ('diff_drive_controller/cmd_vel_unstamped', 'cmd_vel'),
             ('diff_drive_controller/odom', 'odom'),

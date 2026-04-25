@@ -3,7 +3,6 @@
 
 QRCodeDetectionServer::QRCodeDetectionServer() : DetectionServer(
   "qrcode_detection_server",
-  "qrcodes",
   std::bind(&QRCodeDetectionServer::qrcode_detection_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
 )
 {

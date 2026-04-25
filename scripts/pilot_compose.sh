@@ -5,12 +5,7 @@ cmd=(env)
 [[ " $@ " =~ " -sim "  ]] \
   && cmd+=(SIM_MODE=true)
 
-cmd+=(docker compose)
-
-[[ " $@ " =~ " -remote "    ]] \
-  && cmd+=(-f docker-compose.yaml -f docker-compose.remote.yaml)
-
-cmd+=(up rviz)
+cmd+=(docker compose up rviz)
 
 [[ " $@ " =~ " -sim "  ]] \
   && cmd+=(gazebo twist_mux rsp inverse_kinematics)
