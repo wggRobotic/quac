@@ -1,6 +1,5 @@
 #include "detection_server/detection_server.hpp"
 
-#include <opencv2/opencv.hpp>
 #include "quirc.h"
 
 class QRCodeDetectionServer : public DetectionServer

@@ -5,6 +5,7 @@ quac:
       camera_names: ["camera_front", "camera_back"]
       publish_rate: 20
       reference_frame: "map"
+      consideration_radius: 0.1
 
   paintroller_detection_server:
     ros__parameters:
@@ -12,6 +13,7 @@ quac:
       camera_names: ["camera_front"]
       publish_rate: 20
       reference_frame: "map"
+      consideration_radius: 0.05
 
   qrcode_detection_server:
     ros__parameters:
@@ -19,3 +21,4 @@ quac:
       camera_names: ["camera_front", "camera_back"]
       publish_rate: 20
       reference_frame: "map"  
+      consideration_radius: 0.1

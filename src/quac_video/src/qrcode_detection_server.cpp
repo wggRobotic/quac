@@ -48,7 +48,7 @@ void QRCodeDetectionServer::qrcode_detection_callback(const quac_interfaces::msg
       detection d;
       for (int k = 0; k < 4; k++) {d.corners[k].x = code.corners[k].x; d.corners[k].y = code.corners[k].y; }
       d.data = std::string((char*)data.payload);
-
+      d.confidence = 1.;
       detections.push_back(d);
     }
   }

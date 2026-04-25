@@ -22,3 +22,8 @@ gst-launch-1.0 -v udpsrc port=5000 buffer-size=1048576 caps="application/x-rtp, 
 ```
 ros2 topic pub /quac/video_target_ip std_msgs/msg/String "{data: '192.168.1.136'}" -1
 ```
+
+# publish dummy frame
+```
+ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 map odom --ros-args -r /tf:=/quac/tf -r /tf_static:=/quac/tf_static
+```

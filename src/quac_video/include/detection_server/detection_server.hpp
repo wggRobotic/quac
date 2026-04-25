@@ -4,10 +4,12 @@
 #include <quac_interfaces/msg/image_bgrd.hpp>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <quac_interfaces/msg/detected_object.hpp>
 #include <quac_interfaces/msg/detected_object_array.hpp>
 
+#include <opencv2/opencv.hpp>
 #include <memory>
 #include <cstdlib>
 #include <mutex>
@@ -25,6 +27,14 @@ struct detection
     int x, y;
   } corners[4];
   std::string data;
+  double confidence;
+};
+
+struct mapped_object_data
+{
+  int times_detected;
+  cv::Mat image;
+  double confidence;
 };
 
 using DetectionCallback = std::function<void(
@@ -39,6 +49,7 @@ public:
   DetectionServer(const std::string& name, DetectionCallback callback);
 
   void run();
+  void draw_bounding_box(cv::Mat& image, detection& detection);
   void image_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i);
   void publish_callback();
 
@@ -57,9 +68,11 @@ protected:
     
     std::mutex detections_mutex;
     std::vector<quac_interfaces::msg::DetectedObject> objects;
+    std::vector<mapped_object_data> object_datas;
     std::string reference_frame;
   } mapping;
 
   std::vector<std::string> camera_names;
   std::string topic_name;
+  double consideration_radius;
 };

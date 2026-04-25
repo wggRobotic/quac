@@ -46,7 +46,6 @@ void YOLODetectionServer::yolo_detection_callback(const quac_interfaces::msg::Im
 {
   cv::Mat image(msg->height, msg->width, CV_8UC3, (void*)msg->bgr_data.data());
   std::vector<yolos::det::Detection> results = detectors[i]->detect(image);
-  detectors[i]->drawDetections(image, results);
 
   for (int j = 0; j < results.size(); j++)
   {
@@ -61,6 +60,7 @@ void YOLODetectionServer::yolo_detection_callback(const quac_interfaces::msg::Im
     d.corners[3].y = results[j].box.y + results[j].box.height;
     
     d.data = detectors[i]->getClassNames()[results[j].classId];
+    d.confidence = results[j].conf;
 
     detections.push_back(d);
   }
