@@ -3,19 +3,19 @@ quac:
     ros__parameters:
       topic_name: "hazmat_signs"
       camera_names: ["camera_front", "camera_back"]
-      publish_rate: 5
+      publish_rate: 20
       reference_frame: "map"
 
   paintroller_detection_server:
     ros__parameters:
       topic_name: "paintrollers"
       camera_names: ["camera_front"]
-      publish_rate: 5
+      publish_rate: 20
       reference_frame: "map"
 
   qrcode_detection_server:
     ros__parameters:
       topic_name: "qrcodes"
       camera_names: ["camera_front", "camera_back"]
-      publish_rate: 5
+      publish_rate: 20
       reference_frame: "map"  

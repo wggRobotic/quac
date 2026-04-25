@@ -14,15 +14,28 @@ public:
     declare_parameter<double>("l1", 0.1);
     declare_parameter<double>("l2", 0.1);
     declare_parameter<double>("l3", 0.1);
-    declare_parameter<double>("gripper_range", 0.0);
+    declare_parameter<double>("gripper_radius", 0.01);
+    declare_parameter<double>("gripper_offset", 0.01);
 
-    ee_pos_sub_ = create_subscription<geometry_msgs::msg::Pose>(
-        "ee_pos", 10,
-        std::bind(&QuacIKNode::eeContactsCallback, this,
-                  std::placeholders::_1));
-    joint_commands_pub_ =
-        create_publisher<trajectory_msgs::msg::JointTrajectory>(
-            "arm_joint_trajectory", 10);
+    ee_pose_sub_ = create_subscription<geometry_msgs::msg::Pose>(
+      "ee_pose", 10,
+      std::bind(&QuacIKNode::eeContactsCallback, this, std::placeholders::_1)
+    );
+
+    gripper_sub_ = create_subscription<std_msgs::msg::Float64>(
+      "gripper_width", 10,
+      std::bind(&QuacIKNode::gripperCallback, this, std::placeholders::_1)
+    );
+
+    flipper_sub_ = create_subscription<std_msgs::msg::Float64>(
+      "flipper_pos", 10,
+      std::bind(&QuacIKNode::flipperCallback, this, std::placeholders::_1)
+    );
+
+    joint_commands_pub_ = create_publisher<trajectory_msgs::msg::JointTrajectory>(
+      "arm_joint_trajectory", 
+      10
+    );
   }
 
 private:
@@ -31,14 +44,35 @@ private:
     computeAndPublishJointAngles();
   }
 
+  void flipperCallback(const std_msgs::msg::Float64::SharedPtr msg) {
+    trajectory_msgs::msg::JointTrajectory joint_trajectory;
+    joint_trajectory.header.stamp = now();
+
+    trajectory_msgs::msg::JointTrajectoryPoint point;
+    point.positions.push_back( msg->data);
+    point.time_from_start.sec = 0.5;
+
+    joint_trajectory.points.push_back(point);
+    joint_trajectory.joint_names.push_back("flipper_servo_joint");
+
+    joint_commands_pub_->publish(joint_trajectory);
+  }
+
+  inline double safeAsin(double x) {
+    return std::asin(std::clamp(x, -1.0, 1.0));
+  }
+
   void gripperCallback(const std_msgs::msg::Float64::SharedPtr msg) {
     trajectory_msgs::msg::JointTrajectory joint_trajectory;
     joint_trajectory.header.stamp = now();
 
     trajectory_msgs::msg::JointTrajectoryPoint point;
 
-    point.positions.push_back(std::clamp(msg->data, 0.0, 1.0) * get_parameter("gripper_range").as_double());
-    point.time_from_start.sec = 0.2;
+    double width = msg->data + 2. * get_parameter("gripper_offset").as_double();
+    double angle = safeAsin(width / get_parameter("gripper_radius").as_double());
+
+    point.positions.push_back(angle);
+    point.time_from_start.sec = 0.5;
 
     joint_trajectory.points.push_back(point);
     joint_trajectory.joint_names.push_back("gripper_servo_joint");
@@ -104,8 +138,9 @@ private:
     joint_commands_pub_->publish(joint_trajectory);
   }
 
-  rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr ee_pos_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr ee_pose_sub_;
   rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr gripper_sub_;
+  rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr flipper_sub_;
   rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr joint_commands_pub_;
 
   geometry_msgs::msg::Pose ee_position_;

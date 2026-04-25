@@ -82,4 +82,24 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
   topic_handlers[i]->object_publisher->publish(object_msg);
 
   std::lock_guard<std::mutex> lock(mapping.detections_mutex);
+
+  geometry_msgs::msg::TransformStamped T_map_camera = tf_buffer.lookupTransform(
+    mapping.reference_frame,
+    msg->header.frame_id,
+    tf2::TimePointZero
+  );
+
+  for (auto &object : object_msg.objects)
+  {
+    tf2::Transform tf_obj_cam;
+    tf2::fromMsg(object.pose, tf_obj_cam);
+
+    tf2::Transform tf_obj_map = tf_map_camera * tf_obj_cam;
+
+    geometry_msgs::msg::PoseStamped obj_map;
+    obj_map.header.frame_id = "map";
+    obj_map.pose = tf2::toMsg(tf_obj_map);
+
+    objects_map.push_back(obj_map);
+  }
 }

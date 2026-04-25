@@ -4,4 +4,5 @@ quac:
       l1: 0.105
       l2: 0.035
       l3: 0.13
-      gripper_range: 0.8
+      gripper_radius: 0.04
+      gripper_offset: 0.01 
