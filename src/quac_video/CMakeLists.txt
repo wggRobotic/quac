@@ -83,6 +83,7 @@ if(BUILD_QRCODE_DETECTION_SERVER)
   find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(geometry_msgs REQUIRED)
+  find_package(sensor_msgs REQUIRED)
   find_package(tf2 REQUIRED)
   find_package(tf2_ros REQUIRED)
   find_package(tf2_geometry_msgs REQUIRED)
@@ -116,6 +117,7 @@ if(BUILD_QRCODE_DETECTION_SERVER)
     rclcpp
     quac_interfaces
     geometry_msgs
+    sensor_msgs
     tf2
     tf2_ros
     tf2_geometry_msgs
@@ -194,6 +196,7 @@ if(BUILD_YOLO_DETECTION_SERVER)
   find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(geometry_msgs REQUIRED)
+  find_package(sensor_msgs REQUIRED)
   find_package(tf2 REQUIRED)
   find_package(tf2_ros REQUIRED)
   find_package(tf2_geometry_msgs REQUIRED)
@@ -224,6 +227,7 @@ if(BUILD_YOLO_DETECTION_SERVER)
     rclcpp
     quac_interfaces
     geometry_msgs
+    sensor_msgs
     tf2
     tf2_ros
     tf2_geometry_msgs

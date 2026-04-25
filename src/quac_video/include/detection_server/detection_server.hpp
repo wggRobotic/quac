@@ -8,6 +8,7 @@
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <quac_interfaces/msg/detected_object.hpp>
 #include <quac_interfaces/msg/detected_object_array.hpp>
+#include <sensor_msgs/msg/image.hpp>
 
 #include <opencv2/opencv.hpp>
 #include <memory>
@@ -33,8 +34,7 @@ struct detection
 struct mapped_object_data
 {
   int times_detected;
-  cv::Mat image;
-  double confidence;
+  sensor_msgs::msg::Image::SharedPtr image;
 };
 
 using DetectionCallback = std::function<void(
@@ -49,9 +49,10 @@ public:
   DetectionServer(const std::string& name, DetectionCallback callback);
 
   void run();
-  void draw_bounding_box(cv::Mat& image, detection& detection);
+  void draw_bounding_box(cv::Mat& image, const detection& detection, const std::string name);
   void image_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i);
-  void publish_callback();
+  void publish_objects_callback();
+  void publish_images_callback();
 
 protected:
   std::vector<std::unique_ptr<TopicHandler>> topic_handlers;
@@ -64,7 +65,9 @@ protected:
   struct
   {
     rclcpp::Publisher<quac_interfaces::msg::DetectedObjectArray>::SharedPtr object_publisher;
-    rclcpp::TimerBase::SharedPtr timer;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_publisher;
+    rclcpp::TimerBase::SharedPtr object_timer;
+    rclcpp::TimerBase::SharedPtr image_timer;
     
     std::mutex detections_mutex;
     std::vector<quac_interfaces::msg::DetectedObject> objects;
@@ -73,6 +76,6 @@ protected:
   } mapping;
 
   std::vector<std::string> camera_names;
-  std::string topic_name;
+  std::string object_name;
   double consideration_radius;
 };

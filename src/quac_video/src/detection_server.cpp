@@ -12,16 +12,21 @@ DetectionServer::DetectionServer(const std::string& name, DetectionCallback call
   declare_parameter<int>("publish_rate", 10);
   int publish_rate = get_parameter("publish_rate").as_int();
 
-  declare_parameter<std::string>("topic_name", "objects");
-  topic_name = get_parameter("topic_name").as_string();
+  declare_parameter<int>("publish_images_period", 10);
+  int publish_images_period = get_parameter("publish_images_period").as_int();
+
+  declare_parameter<std::string>("object_name", "object");
+  object_name = get_parameter("object_name").as_string();
 
   declare_parameter<double>("consideration_radius", 0.1);
   consideration_radius = get_parameter("consideration_radius").as_double();
 
   callback_group = create_callback_group(rclcpp::CallbackGroupType::Reentrant);
-  mapping.timer = create_wall_timer(std::chrono::milliseconds((int)(1000.f/(float)publish_rate)), std::bind(&DetectionServer::publish_callback, this), callback_group);
+  mapping.object_timer = create_wall_timer(std::chrono::milliseconds((int)(1000.f/(float)publish_rate)), std::bind(&DetectionServer::publish_objects_callback, this), callback_group);
+  mapping.image_timer = create_wall_timer(std::chrono::milliseconds((int)(1000.f * (float)publish_images_period)), std::bind(&DetectionServer::publish_images_callback, this), callback_group);
 
-  mapping.object_publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(topic_name, 10);
+  mapping.object_publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(object_name + "s", 10);
+  mapping.image_publisher = create_publisher<sensor_msgs::msg::Image>(object_name + "s/images", 10);
 
   topic_handlers.resize(camera_names.size());
 
@@ -32,11 +37,11 @@ DetectionServer::DetectionServer(const std::string& name, DetectionCallback call
   {
     topic_handlers[i] = std::make_unique<TopicHandler>();
     topic_handlers[i]->subscriber = create_subscription<quac_interfaces::msg::ImageBGRD>(camera_names[i] + "/bgrd",10,[this, i](quac_interfaces::msg::ImageBGRD::SharedPtr msg) {image_callback(msg, i);}, options);
-    topic_handlers[i]->object_publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(camera_names[i] + "/" + topic_name, 10);
+    topic_handlers[i]->object_publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(camera_names[i] + "/" + object_name + "s", 10);
   }
 }
 
-void DetectionServer::publish_callback()
+void DetectionServer::publish_objects_callback()
 {
   quac_interfaces::msg::DetectedObjectArray object_msg;
   object_msg.header.stamp = now();
@@ -51,16 +56,35 @@ void DetectionServer::publish_callback()
   mapping.object_publisher->publish(object_msg);
 }
 
-void DetectionServer::draw_bounding_box(cv::Mat& image, detection& detection)
+void DetectionServer::publish_images_callback()
+{
+  std::lock_guard<std::mutex> lock(mapping.detections_mutex);
+  for (int i = 0; i < mapping.object_datas.size(); i++)
+    mapping.image_publisher->publish(*(mapping.object_datas[i].image));
+  
+}
+
+void DetectionServer::draw_bounding_box(cv::Mat& image, const detection& detection, const std::string name)
 {
   cv::Scalar color(0, 0, 255);
 
+  int x_min = image.cols, y_min = image.rows, x_max = 0, y_max = 0;
+  for (int i = 0; i < 4; i++)
+  {
+    if (x_min > detection.corners[i].x) x_min = detection.corners[i].x;
+    if (y_min > detection.corners[i].y) y_min = detection.corners[i].y;
+    if (x_max < detection.corners[i].x) x_max = detection.corners[i].x;
+    if (y_max < detection.corners[i].y) y_max = detection.corners[i].y;
+  }
+
   cv::rectangle(
     image,
-    cv::Point(detection.corners[0].x, detection.corners[0].y),
-    cv::Point(detection.corners[2].x, detection.corners[2].y),
+    cv::Point(x_min, y_min),
+    cv::Point(x_max, y_max),
     color, 2, cv::LINE_AA
   );
+
+  std::string label = name + "__" + detection.data + "_" + std::to_string(detection.confidence);
 
   int fontFace = cv::FONT_HERSHEY_SIMPLEX;
   double fontScale = std::min(image.rows, image.cols) * 0.0008;
@@ -68,14 +92,14 @@ void DetectionServer::draw_bounding_box(cv::Mat& image, detection& detection)
   int textThickness = std::max(1, static_cast<int>(std::min(image.rows, image.cols) * 0.002));
   int baseline = 0;
 
-  cv::Size textSize = cv::getTextSize(detection.data, fontFace, fontScale, textThickness, &baseline);
+  cv::Size textSize = cv::getTextSize(label, fontFace, fontScale, textThickness, &baseline);
 
-  int labelY = std::max(detection.corners[0].y, textSize.height + 5);
-  cv::Point labelTopLeft(detection.corners[0].x, labelY - textSize.height - 5);
-  cv::Point labelBottomRight(detection.corners[0].x + textSize.width + 5, labelY + baseline - 5);
+  int labelY = std::max(y_min, textSize.height + 5);
+  cv::Point labelTopLeft(x_min, labelY - textSize.height - 5);
+  cv::Point labelBottomRight(x_min + textSize.width + 5, labelY + baseline - 5);
 
   cv::rectangle(image, labelTopLeft, labelBottomRight, color, cv::FILLED);
-  cv::putText(image, detection.data, cv::Point(detection.corners[0].x + 2, labelY - 2), fontFace, fontScale, cv::Scalar(255, 255, 255), textThickness, cv::LINE_AA);
+  cv::putText(image, label, cv::Point(x_min + 2, labelY - 2), fontFace, fontScale, cv::Scalar(255, 255, 255), textThickness, cv::LINE_AA);
 }
 
 void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i)
@@ -95,6 +119,7 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
     quac_interfaces::msg::DetectedObject object;
     object.name = "detection_" + std::to_string(j);
     object.type = detections[j].data;
+    object.confidence = detections[j].confidence;
     object.last_detection_stamp = msg->header.stamp;
 
     object.pose.orientation.x = 0.0;
@@ -178,13 +203,17 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
 
             mapping.object_datas[k].times_detected++;
 
-            if (detections[j].confidence > mapping.object_datas[k].confidence)
+            if (object_msg.objects[j].confidence > mapping.objects[k].confidence)
             {
-              mapping.object_datas[k].confidence = detections[j].confidence;
+              mapping.objects[k].confidence = object_msg.objects[j].confidence;
 
-              cv::Mat temp(msg->height, msg->width, CV_8UC3, msg->bgr_data.data());
-              mapping.object_datas[k].image = temp.clone();
-              draw_bounding_box(mapping.object_datas[k].image, detections[j]);
+              mapping.object_datas[k].image->width = msg->width;
+              mapping.object_datas[k].image->height = msg->height;
+              mapping.object_datas[k].image->data.resize(msg->height * msg->width * 3);
+              memcpy(mapping.object_datas[k].image->data.data(), msg->bgr_data.data(), msg->height * msg->width * 3);
+            
+              cv::Mat temp(msg->height, msg->width, CV_8UC3, mapping.object_datas[k].image->data.data());
+              draw_bounding_box(temp, detections[j], mapping.objects[k].name);
             }
 
             break;
@@ -193,15 +222,22 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
       }
       else
       {
+        object_msg.objects[j].name = object_name + "_" + std::to_string(k);
         mapping.objects.push_back(object_msg.objects[j]);
 
         mapped_object_data data;
         data.times_detected = 1.;
-        data.confidence = detections[j].confidence;
+        
+        data.image = std::make_shared<sensor_msgs::msg::Image>();
+        data.image->width = msg->width;
+        data.image->height = msg->height;
+        data.image->encoding = "bgr8";
+        data.image->header.frame_id = mapping.objects[k].name;
+        data.image->data.resize(msg->height * msg->width * 3);
+        memcpy(data.image->data.data(), msg->bgr_data.data(), msg->height * msg->width * 3);
 
-        cv::Mat temp(msg->height, msg->width, CV_8UC3, msg->bgr_data.data());
-        data.image = temp.clone();
-        draw_bounding_box(data.image, detections[j]);
+        cv::Mat temp(msg->height, msg->width, CV_8UC3, data.image->data.data());
+        draw_bounding_box(temp, detections[j], mapping.objects[k].name);
 
         mapping.object_datas.push_back(data);
 

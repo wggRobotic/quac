@@ -1,24 +1,27 @@
 quac:
   hazmat_detection_server:
     ros__parameters:
-      topic_name: "hazmat_signs"
+      object_name: "hazmat_sign"
       camera_names: ["camera_front", "camera_back"]
       publish_rate: 20
+      publish_images_period: 10
       reference_frame: "map"
       consideration_radius: 0.1
 
   paintroller_detection_server:
     ros__parameters:
-      topic_name: "paintrollers"
+      object_name: "paintroller"
       camera_names: ["camera_front"]
       publish_rate: 20
+      publish_images_period: 10
       reference_frame: "map"
       consideration_radius: 0.05
 
   qrcode_detection_server:
     ros__parameters:
-      topic_name: "qrcodes"
+      object_name: "qrcode"
       camera_names: ["camera_front", "camera_back"]
       publish_rate: 20
+      publish_images_period: 10
       reference_frame: "map"  
       consideration_radius: 0.1
