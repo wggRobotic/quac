@@ -68,6 +68,9 @@ RealsenseStreamer::RealsenseStreamer() : Node("realsense_streamer")
 
   //pointcloud
   {
+    declare_parameter<std::string>("pointcloud.frame", "cam_frame");
+    pointcloud.frame = get_parameter("pointcloud.frame").as_string();
+
     declare_parameter<int>("pointcloud.interval", 3);
     pointcloud.interval = get_parameter("pointcloud.interval").as_int();
     pointcloud.interval_i = 0;
@@ -75,6 +78,9 @@ RealsenseStreamer::RealsenseStreamer() : Node("realsense_streamer")
 
   //image
   {
+    declare_parameter<std::string>("image.frame", "cam_frame");
+    image.frame = get_parameter("image.frame").as_string();
+
     declare_parameter<int>("image.interval", 3);
     image.interval = get_parameter("image.interval").as_int();
     image.interval_i = 0;
@@ -147,7 +153,7 @@ void RealsenseStreamer::pointcloud_loop()
       size_t num_points = pointcloud.points.size();
 
       pointcloud.msg.header.stamp = now();
-      pointcloud.msg.header.frame_id = get_name();
+      pointcloud.msg.header.frame_id = pointcloud.frame;
 
       pointcloud.msg.height = 1;
       pointcloud.msg.width = num_points;
@@ -283,8 +289,14 @@ void RealsenseStreamer::run()
         GError *error = nullptr;
         gst.pipeline = gst_parse_launch(pipeline_desc.c_str(), &error);
 
-        if (!gst.pipeline || error) {
-          RCLCPP_INFO(get_logger(), "Failed to create Gstreamer pipeline");
+        if (!gst.pipeline || error)
+        {
+          RCLCPP_ERROR(get_logger(), "Failed to create Gstreamer pipeline %s", pipeline_desc.c_str());
+          if (error)
+          {
+            RCLCPP_ERROR(get_logger(), "GError: %s", error->message);
+            g_error_free(error);
+          }
           return;
         }
 
@@ -320,7 +332,7 @@ void RealsenseStreamer::run()
       if (!aligned_depth_frame) continue;
 
       image.msg.header.stamp = now();
-      image.msg.header.frame_id = std::string(get_name());
+      image.msg.header.frame_id = image.frame;
 
       image.msg.height = capture.color.height;
       image.msg.width = capture.color.width;

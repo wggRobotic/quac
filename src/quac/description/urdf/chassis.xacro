@@ -53,20 +53,8 @@
     </joint>
 
     <link name="imu"/>
-
-    <!-- <joint name="camera_back_joint" type="fixed">
-        <parent link="chassis"/>
-        <child link="camera_back"/>
-        <origin xyz="-0.09 0.0 0.1" rpy="0 0 ${pi}"/>
-    </joint>
-
-    <link name="camera_back"/> -->
-
-    <xacro:arg name="use_nominal_extrinsics" default="false"/>
-    <xacro:arg name="add_plug" default="true" />
-    <xacro:arg name="use_mesh" default="true" />
     
-    <xacro:sensor_d435 parent="chassis" name="camera_back" use_nominal_extrinsics="$(arg use_nominal_extrinsics)" add_plug="$(arg add_plug)" use_mesh="$(arg use_mesh)">
+    <xacro:sensor_d435 parent="chassis" name="camera_back" use_nominal_extrinsics="true" add_plug="false" use_mesh="true">
         <origin xyz="-0.09 0.0 0.1" rpy="0 0 ${pi}"/>
     </xacro:sensor_d435>
     

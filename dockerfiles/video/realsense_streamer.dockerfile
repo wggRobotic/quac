@@ -25,6 +25,8 @@ RUN apt install -y \
     libgstreamer-plugins-base1.0-dev \
     libgstreamer-plugins-good1.0-dev \
     libgstreamer-plugins-bad1.0-dev \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
     libgstrtspserver-1.0-dev \
     libyaml-cpp-dev \
     libssl-dev \

@@ -28,8 +28,10 @@ quac:
 
       pointcloud:
         interval: 10
+        frame: camera_front_depth_optical_frame
       image:
         interval: 6
+        frame: camera_front_color_optical_frame
         
   camera_back:
     ros__parameters:
@@ -60,8 +62,10 @@ quac:
 
       pointcloud:
         interval: 10
+        frame: camera_back_depth_optical_frame
       image:
         interval: 6
+        frame: camera_back_color_optical_frame
         
 
       

@@ -60,6 +60,6 @@ protected:
     std::string reference_frame;
   } mapping;
 
-  std::vector<std::string> camera_frames;
+  std::vector<std::string> camera_names;
   std::string topic_name;
 };

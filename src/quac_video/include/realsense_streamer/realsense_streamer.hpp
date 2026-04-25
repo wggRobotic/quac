@@ -59,6 +59,8 @@ public:
 
   struct
   {
+    std::string frame;
+
     std::thread thread;
     
     std::mutex mutex;
@@ -78,6 +80,8 @@ public:
 
   struct
   {
+    std::string frame;
+
     int interval;
     int interval_i;
 
