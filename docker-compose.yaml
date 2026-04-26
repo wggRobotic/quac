@@ -143,6 +143,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
+      - ./docker_setup.sh:/docker_setup.sh:ro
     devices:
       - /dev/dri:/dev/dri
     command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac gazebo.launch.py"
@@ -158,6 +159,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
+      - ./docker_setup.sh:/docker_setup.sh:ro
     devices:
       - /dev/dri:/dev/dri
     command: /bin/bash -c ". /docker_setup.sh && ros2 launch quac rviz.launch.py"
@@ -173,6 +175,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
+      - ./docker_setup.sh:/docker_setup.sh:ro
     devices:
       - /dev/dri:/dev/dri
 
