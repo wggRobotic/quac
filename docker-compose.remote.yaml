@@ -18,6 +18,9 @@ services:
   control:
     image: ghcr.io/wggrobotic/quac-control:stable
 
+  arm_target_controller:
+    image: ghcr.io/wggrobotic/quac-arm-target-controller:stable
+
   inverse_kinematics:
     image: ghcr.io/wggrobotic/quac-inverse-kinematics:stable
 

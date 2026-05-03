@@ -1,0 +1,15 @@
+build:
+  cmake-args:
+    - -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+  base-paths:
+    - src/quac
+    - src/quac-arm-target-controller/quac_arm_target_controller
+    - src/quac-controllers/quac_controllers
+    - src/quac-detection/quac_detection
+    - src/quac-hardware/quac_hardware
+    - src/quac-interfaces/quac_interfaces
+    - src/quac-inverse-kinematics/quac_inverse_kinematics
+    - src/quac-realsense-streamer/quac_realsense_streamer
+    - src/quac-rviz-plugins/quac_rviz_plugins
+    - src/quac-sensor/quac_sensor
+    

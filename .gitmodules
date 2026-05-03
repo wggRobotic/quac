@@ -22,3 +22,6 @@
 [submodule "src/quac-controllers"]
 	path = src/quac-controllers
 	url = https://github.com/wggRobotic/quac-controllers.git
+[submodule "src/quac-arm-target-controller"]
+	path = src/quac-arm-target-controller
+	url = https://github.com/wggRobotic/quac-arm-target-controller.git

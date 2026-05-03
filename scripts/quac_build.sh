@@ -11,6 +11,7 @@ qrcode_detection_server \
 hazmat_detection_server \
 paintroller_detection_server \
 control \
+arm_target_controller \
 inverse_kinematics \
 rsp \
 twist_mux \

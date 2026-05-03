@@ -3,7 +3,6 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /quac
 
 RUN apt update
-RUN apt update
 RUN apt install -y ros-humble-rmw-cyclonedds-cpp
 RUN apt install -y ros-humble-twist-mux
 RUN apt install -y ros-humble-ros-gz ros-humble-gz-ros2-control

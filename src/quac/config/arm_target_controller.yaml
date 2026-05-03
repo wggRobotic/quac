@@ -1,0 +1,5 @@
+quac:
+  arm_controller:
+    ros__parameters:
+      approach_distance_m: 0.8
+      pull_out_distance_m: 0.15
