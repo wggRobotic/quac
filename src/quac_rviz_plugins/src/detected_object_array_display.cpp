@@ -69,7 +69,7 @@ void DetectedObjectArrayDisplay::processMessage(const quac_interfaces::msg::Dete
       vis.node);
 
     vis.label_node = vis.node->createChildSceneNode();
-    vis.label = std::make_unique<rviz_rendering::MovableText>(obj.name + "\n" + obj.type);
+    vis.label = std::make_unique<rviz_rendering::MovableText>(obj.header.frame_id + "\n" + obj.box.header.frame_id);
     vis.label_node->attachObject(vis.label.get());
 
     visuals.push_back(std::move(vis));

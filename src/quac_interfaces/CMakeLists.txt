@@ -24,6 +24,8 @@ find_package(tf2_geometry_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ImageBGRD.msg"
+  "msg/BoundingBox.msg"
+  "msg/BoundingBoxArray.msg"
   "msg/DetectedObject.msg"
   "msg/DetectedObjectArray.msg"
   DEPENDENCIES std_msgs geometry_msgs

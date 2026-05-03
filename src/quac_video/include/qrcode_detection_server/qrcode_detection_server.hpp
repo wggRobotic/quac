@@ -7,7 +7,7 @@ class QRCodeDetectionServer : public DetectionServer
 public:
   QRCodeDetectionServer();
 
-  void qrcode_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<detection>& detections);
+  void qrcode_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<quac_interfaces::msg::BoundingBox>& detections);
   int init();
   void deinit();
 

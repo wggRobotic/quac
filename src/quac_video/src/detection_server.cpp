@@ -1,13 +1,14 @@
 #include "detection_server/detection_server.hpp"
 #include <cmath>
 
-DetectionServer::DetectionServer(const std::string& name, DetectionCallback callback) : Node(name), tf_buffer(this->get_clock()), tf_listener(tf_buffer), detection_callback(callback)
+DetectionServer::DetectionServer(const std::string& name, DetectionCallback callback) : Node(name), tf_buffer(get_clock()), tf_listener(tf_buffer), detection_callback(callback)
 {
+  // declare and read parameters
   declare_parameter<std::vector<std::string>>("camera_names", std::vector<std::string>{"cam"});
-  camera_names = get_parameter("camera_names").as_string_array();
+  param.camera_names = get_parameter("camera_names").as_string_array();
 
   declare_parameter<std::string>("reference_frame", "map");
-  mapping.reference_frame = get_parameter("reference_frame").as_string();
+  param.reference_frame = get_parameter("reference_frame").as_string();
 
   declare_parameter<int>("publish_rate", 10);
   int publish_rate = get_parameter("publish_rate").as_int();
@@ -16,98 +17,196 @@ DetectionServer::DetectionServer(const std::string& name, DetectionCallback call
   int publish_images_period = get_parameter("publish_images_period").as_int();
 
   declare_parameter<std::string>("object_name", "object");
-  object_name = get_parameter("object_name").as_string();
+  param.object_name = get_parameter("object_name").as_string();
 
   declare_parameter<double>("consideration_radius", 0.1);
-  consideration_radius = get_parameter("consideration_radius").as_double();
+  param.consideration_radius = get_parameter("consideration_radius").as_double();
 
+  // create callback group
   callback_group = create_callback_group(rclcpp::CallbackGroupType::Reentrant);
-  mapping.object_timer = create_wall_timer(std::chrono::milliseconds((int)(1000.f/(float)publish_rate)), std::bind(&DetectionServer::publish_objects_callback, this), callback_group);
-  mapping.image_timer = create_wall_timer(std::chrono::milliseconds((int)(1000.f * (float)publish_images_period)), std::bind(&DetectionServer::publish_images_callback, this), callback_group);
-
-  mapping.object_publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(object_name + "s", 10);
-  mapping.image_publisher = create_publisher<sensor_msgs::msg::Image>(object_name + "s/images", 10);
-
-  topic_handlers.resize(camera_names.size());
 
   rclcpp::SubscriptionOptions options;
   options.callback_group = callback_group;
+
+  // global publishers / subscribers
+
+  mapping.delete_subscriber = create_subscription<std_msgs::msg::String>(
+    param.object_name + "s/delete",
+    10,
+    std::bind(&DetectionServer::delete_callback, this, std::placeholders::_1),
+    options
+  );
+
+  mapping.publishing.objects.timer = create_wall_timer(std::chrono::milliseconds((int)(1000.f/(float)publish_rate)), std::bind(&DetectionServer::publish_objects_callback, this), callback_group);
+  mapping.publishing.objects.publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(param.object_name + "s", 10);
   
-  for (int i = 0; i < topic_handlers.size(); i++)
+  mapping.publishing.images.timer = create_wall_timer(std::chrono::milliseconds((int)(1000.f * (float)publish_images_period)), std::bind(&DetectionServer::publish_images_callback, this), callback_group);
+  mapping.publishing.images.image_publisher = create_publisher<sensor_msgs::msg::CompressedImage>(param.object_name + "s/images", 10);
+  mapping.publishing.images.json_publisher = create_publisher<std_msgs::msg::String>(param.object_name + "s/json", 10);
+
+  // individual camera handlers
+  camera_handlers.resize(param.camera_names.size());
+  
+  for (int i = 0; i < camera_handlers.size(); i++)
   {
-    topic_handlers[i] = std::make_unique<TopicHandler>();
-    topic_handlers[i]->subscriber = create_subscription<quac_interfaces::msg::ImageBGRD>(camera_names[i] + "/bgrd",10,[this, i](quac_interfaces::msg::ImageBGRD::SharedPtr msg) {image_callback(msg, i);}, options);
-    topic_handlers[i]->object_publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(camera_names[i] + "/" + object_name + "s", 10);
+    camera_handlers[i] = std::make_unique<CameraHandler>();
+
+    camera_handlers[i]->image_subscriber = create_subscription<quac_interfaces::msg::ImageBGRD>(
+      param.camera_names[i] + "/bgrd",
+      10,
+      [this, i](quac_interfaces::msg::ImageBGRD::SharedPtr msg) {image_callback(msg, i);}, 
+      options
+    );
+
+    camera_handlers[i]->object_publisher = create_publisher<quac_interfaces::msg::DetectedObjectArray>(param.camera_names[i] + "/" + param.object_name + "s", 10);
+    camera_handlers[i]->bb_publisher = create_publisher<quac_interfaces::msg::BoundingBoxArray>(param.camera_names[i] + "/" + param.object_name + "s/bounding_boxes", 10);
   }
 }
 
 void DetectionServer::publish_objects_callback()
 {
-  quac_interfaces::msg::DetectedObjectArray object_msg;
-  object_msg.header.stamp = now();
-  object_msg.header.frame_id = mapping.reference_frame;
+  if (mapping.publishing.objects.busy.exchange(true)) return;
+
+  quac_interfaces::msg::DetectedObjectArray& msg = mapping.publishing.objects.msg;
+
+  msg.header.stamp = now();
+  msg.header.frame_id = param.reference_frame;
 
   {
-    std::lock_guard<std::mutex> lock(mapping.detections_mutex);
-    if (mapping.objects.size() == 0) return;
-    object_msg.objects = mapping.objects;
-  }  
+    std::lock_guard<std::mutex> lock(mapping.mutex);
 
-  mapping.object_publisher->publish(object_msg);
+    msg.objects.resize(mapping.objects.size());
+
+    for (int i = 0; i < msg.objects.size(); i++) msg.objects[i] = mapping.objects[i].object;
+  }
+
+  if (msg.objects.size() > 0) mapping.publishing.objects.publisher->publish(msg);
+
+  mapping.publishing.objects.busy.store(false);
 }
 
 void DetectionServer::publish_images_callback()
 {
-  std::lock_guard<std::mutex> lock(mapping.detections_mutex);
-  for (int i = 0; i < mapping.object_datas.size(); i++)
-    mapping.image_publisher->publish(*(mapping.object_datas[i].image));
-  
-}
+  if (mapping.publishing.images.busy.exchange(true)) return;
 
-void DetectionServer::draw_bounding_box(cv::Mat& image, const detection& detection, const std::string name)
-{
-  cv::Scalar color(0, 0, 255);
+  std_msgs::msg::String json_msg;
+  json_msg.data = (
+    "{\n"
+    "  \"reference_frame\": \"" + param.reference_frame + "\",\n"
+    "  \"objects\": ["
 
-  int x_min = image.cols, y_min = image.rows, x_max = 0, y_max = 0;
-  for (int i = 0; i < 4; i++)
-  {
-    if (x_min > detection.corners[i].x) x_min = detection.corners[i].x;
-    if (y_min > detection.corners[i].y) y_min = detection.corners[i].y;
-    if (x_max < detection.corners[i].x) x_max = detection.corners[i].x;
-    if (y_max < detection.corners[i].y) y_max = detection.corners[i].y;
-  }
-
-  cv::rectangle(
-    image,
-    cv::Point(x_min, y_min),
-    cv::Point(x_max, y_max),
-    color, 2, cv::LINE_AA
   );
 
-  std::string label = name + "__" + detection.data + "_" + std::to_string(detection.confidence);
+  std::vector<sensor_msgs::msg::CompressedImage::SharedPtr> image_msgs;
 
-  int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-  double fontScale = std::min(image.rows, image.cols) * 0.0008;
-  fontScale = std::max(fontScale, 0.4);
-  int textThickness = std::max(1, static_cast<int>(std::min(image.rows, image.cols) * 0.002));
-  int baseline = 0;
+  {
+    std::lock_guard<std::mutex> lock(mapping.mutex);
 
-  cv::Size textSize = cv::getTextSize(label, fontFace, fontScale, textThickness, &baseline);
+    image_msgs.resize(mapping.objects.size());
 
-  int labelY = std::max(y_min, textSize.height + 5);
-  cv::Point labelTopLeft(x_min, labelY - textSize.height - 5);
-  cv::Point labelBottomRight(x_min + textSize.width + 5, labelY + baseline - 5);
+    for (int i = 0; i < image_msgs.size(); i++)
+    {
+      json_msg.data += (
+        "\n"
+        "    {\n"
+        "      \"name\": \"" + mapping.objects[i].object.header.frame_id + "\",\n"
+        "      \"type\": \"" + mapping.objects[i].object.box.header.frame_id + "\",\n"
+        "      \"position\": {"
+                              "\"x\": " + std::to_string(mapping.objects[i].object.pose.position.x) + ", "
+                              "\"y\": " + std::to_string(mapping.objects[i].object.pose.position.y) + ", "
+                              "\"z\": " + std::to_string(mapping.objects[i].object.pose.position.z) + ""
+        "      }\n"
+        "    },"
+      );
 
-  cv::rectangle(image, labelTopLeft, labelBottomRight, color, cv::FILLED);
-  cv::putText(image, label, cv::Point(x_min + 2, labelY - 2), fontFace, fontScale, cv::Scalar(255, 255, 255), textThickness, cv::LINE_AA);
+      image_msgs[i] = mapping.objects[i].image;
+    }
+  }
+
+  json_msg.data[json_msg.data.size() - 1] = '\n';
+  json_msg.data += (
+    "  ]\n"
+    "}"
+  );
+
+  for (int i = 0; i < image_msgs.size(); i++) mapping.publishing.images.image_publisher->publish(*image_msgs[i]);
+
+  mapping.publishing.images.json_publisher->publish(json_msg);
+
+  mapping.publishing.images.busy.store(false);
+}
+
+void DetectionServer::delete_callback(const std_msgs::msg::String::SharedPtr msg)
+{
+
+}
+
+void create_mapped_image(
+  sensor_msgs::msg::CompressedImage::SharedPtr& compressed_image, 
+  quac_interfaces::msg::ImageBGRD::SharedPtr bgrd_image, 
+  const quac_interfaces::msg::BoundingBox& detection,
+  const std::string& name
+)
+{
+  cv::Mat view(bgrd_image->height, bgrd_image->width, CV_8UC3, bgrd_image->bgr_data.data());
+  cv::Mat copy = view.clone();
+
+  // but bounding box
+  {
+    cv::Scalar color(0, 0, 255);
+
+    int x_min = copy.cols, y_min = copy.rows;
+    for (int i = 0; i < 4; i++)
+    {
+      if (x_min > detection.corners[i].x) x_min = detection.corners[i].x;
+      if (y_min > detection.corners[i].y) y_min = detection.corners[i].y;
+    }
+
+    std::vector<cv::Point> pts;
+    for (int i = 0; i < 4; i++) pts.emplace_back(detection.corners[i].x, detection.corners[i].y);
+    
+    std::vector<std::vector<cv::Point>> contour = {pts};
+
+    cv::polylines(copy, contour, true, color, 2, cv::LINE_AA);
+
+    std::string label = detection.header.frame_id;
+
+    int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+    double fontScale = std::min(copy.rows, copy.cols) * 0.0008;
+    fontScale = std::max(fontScale, 0.4);
+    int textThickness = std::max(1, static_cast<int>(std::min(copy.rows, copy.cols) * 0.002));
+    int baseline = 0;
+
+    cv::Size textSize = cv::getTextSize(label, fontFace, fontScale, textThickness, &baseline);
+
+    int labelY = std::max(y_min, textSize.height + 5);
+    cv::Point labelTopLeft(x_min, labelY - textSize.height - 5);
+    cv::Point labelBottomRight(x_min + textSize.width + 5, labelY + baseline - 5);
+
+    cv::rectangle(copy, labelTopLeft, labelBottomRight, color, cv::FILLED);
+    cv::putText(copy, label, cv::Point(x_min + 2, labelY - 2), fontFace, fontScale, cv::Scalar(255, 255, 255), textThickness, cv::LINE_AA);
+  }
+
+  sensor_msgs::msg::CompressedImage::SharedPtr msg = std::make_shared<sensor_msgs::msg::CompressedImage>();
+
+  std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, 90};
+  cv::imencode(".jpg", copy, msg->data, params);
+
+  msg->header.stamp = bgrd_image->header.stamp;
+  msg->header.frame_id = name;
+  msg->format = "jpeg";
+
+  compressed_image = msg;
 }
 
 void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i)
 {
-  std::vector<detection> detections;
+  if (camera_handlers[i]->busy.exchange(true)) return;
+
+  std::vector<quac_interfaces::msg::BoundingBox> detections;
 
   detection_callback(msg, i, detections);
-  if (detections.size() == 0) return;
+  if (detections.size() == 0) { camera_handlers[i]->busy.store(false); return; }
 
   quac_interfaces::msg::DetectedObjectArray object_msg;
   object_msg.header.stamp = now();
@@ -117,10 +216,9 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
   for (int j = 0; j < detections.size(); j++)
   {
     quac_interfaces::msg::DetectedObject object;
-    object.name = "detection_" + std::to_string(j);
-    object.type = detections[j].data;
-    object.confidence = detections[j].confidence;
-    object.last_detection_stamp = msg->header.stamp;
+    object.header.frame_id = "detection_" + std::to_string(j);
+    object.header.stamp = msg->header.stamp;
+    object.box = detections[i];
 
     object.pose.orientation.x = 0.0;
     object.pose.orientation.y = 0.0;
@@ -137,23 +235,34 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
     object_msg.objects.push_back(object);
   }
 
-  topic_handlers[i]->object_publisher->publish(object_msg);
+  camera_handlers[i]->object_publisher->publish(object_msg);
 
- 
-  // global frame
   geometry_msgs::msg::TransformStamped tf_msg;
 
   try
   {
     tf_msg = tf_buffer.lookupTransform(
-      mapping.reference_frame,
+      param.reference_frame,
       msg->header.frame_id,
-      tf2::TimePointZero
+      msg->header.stamp
     );
   }
   catch (const tf2::TransformException &ex)
   {
-    RCLCPP_WARN(this->get_logger(), "TF lookup failed: %s", ex.what());
+    RCLCPP_ERROR(get_logger(), "TF lookup failed: %s", ex.what());
+    camera_handlers[i]->busy.store(false);
+    return;
+  }
+
+  rclcpp::Duration diff = rclcpp::Time(msg->header.stamp) - rclcpp::Time(tf_msg.header.stamp);
+  if (diff.seconds() < 0.0) diff = rclcpp::Duration::from_seconds(-diff.seconds());
+
+  rclcpp::Duration tolerance = rclcpp::Duration::from_seconds(0.05);
+
+  if (diff > tolerance)
+  {
+    RCLCPP_ERROR(get_logger(), "TF frame from %s to %s is too old", msg->header.frame_id.c_str(), param.reference_frame.c_str());
+    camera_handlers[i]->busy.store(false);
     return;
   }
 
@@ -168,7 +277,7 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
     tf2::toMsg(global_to_camera * camera_to_object, object.pose);
   }
 
-  std::lock_guard<std::mutex> lock(mapping.detections_mutex);
+  std::lock_guard<std::mutex> lock(mapping.mutex);
 
   for (int j = 0; j < object_msg.objects.size(); j++)
   {
@@ -176,9 +285,9 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
     {
       if (k < mapping.objects.size())
       {
-        if (object_msg.objects[j].type == mapping.objects[k].type)
+        if (object_msg.objects[j].box.header.frame_id == mapping.objects[k].object.header.frame_id)
         {
-          geometry_msgs::msg::Point& mapped_object_pos = mapping.objects[k].pose.position;
+          geometry_msgs::msg::Point& mapped_object_pos = mapping.objects[k].object.pose.position;
           geometry_msgs::msg::Point& object_pos = object_msg.objects[j].pose.position;
 
           double distance = std::sqrt(
@@ -186,34 +295,33 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
             (mapped_object_pos.y - object_pos.y) * (mapped_object_pos.y - object_pos.y) +
             (mapped_object_pos.z - object_pos.z) * (mapped_object_pos.z - object_pos.z)
           );
-          if (distance < consideration_radius)
+          if (distance < param.consideration_radius)
           {
             
             mapped_object_pos.x = 
-              (mapped_object_pos.x * (double)mapping.object_datas[k].times_detected + object_pos.x) / 
-              (double)(mapping.object_datas[k].times_detected + 1);
+              (mapped_object_pos.x * (double)mapping.objects[k].times_detected + object_pos.x) / 
+              (double)(mapping.objects[k].times_detected + 1);
 
             mapped_object_pos.y = 
-              (mapped_object_pos.y * (double)mapping.object_datas[k].times_detected + object_pos.y) / 
-              (double)(mapping.object_datas[k].times_detected + 1);
+              (mapped_object_pos.y * (double)mapping.objects[k].times_detected + object_pos.y) / 
+              (double)(mapping.objects[k].times_detected + 1);
 
             mapped_object_pos.z = 
-              (mapped_object_pos.z * (double)mapping.object_datas[k].times_detected + object_pos.z) / 
-              (double)(mapping.object_datas[k].times_detected + 1);
+              (mapped_object_pos.z * (double)mapping.objects[k].times_detected + object_pos.z) / 
+              (double)(mapping.objects[k].times_detected + 1);
 
-            mapping.object_datas[k].times_detected++;
+            mapping.objects[k].times_detected++;
 
-            if (object_msg.objects[j].confidence > mapping.objects[k].confidence)
+            if (object_msg.objects[j].box.confidence > mapping.objects[k].object.box.confidence)
             {
-              mapping.objects[k].confidence = object_msg.objects[j].confidence;
+              mapping.objects[k].object.box.confidence = object_msg.objects[j].box.confidence;
 
-              mapping.object_datas[k].image->width = msg->width;
-              mapping.object_datas[k].image->height = msg->height;
-              mapping.object_datas[k].image->data.resize(msg->height * msg->width * 3);
-              memcpy(mapping.object_datas[k].image->data.data(), msg->bgr_data.data(), msg->height * msg->width * 3);
-            
-              cv::Mat temp(msg->height, msg->width, CV_8UC3, mapping.object_datas[k].image->data.data());
-              draw_bounding_box(temp, detections[j], mapping.objects[k].name);
+              create_mapped_image(
+                mapping.objects[k].image, 
+                msg, 
+                detections[j], 
+                object_msg.objects[j].header.frame_id
+              );
             }
 
             break;
@@ -222,28 +330,31 @@ void DetectionServer::image_callback(quac_interfaces::msg::ImageBGRD::SharedPtr 
       }
       else
       {
-        object_msg.objects[j].name = object_name + "_" + std::to_string(k);
-        mapping.objects.push_back(object_msg.objects[j]);
-
-        mapped_object_data data;
-        data.times_detected = 1.;
+        mapped_object obj;
         
-        data.image = std::make_shared<sensor_msgs::msg::Image>();
-        data.image->width = msg->width;
-        data.image->height = msg->height;
-        data.image->encoding = "bgr8";
-        data.image->header.frame_id = mapping.objects[k].name;
-        data.image->data.resize(msg->height * msg->width * 3);
-        memcpy(data.image->data.data(), msg->bgr_data.data(), msg->height * msg->width * 3);
+        obj.object.header.frame_id = param.object_name + "_" + std::to_string(k);
+        obj.times_detected = 1;
+        create_mapped_image(
+          obj.image, 
+          msg, 
+          detections[j], 
+          object_msg.objects[j].header.frame_id
+        );
 
-        cv::Mat temp(msg->height, msg->width, CV_8UC3, data.image->data.data());
-        draw_bounding_box(temp, detections[j], mapping.objects[k].name);
-
-        mapping.object_datas.push_back(data);
+        mapping.objects.push_back(obj);
 
         break;
       }
       
     }
   }
+
+  camera_handlers[i]->busy.store(false);
+}
+
+void DetectionServer::run()
+{
+  rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), camera_handlers.size() + 2 + 2);
+  executor.add_node(shared_from_this());
+  executor.spin();
 }

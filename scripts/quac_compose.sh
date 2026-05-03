@@ -14,7 +14,7 @@ dslam=false
 
 [[ $dwheels == true ]] \
   && cmd+=(WHEELS_DEVICE=/dev/null DISABLE_WHEELS=true) \
-  || cmd+=(WHEELS_DEVICE=)
+  || cmd+=(WHEELS_DEVICE=/dev/wheels_rs485)
 
 [[ $darm == true ]] \
   && cmd+=(ARM_DEVICE=/dev/null DISABLE_ARM=true) \

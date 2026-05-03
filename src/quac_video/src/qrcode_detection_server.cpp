@@ -10,7 +10,7 @@ QRCodeDetectionServer::QRCodeDetectionServer() : DetectionServer(
 
 int QRCodeDetectionServer::init()
 {
-  detectors.resize(topic_handlers.size());
+  detectors.resize(camera_handlers.size());
   for (int i = 0; i < detectors.size(); i++) detectors[i] = quirc_new();
 
   return 0;
@@ -21,7 +21,7 @@ void QRCodeDetectionServer::deinit()
   for (int i = 0; i < detectors.size(); i++) quirc_destroy(detectors[i]);
 }
 
-void QRCodeDetectionServer::qrcode_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<detection>& detections)
+void QRCodeDetectionServer::qrcode_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<quac_interfaces::msg::BoundingBox>& detections)
 {
   cv::Mat grayscale;
 
@@ -45,9 +45,10 @@ void QRCodeDetectionServer::qrcode_detection_callback(const quac_interfaces::msg
 
     if (quirc_decode(&code, &data) == QUIRC_SUCCESS)
     {
-      detection d;
+      quac_interfaces::msg::BoundingBox d;
       for (int k = 0; k < 4; k++) {d.corners[k].x = code.corners[k].x; d.corners[k].y = code.corners[k].y; }
-      d.data = std::string((char*)data.payload);
+      d.header.frame_id = std::string((char*)data.payload);
+      d.header.stamp = now();
       d.confidence = 1.;
       detections.push_back(d);
     }
@@ -61,7 +62,7 @@ int main (int argc, char *argv[])
   auto node = std::make_shared<QRCodeDetectionServer>();
   if (node->init() == 0)
   {
-    rclcpp::spin(node);
+    node->run();
     node->deinit();
   }
 

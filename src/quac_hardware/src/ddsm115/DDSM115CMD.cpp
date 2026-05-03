@@ -88,10 +88,60 @@ uint8_t maximCrc8(uint8_t* data, const unsigned int size)
   return crc;
 }
 
+bool DDSM115CMD::set_id(uint8_t id)
+{
+  uint8_t cmd[] = 
+  {
+    0xAA,
+    0x55,
+    0x53,
+    (uint8_t) id,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00 
+  };
+
+  ::write(m_SerialFD, cmd, sizeof(cmd));
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+  tcdrain(m_SerialFD);
+
+  return true;
+}
+
+bool DDSM115CMD::set_mode(uint8_t id, int mode)
+{
+  uint8_t cmd[] = 
+  {
+    (uint8_t) id,
+    0xA0,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    (uint8_t) mode 
+  };
+
+  ::write(m_SerialFD, cmd, sizeof(cmd));
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+  tcdrain(m_SerialFD);
+
+  return true;
+}
+
 bool DDSM115CMD::drive(uint8_t id, double velocity, uint8_t act, uint8_t brake)
 {
-  int16_t rpm = static_cast<int16_t>(std::round(velocity / (2.0 * M_PI) * 60.0));
-
+  int16_t rpm = (int16_t)(velocity / (2.0 * M_PI) * 60.0);
+  printf("%d\n", rpm);
   uint8_t cmd[] = 
   {
     (uint8_t) id,
@@ -162,5 +212,10 @@ bool DDSM115CMD::drive_feedback(uint8_t* id, uint8_t* mode, double* position, do
   *error_code = response[8];
 
   return true;
+}
+
+int DDSM115CMD::read_bytes(uint8_t* buf, size_t buf_size)
+{
+  return ::read(m_SerialFD, buf, buf_size);
 }
 

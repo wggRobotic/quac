@@ -14,6 +14,9 @@ https://github.com/dlbeer/quirc.git
 ### Flashing OS and Jetpack
 Use the [NVIDIA SDK Manager](https://developer.nvidia.com/sdk-manager) to flash the latest version of linux for tegra and jetpack6 for the jetson orin nano dev kit onto the jetson.
 
+### uart patch
+perhaps apply the patch from https://github.com/jetsonhacks/jetson-orin-uart
+
 ### udev rules
 ```
 sudo nano /etc/udev/rules.d/99-quac.rules
@@ -28,4 +31,10 @@ reload the rules
 ```
 sudo udevadm control --reload-rules
 sudo udevadm trigger
+```
+
+# Docker
+For gui docker apps, add this to ~/.bashrc
+```
+xhost +local:docker
 ```

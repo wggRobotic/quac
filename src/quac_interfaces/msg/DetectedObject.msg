@@ -1,8 +1,5 @@
-string name
-string type
-
-builtin_interfaces/Time last_detection_stamp
-float64 confidence
+std_msgs/Header header
 
 geometry_msgs/Pose pose
-geometry_msgs/Point[4] bounding_box_corners
+
+quac_interfaces/BoundingBox box

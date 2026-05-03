@@ -36,20 +36,20 @@ int YOLODetectionServer::init()
 
   if (std::filesystem::exists(engine_path) == false) return -1;
 
-  detectors.resize(topic_handlers.size());
+  detectors.resize(camera_handlers.size());
   for (int i = 0; i < detectors.size(); i++) detectors[i] = std::make_shared<yolos::det::YOLODetector>(engine_path, labels_path);
 
   return 0;
 }
 
-void YOLODetectionServer::yolo_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<detection>& detections)
+void YOLODetectionServer::yolo_detection_callback(const quac_interfaces::msg::ImageBGRD::SharedPtr msg, int i, std::vector<quac_interfaces::msg::BoundingBox>& detections)
 {
   cv::Mat image(msg->height, msg->width, CV_8UC3, (void*)msg->bgr_data.data());
   std::vector<yolos::det::Detection> results = detectors[i]->detect(image);
 
   for (int j = 0; j < results.size(); j++)
   {
-    detection d;
+    quac_interfaces::msg::BoundingBox d;
     d.corners[0].x = results[j].box.x;
     d.corners[0].y = results[j].box.y;
     d.corners[1].x = results[j].box.x + results[j].box.width;
@@ -59,7 +59,8 @@ void YOLODetectionServer::yolo_detection_callback(const quac_interfaces::msg::Im
     d.corners[3].x = results[j].box.x;
     d.corners[3].y = results[j].box.y + results[j].box.height;
     
-    d.data = detectors[i]->getClassNames()[results[j].classId];
+    d.header.frame_id = detectors[i]->getClassNames()[results[j].classId];
+    d.header.stamp = now();
     d.confidence = results[j].conf;
 
     detections.push_back(d);
@@ -71,7 +72,7 @@ int main (int argc, char *argv[])
   rclcpp::init(argc, argv);
 
   auto node = std::make_shared<YOLODetectionServer>();
-  if (node->init() == 0) rclcpp::spin(node);
+  if (node->init() == 0) node->run();
   
   rclcpp::shutdown();
 }
