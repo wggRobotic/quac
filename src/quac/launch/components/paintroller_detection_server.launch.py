@@ -9,7 +9,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         Node(
-            package='quac_video',
+            package='quac_detection',
             executable='yolo_detection_server',
             name='paintroller_detection_server',
             namespace='quac',

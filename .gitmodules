@@ -1,6 +1,24 @@
-[submodule "src/quac_video/YOLOs-CPP-TensorRT"]
-	path = src/quac_video/YOLOs-CPP-TensorRT
-	url = https://github.com/Geekgineer/YOLOs-CPP-TensorRT
-[submodule "src/quac_video/quirc"]
-	path = src/quac_video/quirc
-	url = https://github.com/dlbeer/quirc.git
+[submodule "src/quac-realsense-streamer"]
+	path = src/quac-realsense-streamer
+	url = https://github.com/wggRobotic/quac-realsense-streamer
+[submodule "src/quac-detection"]
+	path = src/quac-detection
+	url = https://github.com/wggRobotic/quac-detection.git
+[submodule "src/quac-sensor"]
+	path = src/quac-sensor
+	url = https://github.com/wggRobotic/quac-sensor.git
+[submodule "src/quac-inverse-kinematics"]
+	path = src/quac-inverse-kinematics
+	url = https://github.com/wggRobotic/quac-inverse-kinematics.git
+[submodule "src/quac-rviz-plugins"]
+	path = src/quac-rviz-plugins
+	url = https://github.com/wggRobotic/quac-rviz-plugins.git
+[submodule "src/quac-hardware"]
+	path = src/quac-hardware
+	url = https://github.com/wggRobotic/quac-hardware.git
+[submodule "src/quac-interfaces"]
+	path = src/quac-interfaces
+	url = https://github.com/wggRobotic/quac-interfaces.git
+[submodule "src/quac-controllers"]
+	path = src/quac-controllers
+	url = https://github.com/wggRobotic/quac-controllers.git

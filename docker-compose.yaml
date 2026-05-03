@@ -6,14 +6,18 @@ x-defaults: &defaults
     - ./src/quac:/quac/src/quac:ro
     - ./docker_setup.sh:/docker_setup.sh:ro
   environment:
-    - DISABLE_WHEELS=${DISABLE_WHEELS:-false}
-    - DISABLE_ARM=${DISABLE_ARM:-false}
-    - DISABLE_THERMAL_CAM=${DISABLE_THERMAL_CAM:-false}
-    - DISABLE_IMU=${DISABLE_IMU:-false}
-    - DISABLE_MAGNETOMETER=${DISABLE_MAGNETOMETER:-false}
-    - SIM_MODE=${SIM_MODE:-false}
-    - NVIDIA_VISIBLE_DEVICES=all
-    - QUAC_ENGINES_DIR=/quac_trt_engines/
+    ROS_DOMAIN_ID: 187
+    RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+    DISABLE_WHEELS: ${DISABLE_WHEELS:-false}
+    DISABLE_ARM: ${DISABLE_ARM:-false}
+    DISABLE_THERMAL_CAM: ${DISABLE_THERMAL_CAM:-false}
+    DISABLE_IMU: ${DISABLE_IMU:-false}
+    DISABLE_MAGNETOMETER: ${DISABLE_MAGNETOMETER:-false}
+    SIM_MODE: ${SIM_MODE:-false}
+    NVIDIA_VISIBLE_DEVICES: all
+    QUAC_ENGINES_DIR: /quac_trt_engines/
+    DISPLAY: ${DISPLAY:-null}
+    QT_X11_NO_MITSHM: 1
 
 services:
 
@@ -137,9 +141,6 @@ services:
     build:
       dockerfile: dockerfiles/pilot/gazebo.dockerfile
     image: quac_gazebo:dev
-    environment:
-      - DISPLAY=${DISPLAY:-null}
-      - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
@@ -153,9 +154,6 @@ services:
     build:
       dockerfile: dockerfiles/pilot/rviz.dockerfile
     image: quac_rviz:dev
-    environment:
-      - DISPLAY=${DISPLAY:-null}
-      - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
@@ -169,9 +167,6 @@ services:
     build:
       dockerfile: dockerfiles/pilot/desktop.dockerfile
     image: quac_desktop:dev
-    environment:
-      - DISPLAY=${DISPLAY:-null}
-      - QT_X11_NO_MITSHM=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro

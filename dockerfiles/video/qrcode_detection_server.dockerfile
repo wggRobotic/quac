@@ -14,7 +14,8 @@ RUN apt install -y ros-humble-rmw-cyclonedds-cpp
 
 WORKDIR /quac
 
-COPY ./src/quac_interfaces /quac/src/quac_interfaces
+COPY ./src/quac-interfaces /quac/src/quac-interfaces
 RUN . /opt/ros/humble/setup.bash && colcon build
-COPY ./src/quac_video /quac/src/quac_video
-RUN . /opt/ros/humble/setup.bash && . /quac/install/setup.bash && colcon build --packages-select quac_video --cmake-args -DBUILD_QRCODE_DETECTION_SERVER=ON
+
+COPY ./src/quac-detection /quac/src/quac-detection
+RUN . /opt/ros/humble/setup.bash && . /quac/install/setup.bash && colcon build --cmake-args -DBUILD_QRCODE_DETECTION_SERVER=ON

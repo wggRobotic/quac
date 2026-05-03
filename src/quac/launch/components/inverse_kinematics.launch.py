@@ -10,7 +10,7 @@ def generate_launch_description():
     package_dir = get_package_share_directory('quac')
 
     inverse_kinematics = Node(
-        package="quac_control",
+        package="quac_inverse_kinematics",
         executable="ik_node",
         namespace='quac',
         output='screen',

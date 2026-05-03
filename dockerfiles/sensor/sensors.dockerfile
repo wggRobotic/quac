@@ -13,5 +13,5 @@ RUN pip3 install adafruit-circuitpython-mlx90640
 RUN pip3 install 'numpy<2'
 RUN pip3 install Jetson.GPIO
 
-COPY ./src/quac_sensor src/quac_sensor
+COPY ./src/quac-sensor src/quac-sensor
 RUN . /opt/ros/humble/setup.bash && colcon build

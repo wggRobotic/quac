@@ -42,7 +42,8 @@ RUN apt install -y ros-humble-rmw-cyclonedds-cpp
 
 WORKDIR /quac
 
-COPY ./src/quac_interfaces /quac/src/quac_interfaces
+COPY ./src/quac-interfaces /quac/src/quac-interfaces
 RUN . /opt/ros/humble/setup.bash && colcon build
-COPY ./src/quac_video /quac/src/quac_video
-RUN . /opt/ros/humble/setup.bash && . /quac/install/setup.bash && colcon build --cmake-args -DBUILD_REALSENSE_STREAMER=ON
+
+COPY ./src/quac-realsense-streamer /quac/src/quac-realsense-streamer
+RUN . /opt/ros/humble/setup.bash && . /quac/install/setup.bash && colcon build

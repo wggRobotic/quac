@@ -10,7 +10,7 @@ def generate_launch_description():
     package_dir = get_package_share_directory('quac')
 
     camera = Node(
-        package='quac_video',
+        package='quac_realsense_streamer',
         executable='realsense_streamer',
         name=LaunchConfiguration('camera_name'),
         namespace='quac',

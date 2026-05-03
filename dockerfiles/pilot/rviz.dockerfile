@@ -12,6 +12,6 @@ WORKDIR /quac
 RUN git clone https://github.com/realsenseai/realsense-ros.git src/realsense_ros
 RUN . /opt/ros/humble/setup.bash && colcon build --packages-select realsense2_camera_msgs realsense2_description
 
-COPY ./src/quac_interfaces /quac/src/quac_interfaces
-COPY ./src/quac_rviz_plugins /quac/src/quac_rviz_plugins
-RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac_interfaces quac_rviz_plugins
+COPY ./src/quac-interfaces /quac/src/quac-interfaces
+COPY ./src/quac-rviz-plugins /quac/src/quac-rviz-plugins
+RUN . /opt/ros/humble/setup.bash && colcon build --packages-select quac-interfaces quac-rviz-plugins
