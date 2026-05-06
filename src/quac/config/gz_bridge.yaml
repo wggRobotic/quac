@@ -26,7 +26,7 @@
 # front cam
 
 - ros_topic_name: "camera_front/camera_info"
-  gz_topic_name: camera_front/camera_info"
+  gz_topic_name: "camera_front/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS
@@ -43,10 +43,16 @@
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
 
+- ros_topic_name: "camera_front/depth/image_raw"
+  gz_topic_name: "camera_front/depth_image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
   # back cam
 
 - ros_topic_name: "camera_back/camera_info"
-  gz_topic_name: camera_back/camera_info"
+  gz_topic_name: "camera_back/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS
@@ -59,6 +65,12 @@
 
 - ros_topic_name: "camera_back/image_raw"
   gz_topic_name: "camera_back/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "camera_back/depth/image_raw"
+  gz_topic_name: "camera_back/depth_image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS

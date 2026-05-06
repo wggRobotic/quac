@@ -31,13 +31,6 @@
         </visual>
     </link>
 
-    <gazebo reference="chassis">
-        <material>Gazebo/White</material>
-        <mu1>0.2</mu1>
-        <mu2>0.2</mu2>
-        <gravity>true</gravity>
-    </gazebo>
-
     <joint name="laser_joint" type="fixed">
         <parent link="chassis"/>
         <child link="laser"/>
@@ -54,8 +47,8 @@
 
     <link name="imu"/>
     
-    <xacro:sensor_d435 parent="chassis" name="camera_back" use_nominal_extrinsics="true" add_plug="false" use_mesh="true">
-        <origin xyz="-0.09 0.0 0.1" rpy="0 0 ${pi}"/>
+    <xacro:sensor_d435 parent="chassis" name="camera_back" use_nominal_extrinsics="true">
+        <origin xyz="-0.1 0.0 0.09" rpy="0 0 ${pi}"/>
     </xacro:sensor_d435>
     
 </robot>

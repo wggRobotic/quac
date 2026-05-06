@@ -21,3 +21,5 @@ cmd+=(docker compose up rviz)
 
 echo "${cmd[@]}"
 "${cmd[@]}"
+
+docker compose down

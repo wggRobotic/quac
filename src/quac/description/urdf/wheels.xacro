@@ -37,9 +37,6 @@
 
         </link>
 
-        <gazebo reference="${name}">
-            <material>Gazebo/Black</material>
-        </gazebo>
     </xacro:macro>
 
     <!-- Four wheels -->

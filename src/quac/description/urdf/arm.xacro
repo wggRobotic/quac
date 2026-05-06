@@ -114,7 +114,7 @@
         </xacro:inertial_cylinder>
     </link>
 
-    <xacro:sensor_d435 parent="gripper_servo" name="camera_front" use_nominal_extrinsics="true" add_plug="false" use_mesh="true">
+    <xacro:sensor_d435 parent="gripper_servo" name="camera_front" use_nominal_extrinsics="true">
         <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:sensor_d435>
 
