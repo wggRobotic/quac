@@ -5,6 +5,7 @@ twist_mux \
 nav2 \
 slam_toolbox \
 ohm_slam \
+rtabmap \
 gazebo \
 rviz
 )
