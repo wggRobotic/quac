@@ -14,7 +14,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'channel_type': 'serial',
-                'serial_port': '/dev/quac/lidar_uart',
+                'serial_port': '/dev/quac/lidar',
                 'serial_baudrate': 115200,
                 'frame_id': 'laser',
                 'inverted': False,

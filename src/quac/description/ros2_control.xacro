@@ -12,7 +12,7 @@
         <hardware>
             <xacro:unless value="$(arg disable_wheels)">
                 <plugin>quac_hardware/DDSM115</plugin>
-                <param name="port">/dev/ttyTCU0</param>
+                <param name="port">/dev/quac/ddsm115</param>
                 <param name="act">3</param>
             </xacro:unless>
 
@@ -32,10 +32,10 @@
             </joint>
         </xacro:macro>
 
-        <xacro:wheel_joint name="wheel_front_left_joint" id="4" scalar="1"/>
-        <xacro:wheel_joint name="wheel_front_right_joint" id="1" scalar="-1"/>
+        <xacro:wheel_joint name="wheel_front_left_joint" id="1" scalar="1"/>
+        <xacro:wheel_joint name="wheel_front_right_joint" id="2" scalar="-1"/>
         <xacro:wheel_joint name="wheel_rear_left_joint" id="3" scalar="1"/>
-        <xacro:wheel_joint name="wheel_rear_right_joint" id="2" scalar="-1"/>
+        <xacro:wheel_joint name="wheel_rear_right_joint" id="4" scalar="-1"/>
 
     </ros2_control>
 
@@ -46,7 +46,7 @@
         <hardware>
             <xacro:unless value="$(arg disable_arm)">
                 <plugin>quac_hardware/WaveshareServos</plugin>
-                <param name="port">/dev/quac/arm_servos</param>
+                <param name="port">/dev/quac/servos</param>
                 <param name="crawler_arm_param_hw_start_duration_sec">0</param>
                 <param name="crawler_arm_hw_stop_duration_sec">3.0</param>
                 <param name="crawler_arm_hw_slowdown">100</param>

@@ -3,7 +3,6 @@ build:
     - -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
   base-paths:
     - src/quac
-    - src/quac-arm-target-controller/quac_arm_target_controller
     - src/quac-controllers/quac_controllers
     - src/quac-detection/quac_detection
     - src/quac-hardware/quac_hardware
