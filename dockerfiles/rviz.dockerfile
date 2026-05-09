@@ -5,6 +5,9 @@ WORKDIR /quac
 RUN apt update
 RUN apt install -y ros-humble-rmw-cyclonedds-cpp
 
+RUN apt install -y ros-humble-rmw-cyclonedds-cpp
+RUN apt install -y ros-humble-navigation2 ros-humble-rtabmap ros-humble-rtabmap-ros
+
 # quac
 
 WORKDIR /quac

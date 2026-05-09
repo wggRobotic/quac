@@ -7,9 +7,7 @@
     <xacro:include filename="urdf/servo.xacro" />
     <xacro:include filename="urdf/d435.xacro" />
 
-    <xacro:include filename="urdf/chassis.xacro" />
-    <xacro:include filename="urdf/wheels.xacro" />
-    <xacro:include filename="urdf/arm.xacro" />
+    <xacro:include filename="urdf/version_6/chassis.xacro" />
 
     <xacro:unless value="$(arg sim_mode)">
         <xacro:include filename="ros2_control.xacro" />

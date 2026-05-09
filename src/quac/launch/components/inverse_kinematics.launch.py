@@ -18,7 +18,7 @@ def generate_launch_description():
             os.path.join(package_dir, 'config', 'inverse_kinematics.yaml'),
             {'use_sim_time': LaunchConfiguration('sim_mode')}    
         ],
-        remappings=[('/clock', 'clock'),],
+        remappings=[('/clock', 'clock')],
     )
 
     return LaunchDescription([

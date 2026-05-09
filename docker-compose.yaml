@@ -132,7 +132,7 @@ services:
     build:
       dockerfile: dockerfiles/slam_toolbox.dockerfile
     image: quac_slam_toolbox:dev
-    command: "ros2 launch quac slam_toolbox.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: "ros2 launch quac slam_toolbox.launch.py sim_mode:=${SIM_MODE:-false} sync:=false"
 
   ohm_slam:
     <<: *defaults
@@ -146,7 +146,7 @@ services:
     build:
       dockerfile: dockerfiles/rtabmap.dockerfile
     image: quac_rtabmap:dev
-    command: "ros2 launch quac rtabmap.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: "ros2 launch quac rtabmap.launch.py use_sim_time:=${SIM_MODE:-false}"
 
   gazebo:
     <<: *defaults
@@ -156,7 +156,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
-      - ./docker_setup.sh:/docker_setup.sh:ro
+      - ./docker_entrypoint.sh:/docker_entrypoint.sh:ro
     devices:
       - /dev/dri:/dev/dri
     command: "ros2 launch quac gazebo.launch.py"
@@ -169,7 +169,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
-      - ./docker_setup.sh:/docker_setup.sh:ro
+      - ./docker_entrypoint.sh:/docker_entrypoint.sh:ro
     devices:
       - /dev/dri:/dev/dri
     command: "ros2 launch quac rviz.launch.py"
@@ -182,7 +182,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src/quac:/quac/src/quac:ro
-      - ./docker_setup.sh:/docker_setup.sh:ro
+      - ./docker_entrypoint.sh:/docker_entrypoint.sh:ro
     devices:
       - /dev/dri:/dev/dri
 

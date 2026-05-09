@@ -38,7 +38,7 @@ def generate_launch_description():
           'Reg/Force3DoF':'true',
           'RGBD/NeighborLinkRefining':'True',
           'Grid/RayTracing':'true', # Fill empty space
-          'Grid/3D':'false', # Use 2D occupancy
+          'Grid/3D':'true', # Use 2D occupancy
           'Grid/RangeMax':'3',
           'Grid/NormalsSegmentation':'false', # Use passthrough filter to detect obstacles
           'Grid/Sensor':'2', # Use both laser scan and camera for obstacle detection in global map
@@ -73,7 +73,7 @@ def generate_launch_description():
         Node(
             package='rtabmap_sync', executable='rgbd_sync', output='screen',
             namespace='quac',
-            parameters=[{'approx_sync':False, 'use_sim_time':use_sim_time}],
+            parameters=[{'approx_sync':True, 'use_sim_time':use_sim_time}],
             remappings=remappings),
 
         # SLAM Mode:
