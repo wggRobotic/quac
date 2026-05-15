@@ -30,9 +30,11 @@
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+            <!-- 
             <geometry>
                 <mesh filename="package://quac/meshes/version_6/chassis.glb" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
             </geometry>
+            -->
             <material name="chassis_material"/>
         </visual>
     </link>

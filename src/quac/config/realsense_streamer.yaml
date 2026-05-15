@@ -7,8 +7,8 @@ quac:
 
         fps: 30
         color:
-          width: 1920
-          height: 1080
+          width: 640
+          height: 480
         depth:
           width: 640
           height: 480
@@ -27,7 +27,7 @@ quac:
           key_int_max: 10
 
       pointcloud:
-        enable: true
+        enable: false
         interval: 10
         frame: camera_front_depth_optical_frame
       image:
@@ -43,8 +43,8 @@ quac:
 
         fps: 30
         color:
-          width: 1920
-          height: 1080
+          width: 640
+          height: 480
         depth:
           width: 640
           height: 480
@@ -63,7 +63,7 @@ quac:
           key_int_max: 10
 
       pointcloud:
-        enable: true
+        enable: false
         interval: 10
         frame: camera_back_depth_optical_frame
       image:

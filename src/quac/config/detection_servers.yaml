@@ -3,11 +3,11 @@ quac:
     ros__parameters:
       object_name: "hazmat_sign"
       camera_names: ["camera_front", "camera_back"]
-      mapping: false # true
+      mapping: true
       publish_rate: 10
       publish_images_period: 10
       reference_frame: "map"
-      consideration_radius: 0.1
+      consideration_radius: 2.0
       detection_weight: 0.01
       confidence_threshold: 0.5
 
@@ -27,9 +27,9 @@ quac:
     ros__parameters:
       object_name: "qrcode"
       camera_names: ["camera_front", "camera_back"]
-      mapping: false # true
+      mapping: true
       publish_rate: 10
       publish_images_period: 10
       reference_frame: "map"  
-      consideration_radius: 0.1
+      consideration_radius: 2.0
       detection_weight: 0.01
