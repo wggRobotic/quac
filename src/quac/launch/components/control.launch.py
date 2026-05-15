@@ -20,6 +20,7 @@ def generate_launch_description():
             ('/tf_static', 'tf_static'),
             ('/trajectories', 'trajectories'),
             ('diff_drive_controller/cmd_vel_unstamped', 'cmd_vel'),
+            ('diff_drive_controller/cmd_vel', 'cmd_vel'),
             ('diff_drive_controller/odom', 'odom'),
             ('arm_position_controller/joint_trajectory', 'arm_joint_trajectory'),
             ('controller_manager/robot_description', 'robot_description')

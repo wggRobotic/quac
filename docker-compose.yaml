@@ -96,12 +96,12 @@ services:
     image: quac_rsp:dev
     command: "ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false} sim_mode:=${SIM_MODE:-false}"
 
-  twist_mux:
+  cmd_vel_mux:
     <<: *defaults
     build:
-      dockerfile: dockerfiles/twist_mux.dockerfile
-    image: quac_twist_mux:dev
-    command: "ros2 launch quac twist_mux.launch.py sim_mode:=${SIM_MODE:-false}"
+      context: src/quac-cmd-vel-mux/
+    image: quac_cmd_vel_mux:dev
+    command: "ros2 launch quac cmd_vel_mux.launch.py sim_mode:=${SIM_MODE:-false}"
 
   lidar:
     <<: *defaults

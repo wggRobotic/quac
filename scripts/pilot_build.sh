@@ -1,7 +1,7 @@
 cmd=(docker compose build \
 inverse_kinematics \
 rsp \
-twist_mux \
+cmd_vel_mux \
 nav2 \
 slam_toolbox \
 ohm_slam \

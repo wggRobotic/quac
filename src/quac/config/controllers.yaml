@@ -34,7 +34,7 @@ quac:
       base_frame_id: "base_link"
       enable_odom_tf: true
       tf_frame_prefix_enable: false
-      use_stamped_vel: false
+      use_stamped_vel: true
 
   arm_position_controller:
     ros__parameters:

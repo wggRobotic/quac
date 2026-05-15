@@ -14,7 +14,7 @@ control \
 arm_target_controller \
 inverse_kinematics \
 rsp \
-twist_mux \
+cmd_vel_mux \
 lidar \
 sensors \
 nav2 \

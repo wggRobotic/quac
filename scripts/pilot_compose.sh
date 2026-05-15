@@ -8,7 +8,7 @@ cmd=(env)
 cmd+=(docker compose up rviz)
 
 [[ " $@ " =~ " -sim "  ]] \
-  && cmd+=(gazebo twist_mux rsp inverse_kinematics)
+  && cmd+=(gazebo cmd_vel_mux rsp inverse_kinematics)
 
 ([[ " $@ " =~ " -sim "  ]] && [[ ! " $@ " =~ " -dnav " ]] && [[ ! " $@ " =~ " -dslam " ]]) \
   && cmd+=(nav2)

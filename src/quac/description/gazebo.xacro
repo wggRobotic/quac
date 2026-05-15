@@ -78,6 +78,7 @@
                 <remapping>/tf_static:=tf_static</remapping>
                 <remapping>/clock:=clock</remapping>
                 <remapping>diff_drive_controller/cmd_vel_unstamped:=cmd_vel</remapping>
+                <remapping>diff_drive_controller/cmd_vel:=cmd_vel</remapping>
                 <remapping>diff_drive_controller/odom:=odom</remapping>
                 <remapping>arm_position_controller/joint_trajectory:=arm_joint_trajectory</remapping>
             </ros>

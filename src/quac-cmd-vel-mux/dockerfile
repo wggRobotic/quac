@@ -4,4 +4,6 @@ WORKDIR /quac
 
 RUN apt update
 RUN apt install -y ros-humble-rmw-cyclonedds-cpp
-RUN apt install -y ros-humble-twist-mux
+
+COPY ./quac_cmd_vel_mux /quac/src/quac_cmd_vel_mux
+RUN . /opt/ros/humble/setup.bash && colcon build

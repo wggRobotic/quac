@@ -9,16 +9,16 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
     package_dir = get_package_share_directory('quac')
 
-    twist_mux = Node(
-        package='twist_mux',
-        executable='twist_mux',
+    cmd_vel_mux = Node(
+        package='quac_cmd_vel_mux',
+        executable='cmd_vel_mux',
         namespace='quac',
         output='screen',
         parameters=[
-            os.path.join(package_dir, 'config', 'twist_mux.yaml'),
+            os.path.join(package_dir, 'config', 'cmd_vel_mux.yaml'),
             {'use_sim_time': LaunchConfiguration('sim_mode')}
         ],
-        remappings=[('cmd_vel_out', 'cmd_vel'), ('/clock', 'clock'),],
+        remappings=[('/clock', 'clock')],
     )
 
     return LaunchDescription([
@@ -28,5 +28,5 @@ def generate_launch_description():
             description='Use simulation (Gazebo) clock if true'
         ),
 
-        twist_mux
+        cmd_vel_mux
     ])

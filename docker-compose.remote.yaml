@@ -27,8 +27,8 @@ services:
   rsp:
     image: ghcr.io/wggrobotic/quac-rsp:stable
 
-  twist_mux:
-    image: ghcr.io/wggrobotic/quac-twist-mux:stable
+  cmd_vel_mux:
+    image: ghcr.io/wggrobotic/quac-cmd-vel-mux:stable
 
   lidar:
     image: ghcr.io/wggrobotic/quac-lidar:stable

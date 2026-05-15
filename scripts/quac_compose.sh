@@ -34,7 +34,7 @@ cmd+=(docker compose )
 [[ " $@ " =~ " -remote "    ]] \
   && cmd+=(-f docker-compose.yaml -f docker-compose.remote.yaml)
 
-cmd+=(up rsp twist_mux control inverse_kinematics)
+cmd+=(up rsp cmd_vel_mux control inverse_kinematics)
 
 [[ $dlidar == false ]] \
   && cmd+=(lidar)

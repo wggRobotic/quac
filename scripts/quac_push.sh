@@ -8,5 +8,5 @@ docker push ghcr.io/wggrobotic/quac-realsense-streamer:stable
 docker push ghcr.io/wggrobotic/quac-control:stable
 docker push ghcr.io/wggrobotic/quac-nav2:stable
 docker push ghcr.io/wggrobotic/quac-yolo-detection_server:stable
-docker push ghcr.io/wggrobotic/quac-twist-mux:stable
+docker push ghcr.io/wggrobotic/quac-cmd-vel-mux:stable
 docker push ghcr.io/wggrobotic/quac-sensors:stable
