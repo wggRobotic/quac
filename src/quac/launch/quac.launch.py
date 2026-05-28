@@ -18,12 +18,20 @@ def generate_launch_description():
         }.items()
     )
 
-    twist_mux = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'twist_mux.launch.py')]),
+    cmd_vel_mux = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'cmd_vel_mux.launch.py')]),
+    )
+
+    ekf = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'ekf.launch.py')]),
+        condition=UnlessCondition(LaunchConfiguration('disable_ekf'))
     )
 
     control = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'control.launch.py')]),
+        launch_arguments={ 
+            'disable_ekf': LaunchConfiguration('disable_ekf')
+        }.items(),
     )
 
     inverse_kinematics = IncludeLaunchDescription(
@@ -77,7 +85,10 @@ def generate_launch_description():
         actions=[
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'slam_toolbox.launch.py')]),
-                condition=UnlessCondition(LaunchConfiguration('ohm_slam'))
+                condition=UnlessCondition(LaunchConfiguration('ohm_slam')),
+                launch_arguments={ 
+                    'snyc': "false"
+                }.items(),
             ),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'ohm_slam.launch.py')]),
@@ -169,13 +180,19 @@ def generate_launch_description():
             description='whether to disable the imu'
         ),
         DeclareLaunchArgument(
+            'disable_ekf',
+            default_value='false',
+            description='whether to disable the imu'
+        ),
+        DeclareLaunchArgument(
             'disable_magnetometer',
             default_value='false',
             description='whether to disable the magnetometer'
         ),
         
         rsp,
-        twist_mux,
+        cmd_vel_mux,
+        ekf,
         control,
         inverse_kinematics,
         lidar,

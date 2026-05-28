@@ -23,14 +23,14 @@ sudo nano /etc/udev/rules.d/99-quac.rules
 ```
 add the following
 ```
-SUBSYSTEM=="tty", KERNEL=="ttyTHS1", SYMLINK+="quac/ddsm115", MODE="0666"
+SUBSYSTEM=="tty", KERNEL=="ttyTHS1", SYMLINK+="quac/wheels", MODE="0666"
 SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="58FA095462", SYMLINK+="quac/servos", MODE="0666"
 SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="0e16a7441b82da48a5daed6b8d07ffde", SYMLINK+="quac/lidar", MODE="0666"
 ```
 
 ```
 # old
-SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A50285BI", SYMLINK+="quac/ddsm115", MODE="0666"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A50285BI", SYMLINK+="quac/wheels", MODE="0666"
 ```
 reload the rules
 ```

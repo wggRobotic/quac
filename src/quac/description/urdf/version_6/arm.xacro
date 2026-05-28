@@ -15,12 +15,9 @@
         </xacro:inertial_box>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-            <!-- 
-            
             <geometry>
                 <mesh filename="package://quac/meshes/version_6/arm_segment_1.glb" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
             </geometry>
-            -->
             <material name="chassis_material"/>
         </visual>
     </link>
@@ -38,11 +35,9 @@
         </xacro:inertial_box>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-            <!-- 
             <geometry>
                 <mesh filename="package://quac/meshes/version_6/arm_segment_2.glb" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
             </geometry>
-            -->
             <material name="chassis_material"/>
         </visual>
     </link>

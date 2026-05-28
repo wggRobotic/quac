@@ -2,9 +2,10 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler
+from launch.actions import RegisterEventHandler, DeclareLaunchArgument
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessStart
+from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     package_dir = get_package_share_directory('quac')
@@ -14,7 +15,16 @@ def generate_launch_description():
         executable="ros2_control_node",
         namespace='quac',
         output='screen',
-        parameters=[os.path.join(package_dir,'config','controllers.yaml')],
+        parameters=[
+            os.path.join(package_dir,'config','controllers.yaml'),
+            {
+                "diff_drive_controller": {
+                    "ros__parameters": {
+                        "enable_odom_tf": LaunchConfiguration('disable_ekf')
+                    }
+                }
+            }
+        ],
         remappings=[
             ('/tf', 'tf'),
             ('/tf_static', 'tf_static'),
@@ -64,6 +74,10 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'disable_ekf',
+            default_value='false'
+        ),
         controller_manager,
         controllers
     ])

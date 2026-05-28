@@ -31,7 +31,7 @@ quac:
         interval: 10
         frame: camera_front_depth_optical_frame
       image:
-        enable: true
+        enable: false
         interval: 3
         frame: camera_front_color_optical_frame
         
@@ -67,7 +67,7 @@ quac:
         interval: 10
         frame: camera_back_depth_optical_frame
       image:
-        enable: true
+        enable: false
         interval: 3
         frame: camera_back_color_optical_frame
         

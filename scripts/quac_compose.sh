@@ -1,24 +1,24 @@
 cmd=(env)
 
 dwheels=false
-([[ " $@ " =~ " -dwheels " ]] || [ ! -e /dev/quac/wheels_rs485 ]) && dwheels=true
+([[ " $@ " =~ " -dwheels " ]] || [ ! -e /dev/quac/wheels ]) && dwheels=true
 
 darm=false
-([[ " $@ " =~ " -darm "    ]] || [ ! -e /dev/quac/arm_servos ]) && darm=true
+([[ " $@ " =~ " -darm "    ]] || [ ! -e /dev/quac/servos ]) && darm=true
 
 dlidar=false
-([[ " $@ " =~ " -dlidar "  ]] || [ ! -e /dev/quac/lidar_uart ]) && dlidar=true
+([[ " $@ " =~ " -dlidar "  ]] || [ ! -e /dev/quac/lidar ]) && dlidar=true
 
 dslam=false
 ([[ " $@ " =~ " -dslam " ]] || [[ $dwheels == true ]] || [[ $dlidar == true ]]) && dslam=true
 
 [[ $dwheels == true ]] \
   && cmd+=(WHEELS_DEVICE=/dev/null DISABLE_WHEELS=true) \
-  || cmd+=(WHEELS_DEVICE=/dev/wheels_rs485)
+  || cmd+=(WHEELS_DEVICE=/dev/quac/wheels)
 
 [[ $darm == true ]] \
   && cmd+=(ARM_DEVICE=/dev/null DISABLE_ARM=true) \
-  || cmd+=(ARM_DEVICE=/dev/quac/arm_servos)
+  || cmd+=(ARM_DEVICE=/dev/quac/servos)
 
 [[ " $@ " =~ " -dtcam"    ]] \
   && cmd+=(DISABLE_THERMAL_CAM=true)
