@@ -16,6 +16,7 @@ x-defaults: &defaults
     DISABLE_THERMAL_CAM: ${DISABLE_THERMAL_CAM:-false}
     DISABLE_IMU: ${DISABLE_IMU:-false}
     DISABLE_MAGNETOMETER: ${DISABLE_MAGNETOMETER:-false}
+    DISABLE_EKF: ${DISABLE_EKF:-false}
     SIM_MODE: ${SIM_MODE:-false}
     NVIDIA_VISIBLE_DEVICES: all
     QUAC_ENGINES_DIR: /quac_trt_engines/
@@ -73,7 +74,14 @@ services:
     devices:
       - ${WHEELS_DEVICE:-/dev/null}:${WHEELS_DEVICE:-/dev/null}
       - ${ARM_DEVICE:-/dev/null}:${ARM_DEVICE:-/dev/null}
-    command: "ros2 launch quac control.launch.py"
+    command: "ros2 launch quac control.launch.py disable_ekf:=${DISABLE_EKF:-false}"
+
+  ekf:
+    <<: *defaults
+    build:
+      dockerfile: dockerfiles/ekf.dockerfile
+    image: quac_ekf:dev
+    command: "ros2 launch quac ekf.launch.py"
 
   arm_target_controller:
     <<: *defaults

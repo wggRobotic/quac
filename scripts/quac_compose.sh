@@ -29,6 +29,9 @@ dslam=false
 [[ " $@ " =~ " -dmag "    ]] \
   && cmd+=(DISABLE_MAGNETOMETER=true)
 
+[[ " $@ " =~ " -dekf "    ]] \
+  && cmd+=(DISABLE_EKF=true)
+
 cmd+=(docker compose )
 
 [[ " $@ " =~ " -remote "    ]] \
@@ -41,6 +44,9 @@ cmd+=(up rsp cmd_vel_mux control inverse_kinematics)
 
 [[ ! " $@ " =~ " -dsen "  ]] \
   && cmd+=(sensors)
+
+[[ ! " $@ " =~ " -dekf "    ]] \
+  && cmd+=(ekf)
 
 ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -drsf " ]]) \
   && cmd+=(realsense_streamer_front)

@@ -14,6 +14,7 @@ def generate_launch_description():
         package="robot_localization",
         executable="ekf_node",
         output="screen",
+        namespace='quac',
         parameters=[
             os.path.join(package_dir,'config','ekf.yaml'),
             {'use_sim_time': LaunchConfiguration('sim_mode')},
