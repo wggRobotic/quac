@@ -148,7 +148,7 @@
         </gazebo>
     </xacro:macro>
 
-    <xacro:cam_sim frame="camera_front"/>
+    <xacro:cam_sim frame="camera_gripper"/>
     <xacro:cam_sim frame="camera_back"/>
 
     <gazebo reference="imu">

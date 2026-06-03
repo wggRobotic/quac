@@ -18,6 +18,11 @@
     </joint>
 
     <link name="arm_segment_1">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.2"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
             <geometry>
@@ -35,6 +40,11 @@
     </joint>
 
     <link name="arm_segment_2">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.2"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
             <geometry>
@@ -56,7 +66,13 @@
         <axis xyz="0 0 1" />
     </joint>
 
-    <link name="gripper_gear"></link>
+    <link name="gripper_gear">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.1"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
+    </link>
 
     <xacro:macro name="gripper_side" params="side multiplier">
         <joint name="gripper_${side}_back_piece_joint" type="continuous">
@@ -68,6 +84,11 @@
         </joint>
 
         <link name="gripper_${side}_back_piece">
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <mass value="0.02"/>
+                <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+            </inertial>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 ${pi/2+multiplier*pi/2}"/>
                 <geometry>
@@ -86,6 +107,11 @@
         </joint>
 
         <link name="gripper_${side}_front_piece">
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <mass value="0.02"/>
+                <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+            </inertial>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 ${pi/2+multiplier*pi/2}"/>
                 <geometry>
@@ -104,6 +130,11 @@
         </joint>
 
         <link name="gripper_${side}">
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <mass value="0.1"/>
+                <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+            </inertial>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>

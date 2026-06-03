@@ -23,28 +23,28 @@
   lazy: true
   direction: GZ_TO_ROS
 
-# front cam
+# gripper cam
 
-- ros_topic_name: "camera_front/camera_info"
-  gz_topic_name: "camera_front/camera_info"
+- ros_topic_name: "camera_gripper/camera_info"
+  gz_topic_name: "camera_gripper/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "camera_front/points"
-  gz_topic_name: "camera_front/points"
+- ros_topic_name: "camera_gripper/points"
+  gz_topic_name: "camera_gripper/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "gz.msgs.PointCloudPacked"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "camera_front/image_raw"
-  gz_topic_name: "camera_front/image"
+- ros_topic_name: "camera_gripper/image_raw"
+  gz_topic_name: "camera_gripper/image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "camera_front/depth/image_raw"
-  gz_topic_name: "camera_front/depth_image"
+- ros_topic_name: "camera_gripper/depth/image_raw"
+  gz_topic_name: "camera_gripper/depth_image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
