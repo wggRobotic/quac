@@ -9,7 +9,7 @@ build:
     - src/quac-hardware/quac_hardware
     - src/quac-interfaces/quac_interfaces
     - src/quac-inverse-kinematics/quac_inverse_kinematics
-    - src/quac-realsense-streamer/quac_realsense_streamer
+    - src/quac-cam-streams/quac_cam_streams
     - src/quac-rviz-plugins/quac_rviz_plugins
     - src/quac-sensor/quac_sensor
     

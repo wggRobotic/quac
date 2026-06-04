@@ -65,17 +65,26 @@ def generate_launch_description():
                 launch_arguments={'camera_name': 'camera_back'}.items(),
                 condition=UnlessCondition(LaunchConfiguration('disable_realsense_back'))
             ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'qrcode_detection_server.launch.py')]),
-                condition=UnlessCondition(LaunchConfiguration('disable_qrcode_detection'))
-            ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'hazmat_detection_server.launch.py')]),
-                condition=UnlessCondition(LaunchConfiguration('disable_hazmat_detection'))
-            ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'paintroller_detection_server.launch.py')]),
-                condition=UnlessCondition(LaunchConfiguration('disable_paintroller_detection'))
+            GroupAction(
+                actions=[
+                    IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'qrcode_detection_server.launch.py')]),
+                        condition=UnlessCondition(LaunchConfiguration('disable_qrcode_detection'))
+                    ),
+                    IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'landolt_c_detection_server.launch.py')]),
+                        condition=UnlessCondition(LaunchConfiguration('disable_landolt_c_detection'))
+                    ),
+                    IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'hazmat_detection_server.launch.py')]),
+                        condition=UnlessCondition(LaunchConfiguration('disable_hazmat_detection'))
+                    ),
+                    IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource([os.path.join(package_dir, 'launch', 'components', 'paintroller_detection_server.launch.py')]),
+                        condition=UnlessCondition(LaunchConfiguration('disable_paintroller_detection'))
+                    )
+                ],
+                condition=UnlessCondition(LaunchConfiguration('disable_detection'))
             )
         ],
         condition=UnlessCondition(LaunchConfiguration('disable_video'))
@@ -135,9 +144,19 @@ def generate_launch_description():
             description='Whether to disable the back camera'
         ),
         DeclareLaunchArgument(
+            'disable_detection',
+            default_value='false',
+            description='Whether to disable object detection'
+        ),
+        DeclareLaunchArgument(
             'disable_qrcode_detection',
             default_value='false',
             description='Whether to disable qrcode detection'
+        ),
+        DeclareLaunchArgument(
+            'disable_landolt_c_detection',
+            default_value='false',
+            description='Whether to disable landolt c detection'
         ),
         DeclareLaunchArgument(
             'disable_hazmat_detection',

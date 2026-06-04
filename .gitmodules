@@ -1,6 +1,3 @@
-[submodule "src/quac-realsense-streamer"]
-	path = src/quac-realsense-streamer
-	url = https://github.com/wggRobotic/quac-realsense-streamer
 [submodule "src/quac-detection"]
 	path = src/quac-detection
 	url = https://github.com/wggRobotic/quac-detection.git
@@ -25,3 +22,9 @@
 [submodule "src/quac-arm-target-controller"]
 	path = src/quac-arm-target-controller
 	url = https://github.com/wggRobotic/quac-arm-target-controller.git
+[submodule "src/quac-cam-streams"]
+	path = src/quac-cam-streams
+	url = https://github.com/wggRobotic/quac-cam-streams
+[submodule "src/quac-cmd-vel-mux"]
+	path = src/quac-cmd-vel-mux
+	url = https://github.com/wggRobotic/quac-cmd-vel-mux

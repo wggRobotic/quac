@@ -15,7 +15,7 @@ def generate_launch_description():
         name=LaunchConfiguration('camera_name'),
         namespace='quac',
         output='screen',
-        parameters=[os.path.join(package_dir, 'config', 'realsense_streamer.yaml')],
+        parameters=[os.path.join(package_dir, 'config', 'cam_streamers.yaml')],
     )
 
     return LaunchDescription([

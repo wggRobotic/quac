@@ -25,19 +25,37 @@ x-defaults: &defaults
 
 services:
 
-  realsense_streamer_front:
+  cam_streamer_front:
     <<: *defaults
     build:
-      context: src/quac-realsense-streamer/
+      context: src/quac-cam-streams/
+      dockerfile: depthai_streamer.dockerfile
+    image: quac_depthai_streamer:dev
+    privileged: true
+    command: "ros2 launch quac depthai_streamer.launch.py"
+
+  cam_streamer_gripper:
+    <<: *defaults
+    build:
+      context: src/quac-cam-streams/
+      dockerfile: realsense_streamer.dockerfile
     image: quac_realsense_streamer:dev
     privileged: true
-    command: "ros2 launch quac realsense_streamer.launch.py camera_name:=camera_front"
+    command: "ros2 launch quac realsense_streamer.launch.py camera_name:=camera_gripper"
 
-  realsense_streamer_back:
+  cam_streamer_back:
     <<: *defaults
     image: quac_realsense_streamer:dev
     privileged: true
     command: "ros2 launch quac realsense_streamer.launch.py camera_name:=camera_back"
+
+  landolt_c_detection_server:
+    <<: *defaults
+    build:
+      dockerfile: landolt_c_detection_server.dockerfile
+      context: src/quac-detection/
+    image: quac_landolt_c_detection_server:dev
+    command: "ros2 launch quac landolt_c_detection_server.launch.py"
 
   qrcode_detection_server:
     <<: *defaults

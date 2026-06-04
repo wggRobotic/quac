@@ -48,11 +48,11 @@ cmd+=(up rsp cmd_vel_mux control inverse_kinematics)
 [[ ! " $@ " =~ " -dekf "    ]] \
   && cmd+=(ekf)
 
-([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -drsf " ]]) \
-  && cmd+=(realsense_streamer_front)
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dcsg " ]]) \
+  && cmd+=(cam_streamer_gripper)
 
-([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -drsb " ]]) \
-  && cmd+=(realsense_streamer_back)
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dcsb " ]]) \
+  && cmd+=(cam_streamer_back)
 
 ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dhazmat " ]]) \
   && cmd+=(hazmat_detection_server)
@@ -62,6 +62,9 @@ cmd+=(up rsp cmd_vel_mux control inverse_kinematics)
 
 ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dqrcode " ]]) \
   && cmd+=(qrcode_detection_server)
+
+([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dlandolt " ]]) \
+&& cmd+=(landolt_c_detection_server)
 
 ([[ $dslam == false ]] && [[ ! " $@ " =~ " -dnav " ]]) \
   && cmd+=(nav2)

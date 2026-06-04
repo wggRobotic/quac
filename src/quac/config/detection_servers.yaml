@@ -7,9 +7,12 @@ quac:
       publish_rate: 10
       publish_images_period: 10
       reference_frame: "map"
-      consideration_radius: 2.0
+      consideration_radius: 20.0
+      valid_distance_range: [0.1, 2.0]
+      max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
       confidence_threshold: 0.5
+      min_times_detected: 10
 
   paintroller_detection_server:
     ros__parameters:
@@ -20,8 +23,11 @@ quac:
       publish_images_period: 10
       reference_frame: "map"
       consideration_radius: 0.05
+      valid_distance_range: [0.1, 2.0]
+      max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
       confidence_threshold: 0.5
+      min_times_detected: 10
 
   qrcode_detection_server:
     ros__parameters:
@@ -32,4 +38,27 @@ quac:
       publish_images_period: 10
       reference_frame: "map"  
       consideration_radius: 2.0
+      valid_distance_range: [0.1, 2.0]
+      max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
+      min_times_detected: 1
+
+  landolt_c_detection_server:
+    ros__parameters:
+      object_name: "landolt_c"
+      camera_names: ["camera_front", "camera_back"]
+      mapping: false
+      publish_rate: 10
+      publish_images_period: 10
+      reference_frame: "map"  
+      consideration_radius: 2.0
+      valid_distance_range: [0.1, 2.0]
+      max_tf_stamp_difference: 0.5 
+      detection_weight: 0.01
+      min_times_detected: 1
+      min_edge_count: 12
+      min_ratio_circle: 0.8
+      min_depth: 10
+      requires_two: true
+      color_threshold: 100
+

@@ -5,6 +5,8 @@ https://github.com/htchr/waveshare_servos
 
 https://github.com/Geekgineer/YOLOs-CPP-TensorRT
 
+https://github.com/clubcapra/capra_landolt_ros
+
 https://github.com/dlbeer/quirc.git
 
 # Quac - Software

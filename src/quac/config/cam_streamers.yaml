@@ -1,10 +1,8 @@
 quac:
   camera_front:
     ros__parameters:
-
       capture:
-        serial_number: "827312072798"
-
+        device_id: "19443010218B077E00"
         fps: 30
         color:
           width: 640
@@ -12,35 +10,27 @@ quac:
         depth:
           width: 640
           height: 480
-
       gst:
         port: 5000
         width: 640 #1920
         height: 480 #1080
-
-        #compression: "jpeg"
         compression: "h264"
-        jpeg:
-          quality: 80
         h264:
           bitrate: 5000
           key_int_max: 10
-
       pointcloud:
         enable: false
         interval: 10
         frame: camera_front_depth_optical_frame
       image:
-        enable: false
+        enable: true
         interval: 3
         frame: camera_front_color_optical_frame
         
-  camera_back:
+  camera_gripper:
     ros__parameters:
-
       capture:
-        serial_number: "938422071694"
-
+        device_id: "827312072798"
         fps: 30
         color:
           width: 640
@@ -48,28 +38,48 @@ quac:
         depth:
           width: 640
           height: 480
+      gst:
+        port: 5002
+        width: 640 #1920
+        height: 480 #1080
 
+        compression: "h264"
+        h264:
+          bitrate: 5000
+          key_int_max: 10
+      pointcloud:
+        enable: false
+        interval: 10
+        frame: camera_gripper_depth_optical_frame
+      image:
+        enable: true
+        interval: 3
+        frame: camera_gripper_color_optical_frame
+        
+  camera_back:
+    ros__parameters:
+      capture:
+        device_id: "938422071694"
+        fps: 30
+        color:
+          width: 640
+          height: 480
+        depth:
+          width: 640
+          height: 480
       gst:
         port: 5001
         width: 640 #1920
         height: 480 #1080
-
-        #compression: "jpeg"
         compression: "h264"
-        jpeg:
-          quality: 80
         h264:
           bitrate: 5000
           key_int_max: 10
-
       pointcloud:
         enable: false
         interval: 10
         frame: camera_back_depth_optical_frame
       image:
-        enable: false
+        enable: true
         interval: 3
         frame: camera_back_color_optical_frame
-        
-
-      
