@@ -3,17 +3,15 @@ quac:
     ros__parameters:
       capture:
         device_id: "19443010218B077E00"
-        fps: 30
+        fps: 10
         color:
-          width: 640
-          height: 480
+          width: 1920
+          height: 1080
         depth:
           width: 640
-          height: 480
+          height: 400
       gst:
         port: 5000
-        width: 640 #1920
-        height: 480 #1080
         compression: "h264"
         h264:
           bitrate: 5000
@@ -40,8 +38,6 @@ quac:
           height: 480
       gst:
         port: 5002
-        width: 640 #1920
-        height: 480 #1080
 
         compression: "h264"
         h264:
@@ -69,8 +65,6 @@ quac:
           height: 480
       gst:
         port: 5001
-        width: 640 #1920
-        height: 480 #1080
         compression: "h264"
         h264:
           bitrate: 5000

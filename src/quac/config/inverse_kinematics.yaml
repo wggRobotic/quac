@@ -1,8 +1,9 @@
 quac:
   ik_node:
     ros__parameters:
-      l1: 0.105
-      l2: 0.035
-      l3: 0.13
+      l1: 0.1025
+      l2: 0.0288
+      l3: 0.15
       gripper_radius: 0.045
       gripper_offset: 0.005
+      joint_names: [arm_servo_0_joint, arm_servo_1_joint, gripper_servo_joint]

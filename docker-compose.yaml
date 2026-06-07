@@ -31,6 +31,10 @@ services:
       context: src/quac-cam-streams/
       dockerfile: depthai_streamer.dockerfile
     image: quac_depthai_streamer:dev
+    #devices:
+    #  - /dev/bus/usb:/dev/bus/usb
+    #device_cgroup_rules:
+    #  - 'c 189:* rmw'
     privileged: true
     command: "ros2 launch quac depthai_streamer.launch.py"
 
@@ -211,6 +215,7 @@ services:
       - ./docker_entrypoint.sh:/docker_entrypoint.sh:ro
     devices:
       - /dev/dri:/dev/dri
+    command: "bash"
 
   debug_shell:
     <<: *defaults
@@ -218,3 +223,8 @@ services:
       dockerfile: dockerfiles/debug_shell.dockerfile
     image: quac_debug_shell:dev
     command: "bash"
+
+  dummy_tf:
+    <<: *defaults
+    image: quac_debug_shell:dev
+    command: "ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 map base_link --ros-args -r /tf:=/quac/tf -r /tf_static:=/quac/tf_static"  

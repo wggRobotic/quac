@@ -4,9 +4,9 @@ cmd=(docker compose)
   && cmd+=(-f docker-compose.yaml -f docker-compose.remote.yaml)
 
 cmd+=(
-build \
-realsense_streamer_front \
-realsense_streamer_back \
+build --pull=false \
+cam_streamer_gripper \
+cam_streamer_back \
 qrcode_detection_server \
 landolt_c_detection_server \
 hazmat_detection_server \

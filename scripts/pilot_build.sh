@@ -1,4 +1,4 @@
-cmd=(docker compose build \
+cmd=(docker compose build --pull=false \
 inverse_kinematics \
 rsp \
 cmd_vel_mux \

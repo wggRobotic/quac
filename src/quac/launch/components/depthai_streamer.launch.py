@@ -8,9 +8,9 @@ def generate_launch_description():
     package_dir = get_package_share_directory('quac')
 
     return LaunchDescription([
-        camera = Node(
+        Node(
             package='quac_cam_streams',
-            executable='deapthai_streamer',
+            executable='depthai_streamer',
             name='camera_front',
             namespace='quac',
             output='screen',
