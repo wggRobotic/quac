@@ -14,9 +14,8 @@ x-defaults: &defaults
     DISABLE_WHEELS: ${DISABLE_WHEELS:-false}
     DISABLE_ARM: ${DISABLE_ARM:-false}
     DISABLE_THERMAL_CAM: ${DISABLE_THERMAL_CAM:-false}
-    DISABLE_IMU: ${DISABLE_IMU:-false}
     DISABLE_MAGNETOMETER: ${DISABLE_MAGNETOMETER:-false}
-    DISABLE_EKF: ${DISABLE_EKF:-false}
+    CONTROL_ODOM_TF: ${CONTROL_ODOM_TF:-true}
     SIM_MODE: ${SIM_MODE:-false}
     NVIDIA_VISIBLE_DEVICES: all
     QUAC_ENGINES_DIR: /quac_trt_engines/
@@ -74,6 +73,7 @@ services:
     build:
       dockerfile: yolo_detection_server.dockerfile
       context: src/quac-detection/
+      pull: false
     image: quac_yolo_detection_server:dev
     runtime: nvidia
     ipc: host
@@ -96,7 +96,7 @@ services:
     devices:
       - ${WHEELS_DEVICE:-/dev/null}:${WHEELS_DEVICE:-/dev/null}
       - ${ARM_DEVICE:-/dev/null}:${ARM_DEVICE:-/dev/null}
-    command: "ros2 launch quac control.launch.py disable_ekf:=${DISABLE_EKF:-false}"
+    command: "ros2 launch quac control.launch.py odom_tf:=${CONTROL_ODOM_TF:-true}"
 
   ekf:
     <<: *defaults
@@ -148,7 +148,7 @@ services:
       context: src/quac-sensor/
     image: quac_sensors:dev
     privileged: true
-    command: "ros2 launch quac sensors.launch.py disable_thermal_cam:=${DISABLE_THERMAL_CAM:-false} disable_imu:=${DISABLE_IMU:-false} disable_magnetometer:=${DISABLE_MAGNETOMETER:-false}"
+    command: "ros2 launch quac sensors.launch.py disable_thermal_cam:=${DISABLE_THERMAL_CAM:-false} disable_imu:=true disable_magnetometer:=${DISABLE_MAGNETOMETER:-false}"
 
   nav2:
     <<: *defaults

@@ -8,6 +8,6 @@ quac:
       in:
         topics: [cmd_vel_nav2, cmd_vel_pilot]
         timeouts: [0.5, 0.5]
-        stamped_flags: [false, false]
+        stamped_flags: [false, true]
         priorities: [10.0, 100.0]
 

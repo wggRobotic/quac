@@ -21,9 +21,9 @@ def generate_launch_description():
             parameters=[
                 os.path.join(package_dir, 'config', 'detection_servers.yaml'),
                 {
-                    'engine_path': os.path.join(os.environ.get('QUAC_ENGINES_DIR', '/null/'), 'paintroller_yolo11.engine'),
-                    'model_path': os.path.join(package_dir, 'models/paintroller_yolo11.onnx'),
-                    'labels_path': os.path.join(package_dir, 'models/paintroller_yolo11.labels.txt'),
+                    'engine_path': os.path.join(os.environ.get('QUAC_ENGINES_DIR', '/null/'), 'paintroller_yolo26s_obb.engine'),
+                    'model_path': os.path.join(package_dir, 'models/paintroller_yolo26s_obb.onnx'),
+                    'labels_path': os.path.join(package_dir, 'models/paintroller_labels.txt'),
                 },
             ]
         )

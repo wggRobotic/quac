@@ -14,6 +14,6 @@ def generate_launch_description():
             name='camera_front',
             namespace='quac',
             output='screen',
-            parameters=[os.path.join(package_dir, 'config', 'cam_streamers.yaml')],
+            parameters=[os.path.join(package_dir, 'config', 'cam_streamers.yaml')]
         )
     ])

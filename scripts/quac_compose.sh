@@ -23,14 +23,11 @@ dslam=false
 [[ " $@ " =~ " -dtcam"    ]] \
   && cmd+=(DISABLE_THERMAL_CAM=true)
 
-[[ " $@ " =~ " -dimu "    ]] \
-  && cmd+=(DISABLE_IMU=true)
-
 [[ " $@ " =~ " -dmag "    ]] \
   && cmd+=(DISABLE_MAGNETOMETER=true)
 
-[[ " $@ " =~ " -dekf "    ]] \
-  && cmd+=(DISABLE_EKF=true)
+[[ " $@ " =~ " -ekf " || " $@ " =~ " -dodomtf " ]] \
+  && cmd+=(CONTROL_ODOM_TF=false)
 
 cmd+=(docker compose )
 
@@ -45,7 +42,7 @@ cmd+=(up rsp cmd_vel_mux control inverse_kinematics)
 [[ ! " $@ " =~ " -dsen "  ]] \
   && cmd+=(sensors)
 
-[[ ! " $@ " =~ " -dekf "    ]] \
+[[ " $@ " =~ " -ekf "    ]] \
   && cmd+=(ekf)
 
 ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dcsg " ]]) \
@@ -54,26 +51,26 @@ cmd+=(up rsp cmd_vel_mux control inverse_kinematics)
 ([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dcsb " ]]) \
   && cmd+=(cam_streamer_back)
 
-([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dhazmat " ]]) \
+([[ ! " $@ " =~ " -dvid " ]] && [[ " $@ " =~ " -hazmat " ]]) \
   && cmd+=(hazmat_detection_server)
 
-([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dpaint " ]]) \
+([[ ! " $@ " =~ " -dvid " ]] && [[ " $@ " =~ " -paint " ]]) \
   && cmd+=(paintroller_detection_server)
 
-([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dqrcode " ]]) \
+([[ ! " $@ " =~ " -dvid " ]] && [[ " $@ " =~ " -qrcode " ]]) \
   && cmd+=(qrcode_detection_server)
 
-([[ ! " $@ " =~ " -dvid " ]] && [[ ! " $@ " =~ " -dlandolt " ]]) \
+([[ ! " $@ " =~ " -dvid " ]] && [[ " $@ " =~ " -landolt " ]]) \
 && cmd+=(landolt_c_detection_server)
 
 ([[ $dslam == false ]] && [[ ! " $@ " =~ " -dnav " ]]) \
   && cmd+=(nav2)
 
-([[ $dslam == false ]] && [[ ! " $@ " =~ " -ohm " ]]) \
-  && cmd+=(slam_toolbox)
-
-([[ $dslam == false ]] && [[ " $@ " =~ " -ohm " ]]) \
+([[ $dslam == false ]] && [[ ! " $@ " =~ " -toolbox " ]]) \
   && cmd+=(ohm_slam)
+
+([[ $dslam == false ]] && [[ " $@ " =~ " -toolbox " ]]) \
+  && cmd+=(slam_toolbox)
 
 echo "${cmd[@]}"
 "${cmd[@]}"

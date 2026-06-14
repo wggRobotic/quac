@@ -21,9 +21,9 @@ def generate_launch_description():
             parameters=[
                 os.path.join(package_dir, 'config', 'detection_servers.yaml'),
                 {
-                    'engine_path': os.path.join(os.environ.get('QUAC_ENGINES_DIR', '/null/'), 'hazmat_yolo26.engine'),
-                    'model_path': os.path.join(package_dir, 'models/hazmat_yolo26.onnx'),
-                    'labels_path': os.path.join(package_dir, 'models/hazmat_yolo26.labels.txt'),
+                    'engine_path': os.path.join(os.environ.get('QUAC_ENGINES_DIR', '/null/'), 'hazmat_yolo26n.engine'),
+                    'model_path': os.path.join(package_dir, 'models/hazmat_yolo26n.onnx'),
+                    'labels_path': os.path.join(package_dir, 'models/hazmat_labels.txt'),
                 },
             ]
         )

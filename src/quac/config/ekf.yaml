@@ -13,18 +13,22 @@ quac:
       world_frame: odom
 
       odom0: odom
-      odom0_config: [false, false, false,
-                    false, false, false,
-                    true,  true,  false,
-                    false, false, true,
-                    false, false, false]
+      odom0_config: [
+        false, false, false,      # position: x, y, z
+        false, false, true,    # orientation: roll, pitch, yaw
+        true,  true,  false,    # linear velocity: vx, vy, vz
+        false, false, true,    # angular velocity: roll rate, pitch rate, yaw rate
+        false, false, false     # linear acceleration: ax, ay, az 
+      ]
 
-      imu0: imu
-      imu0_config: [false, false, false,
-                    false, false, true,
-                    false, false, false,
-                    false, false, true,
-                    false,  false, false]
+      imu0: camera_front/imu
+      imu0_config: [
+        false, false, false,    # position: x, y, z
+        false, false, false,     # orientation: roll, pitch, yaw
+        false, false, false,    # linear velocity: vx, vy, vz
+        true, true, true,     # angular velocity: roll rate, pitch rate, yaw rate
+        false, false, true,      # linear acceleration: ax, ay, az 
+      ]
 
       imu0_differential: false
       imu0_relative: false

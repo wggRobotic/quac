@@ -18,6 +18,7 @@
 
             <xacro:if value="$(arg disable_wheels)">
                 <plugin>mock_components/GenericSystem</plugin>
+                <param name="calculate_dynamics">true</param>
             </xacro:if>
         </hardware>
 

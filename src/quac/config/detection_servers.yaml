@@ -13,6 +13,7 @@ quac:
       detection_weight: 0.01
       confidence_threshold: 0.5
       min_times_detected: 10
+      yolo_task: "detect"
 
   paintroller_detection_server:
     ros__parameters:
@@ -23,11 +24,12 @@ quac:
       publish_images_period: 10
       reference_frame: "map"
       consideration_radius: 0.05
-      valid_distance_range: [0.00, 2.0]
+      valid_distance_range: [0.08, 2.0]
       max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
       confidence_threshold: 0.5
       min_times_detected: 10
+      yolo_task: "obb"
 
   qrcode_detection_server:
     ros__parameters:
@@ -38,7 +40,7 @@ quac:
       publish_images_period: 10
       reference_frame: "map"  
       consideration_radius: 2.0
-      valid_distance_range: [0.00, 2.0]
+      valid_distance_range: [0.08, 2.0]
       max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
       min_times_detected: 1
@@ -46,13 +48,13 @@ quac:
   landolt_c_detection_server:
     ros__parameters:
       object_name: "landolt_c"
-      camera_names: ["camera_front", "camera_gripper", "camera_back"]
-      mapping: false
+      camera_names: ["camera_front", "camera_gripper"]
+      mapping: true
       publish_rate: 10
       publish_images_period: 1
       reference_frame: "map"  
       consideration_radius: 2.0
-      valid_distance_range: [0.00, 2.0]
+      valid_distance_range: [0.08, 2.0]
       max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
       min_times_detected: 1
@@ -60,8 +62,8 @@ quac:
       min_ratio_circle: 0.8
       min_depth: 10
       requires_two: true
-      color_threshold: 100
-      enable_outer_default: true
+      color_threshold: 80
+      enable_outer_default: false
       outer_default: "up"
-      outer_up_configuration: 0.625
+      outer_up_configuration: 0.0
 

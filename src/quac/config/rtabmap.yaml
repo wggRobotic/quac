@@ -1,0 +1,68 @@
+quac:
+  rtabmap:
+    ros__parameters:
+      frame_id: base_footprint
+      subscribe_rgbd: true
+      subscribe_scan: true
+      use_action_for_goal: true
+      rgbd_cameras: 2
+
+      # RTAB-Map core parameters
+      Reg/Strategy: "2"
+      Reg/Force3DoF: "true"
+      RGBD/NeighborLinkRefining: "True"
+      RGBD/MarkerDetection: "false"
+
+      # Mapping / grid parameters
+      Grid/RayTracing: "true"
+      Grid/3D: "true"
+      Grid/RangeMax: "3"
+      Grid/Sensor: "2"
+
+      Grid/NormalsSegmentation: "false"
+      Grid/MaxGroundHeight: "0.05"
+      Grid/MaxObstacleHeight: "0.4"
+      Grid/RangeMin: "0.2"
+
+      Optimizer/GravitySigma: "0"
+
+quac:
+  obstacles_detection:
+    ros__parameters:
+      frame_id: base_footprint
+
+      Grid/3D: "true"
+      Grid/MaxGroundHeight: "0.05"
+      Grid/MaxObstacleHeight: "0.4"
+      Grid/RangeMin: "0.2"
+      Grid/RangeMax: "3"
+
+      Grid/NormalsSegmentation: "false"
+      Grid/Sensor: "2"
+
+quac:
+  rgbd_odometry:
+    ros__parameters:
+      frame_id: base_link            # Your robots base frame
+      odom_frame_id: odom          # Output odom frame (fused later via EKF)
+      publish_tf: True                 # Set to False if your EKF node publishes the odom->base_link TF
+      wait_for_transform: 0.2
+
+      queue_size: 30
+      approx_sync: True
+
+      # Input Configuration
+      subscribe_rgbd: True
+      rgbd_cameras: 2
+
+      Odom/Strategy: "0"               # 0=Frame-to-Map (More accurate), 1=Frame-to-Frame
+      Vis/CorType: "0"                 # 0=Features Matching, 1=Optical Flow
+      Vis/FeatureType: "8"             # 6=GFTT/ORB, 8=FAST/ORB (Very fast on Orin Nano)
+      Vis/MaxFeatures: "600"           # Balanced for tracking quality vs CPU usage
+      Vis/EstimationType: "0"          # 0=3D->3D (Requires depth), 1=3D->2D (PnP)
+      
+      # Filtering out erratic movements (Essential for uneven terrain)
+      Odom/FilteringStrategy: "1"      # 1=Kalman Filtering
+      Odom/MaxGradients: "0.0"
+      Vis/MinInliers: "15"             # Minimum matching features to accept a transformation
+      Vis/InlierDistance: "0.1"        # Maximum distance (meters) for a feature to be considered an inlier

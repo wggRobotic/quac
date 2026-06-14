@@ -5,20 +5,21 @@
         <color rgba="0.5 0.5 0.5 1"/>
     </material>
 
-	<xacro:macro name="base"
-		params="camera_name parent has_imu cam_pos_x cam_pos_y cam_pos_z cam_roll cam_pitch cam_yaw">
+	<xacro:macro name="oak_d_lite" params="camera_name parent xyz rpy">
 
-		<!-- base_link of the sensor-->
+		<xacro:property name="baseline" value="0.075" />
+
+		<xacro:property name="left_name" value="infra2" />
+		<xacro:property name="right_name" value="infra1" />
+
 		<link name="${camera_name}" />
 
 		<joint name="${camera_name}_center_joint" type="fixed">
 			<parent link="${parent}" />
 			<child link="${camera_name}" />
-			<origin xyz="${cam_pos_x} ${cam_pos_y} ${cam_pos_z}"
-				rpy="${cam_roll} ${cam_pitch} ${cam_yaw}" />
+			<origin xyz="${xyz}" rpy="${rpy}" />
 		</joint>
 
-		<!-- device Center -->
 		<link name="${camera_name}_model_origin">
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0" />
@@ -32,38 +33,8 @@
 		<joint name="${camera_name}_model_origin_joint" type="fixed">
 			<parent link="${camera_name}" />
 			<child link="${camera_name}_model_origin" />
-			<origin xyz="0 0 0" rpy="1.5708 0 1.5708" />
+			<origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
 		</joint>
-
-
-		<!-- IMU -->
-
-		<xacro:if value="${has_imu}">
-			<link name="${camera_name}_imu_frame" />
-			<joint name="${camera_name}_imu_joint" type="fixed">
-				<parent link="${camera_name}" />
-				<child link="${camera_name}_imu_frame" />
-				<origin xyz="${imu_offset_x} ${imu_offset_y} ${imu_offset_z}"
-					rpy="${imu_r} ${imu_p} ${imu_y}" />
-			</joint>
-		</xacro:if>
-
-	</xacro:macro>
-
-	<xacro:macro name="oak_d_lite"
-		params="camera_name parent 
-                                           cam_pos_x cam_pos_y cam_pos_z 
-                                           cam_roll cam_pitch cam_yaw">
-
-		<xacro:property name="has_imu" value="false" />
-		<xacro:property name="baseline" value="0.075" />
-
-		<xacro:property name="left_name" value="infra2" />
-		<xacro:property name="right_name" value="infra1" />
-
-		<xacro:base camera_name="${camera_name}" parent="${parent}" has_imu="${has_imu}"
-			cam_pos_x="${cam_pos_x}" cam_pos_y="${cam_pos_y}" cam_pos_z="${cam_pos_z}"
-			cam_roll="${cam_roll}" cam_pitch="${cam_pitch}" cam_yaw="${cam_yaw}" />
 
 		<!-- RGB Camera -->
 		<link name="${camera_name}_color_frame" />
@@ -72,6 +43,15 @@
 			<parent link="${camera_name}" />
 			<child link="${camera_name}_color_frame" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
+		</joint>
+
+		<link name="${camera_name}_imu"/>
+
+		<joint name="${camera_name}_imu_joint" type="fixed">
+			<parent link="${camera_name}_color_frame"/>
+			<child link="${camera_name}_imu"/>
+
+			<origin xyz="-0.00315 0.0006439 -0.0002" rpy="-${pi/2} 0.0 ${pi/2}"/>
 		</joint>
 
 		<link name="${camera_name}_color_optical_frame" />

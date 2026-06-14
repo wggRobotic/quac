@@ -17,13 +17,7 @@ def generate_launch_description():
         output='screen',
         parameters=[
             os.path.join(package_dir,'config','controllers.yaml'),
-            {
-                "diff_drive_controller": {
-                    "ros__parameters": {
-                        "enable_odom_tf": LaunchConfiguration('disable_ekf')
-                    }
-                }
-            }
+            {"enable_odom_tf": LaunchConfiguration('odom_tf')}
         ],
         remappings=[
             ('/tf', 'tf'),
@@ -75,8 +69,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         DeclareLaunchArgument(
-            'disable_ekf',
-            default_value='false'
+            'odom_tf',
+            default_value='true'
         ),
         controller_manager,
         controllers
