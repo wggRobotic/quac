@@ -10,7 +10,7 @@ dlidar=false
 ([[ " $@ " =~ " -dlidar "  ]] || [ ! -e /dev/quac/lidar ]) && dlidar=true
 
 dslam=false
-([[ " $@ " =~ " -dslam " ]] || [[ $dwheels == true ]] || [[ $dlidar == true ]]) && dslam=true
+([[ " $@ " =~ " -dslam " ]] || [[ $dlidar == true ]]) && dslam=true
 
 [[ $dwheels == true ]] \
   && cmd+=(WHEELS_DEVICE=/dev/null DISABLE_WHEELS=true) \

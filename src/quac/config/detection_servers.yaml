@@ -52,7 +52,7 @@ quac:
       mapping: true
       publish_rate: 10
       publish_images_period: 1
-      reference_frame: "map"  
+      reference_frame: "base_link"  
       consideration_radius: 2.0
       valid_distance_range: [0.08, 2.0]
       max_tf_stamp_difference: 0.5 

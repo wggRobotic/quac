@@ -74,7 +74,7 @@ quac:
           bitrate: 5000
           key_int_max: 60
       pointcloud:
-        enable: false
+        enable: true
         interval: 10
         frame: camera_back_depth_optical_frame
       image:
