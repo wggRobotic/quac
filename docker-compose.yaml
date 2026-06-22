@@ -13,6 +13,7 @@ x-defaults: &defaults
     RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
     DISABLE_WHEELS: ${DISABLE_WHEELS:-false}
     DISABLE_ARM: ${DISABLE_ARM:-false}
+    OLD_ARM: ${OLD_ARM:-false}
     DISABLE_THERMAL_CAM: ${DISABLE_THERMAL_CAM:-false}
     DISABLE_MAGNETOMETER: ${DISABLE_MAGNETOMETER:-false}
     CONTROL_ODOM_TF: ${CONTROL_ODOM_TF:-true}
@@ -30,10 +31,6 @@ services:
       context: src/quac-cam-streams/
       dockerfile: depthai_streamer.dockerfile
     image: quac_depthai_streamer:dev
-    #devices:
-    #  - /dev/bus/usb:/dev/bus/usb
-    #device_cgroup_rules:
-    #  - 'c 189:* rmw'
     privileged: true
     command: "ros2 launch quac depthai_streamer.launch.py"
 
@@ -96,7 +93,7 @@ services:
     devices:
       - ${WHEELS_DEVICE:-/dev/null}:${WHEELS_DEVICE:-/dev/null}
       - ${ARM_DEVICE:-/dev/null}:${ARM_DEVICE:-/dev/null}
-    command: "ros2 launch quac control.launch.py odom_tf:=${CONTROL_ODOM_TF:-true}"
+    command: "ros2 launch quac control.launch.py odom_tf:=${CONTROL_ODOM_TF:-true} old_arm:=${OLD_ARM:-false}"
 
   ekf:
     <<: *defaults
@@ -117,14 +114,14 @@ services:
     build:
       context: src/quac-inverse-kinematics/
     image: quac_inverse_kinematics:dev
-    command: "ros2 launch quac inverse_kinematics.launch.py sim_mode:=${SIM_MODE:-false}"
+    command: "ros2 launch quac inverse_kinematics.launch.py sim_mode:=${SIM_MODE:-false} old_arm:=${OLD_ARM:-false}"
 
   rsp:
     <<: *defaults
     build:
       dockerfile: dockerfiles/rsp.dockerfile
     image: quac_rsp:dev
-    command: "ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false} sim_mode:=${SIM_MODE:-false}"
+    command: "ros2 launch quac rsp.launch.py disable_wheels:=${DISABLE_WHEELS:-false} disable_arm:=${DISABLE_ARM:-false} sim_mode:=${SIM_MODE:-false} old_arm:=${OLD_ARM:-false}"
 
   cmd_vel_mux:
     <<: *defaults

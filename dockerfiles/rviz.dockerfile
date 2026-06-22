@@ -12,6 +12,5 @@ RUN apt install -y ros-humble-navigation2 ros-humble-rtabmap ros-humble-rtabmap-
 
 WORKDIR /quac
 
-COPY ./src/quac-interfaces /quac/src/quac-interfaces
 COPY ./src/quac-rviz-plugins /quac/src/quac-rviz-plugins
 RUN . /opt/ros/humble/setup.bash && colcon build

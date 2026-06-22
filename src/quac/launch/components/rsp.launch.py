@@ -14,6 +14,7 @@ def generate_launch_description():
         ' sim_mode:=', LaunchConfiguration('sim_mode'),
         ' disable_wheels:=', LaunchConfiguration('disable_wheels'),
         ' disable_arm:=', LaunchConfiguration('disable_arm'),
+        ' old_arm:=', LaunchConfiguration('old_arm'),
     ])
     
     rsp = Node(
@@ -47,6 +48,11 @@ def generate_launch_description():
             'disable_arm',
             default_value='false',
             description='Whether to disable the robotic arm'
+        ),
+        DeclareLaunchArgument(
+            'old_arm',
+            default_value='false',
+            description='Whether to use the old arm'
         ),
 
         rsp

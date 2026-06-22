@@ -1,0 +1,19 @@
+quac:
+  inverse_kinematics:
+    ros__parameters:
+
+      gripper_radius: 0.045
+      gripper_offset: 0.005
+      gripper_joint: "gripper_joint"
+
+      segment_count: 2
+
+      segment_0:
+      x: 0.1
+      y: 0.1
+      joint: arm_segment_0_joint
+
+      segment_1:
+      x: 0.1
+      y: 0.1
+      joint: arm_segment_1_joint

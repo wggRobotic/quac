@@ -20,6 +20,9 @@ dslam=false
   && cmd+=(ARM_DEVICE=/dev/null DISABLE_ARM=true) \
   || cmd+=(ARM_DEVICE=/dev/quac/servos)
 
+[[ " $@ " =~ " -oldarm "    ]] \
+  && cmd+=(OLD_ARM=true)
+
 [[ " $@ " =~ " -dtcam"    ]] \
   && cmd+=(DISABLE_THERMAL_CAM=true)
 

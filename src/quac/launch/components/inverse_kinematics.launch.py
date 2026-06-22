@@ -5,13 +5,14 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
+from launch.conditions import UnlessCondition, IfCondition
 
 def generate_launch_description():
     package_dir = get_package_share_directory('quac')
 
     inverse_kinematics = Node(
         package="quac_inverse_kinematics",
-        executable="ik_node",
+        executable="inverse_kinematics",
         namespace='quac',
         output='screen',
         parameters=[
@@ -19,6 +20,20 @@ def generate_launch_description():
             {'use_sim_time': LaunchConfiguration('sim_mode')}    
         ],
         remappings=[('/clock', 'clock')],
+        condition=UnlessCondition(LaunchConfiguration('old_arm'))
+    )
+
+    inverse_kinematics_old = Node(
+        package="quac_inverse_kinematics",
+        executable="inverse_kinematics",
+        namespace='quac',
+        output='screen',
+        parameters=[
+            os.path.join(package_dir, 'config', 'inverse_kinematics_old.yaml'),
+            {'use_sim_time': LaunchConfiguration('sim_mode')}    
+        ],
+        remappings=[('/clock', 'clock')],
+        condition=IfCondition(LaunchConfiguration('old_arm'))
     )
 
     return LaunchDescription([
@@ -27,6 +42,12 @@ def generate_launch_description():
             default_value='false',
             description='Starts with gazebo version of description'
         ),
+        DeclareLaunchArgument(
+            'old_arm',
+            default_value='false',
+            description='Whether to use the kinematics of the old arm'
+        ),
 
-        inverse_kinematics
+        inverse_kinematics,
+        inverse_kinematics_old
     ])

@@ -4,6 +4,7 @@
     <xacro:arg name="sim_mode" default="false"/>
     <xacro:arg name="disable_wheels" default="false"/>
     <xacro:arg name="disable_arm" default="false"/>
+    <xacro:arg name="old_arm" default="false"/>
     
     <!-- WHEELS -->
 
@@ -80,9 +81,18 @@
             </joint>
         </xacro:macro>
 
-        <xacro:arm_joint name="arm_servo_0_joint"   id="5" inverted="true" offset="${pi/2}" pos_min="${-pi}" pos_max="0"/>
-        <xacro:arm_joint name="arm_servo_1_joint"   id="6" inverted="false"  offset="${1.8-pi/2}"   pos_min="0"     pos_max="${pi/2 + 0.8}"/>
-        <xacro:arm_joint name="gripper_servo_joint" id="1" inverted="true"  offset="1.75"  pos_min="0"        pos_max="1.7" />
+        <xacro:arm_joint name="gripper_joint" id="1" inverted="true"  offset="1.75"        pos_min="0"      pos_max="1.7" />
+
+        <xacro:if value="$(arg old_arm)">
+            <xacro:arm_joint name="arm_segment_0_joint"   id="5" inverted="true"  offset="${pi/2}"     pos_min="${-pi}" pos_max="0"/>
+            <xacro:arm_joint name="arm_segment_1_joint"   id="6" inverted="false" offset="${1.8-pi/2}" pos_min="0"      pos_max="${pi/2 + 0.8}"/>
+        </xacro:if>
+
+        <xacro:unless value="$(arg old_arm)">
+            <xacro:arm_joint name="arm_segment_0_joint"   id="" inverted=""  offset=""     pos_min="" pos_max=""/>
+            <xacro:arm_joint name="arm_segment_1_joint"   id="" inverted="" offset="" pos_min=""      pos_max=""/>
+            <xacro:arm_joint name="arm_segment_2_joint"   id="" inverted=""  offset=""        pos_min=""      pos_max="" />
+        </xacro:unless>
 
     </ros2_control>     
 </robot>

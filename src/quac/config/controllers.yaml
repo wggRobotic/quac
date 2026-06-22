@@ -39,9 +39,10 @@ quac:
   arm_position_controller:
     ros__parameters:
       joints:
-        - arm_servo_0_joint
-        - arm_servo_1_joint
-        - gripper_servo_joint
+        - arm_segment_0_joint
+        - arm_segment_1_joint
+        - arm_segment_2_joint
+        - gripper_joint
 
       command_interfaces:
         - position

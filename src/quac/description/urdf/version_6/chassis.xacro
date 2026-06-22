@@ -1,7 +1,13 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:include filename="arm.xacro" />
+    <xacro:unless value="$(arg old_arm)">
+        <xacro:include filename="arm_v2.xacro" />
+    </xacro:unless>
+    <xacro:if value="$(arg old_arm)">
+        <xacro:include filename="arm_v1.xacro" />
+    </xacro:if>
+    
     <xacro:include filename="wheels.xacro" />
 
     <material name="chassis_material">
