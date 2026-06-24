@@ -148,7 +148,7 @@ quac:
         min_vel_y: 0.0
         max_vel_x: 0.26
         max_vel_y: 0.0
-        max_vel_theta: 0.0
+        min_vel_theta: 0.0
         max_vel_theta: 1.0
         min_speed_xy: 0.0
         max_speed_xy: 0.26
@@ -201,8 +201,8 @@ quac:
         plugins: ["obstacle_layer", "inflation_layer"]
         inflation_layer:
           plugin: "nav2_costmap_2d::InflationLayer"
-          cost_scaling_factor: 10.0
-          inflation_radius: 0.02
+          cost_scaling_factor: 5.0
+          inflation_radius: 0.08
 
         obstacle_layer:
           plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -255,8 +255,8 @@ quac:
           map_subscribe_transient_local: True
         inflation_layer:
           plugin: "nav2_costmap_2d::InflationLayer"
-          cost_scaling_factor: 10.0
-          inflation_radius: 0.02
+          cost_scaling_factor: 5.0
+          inflation_radius: 0.08
         always_send_full_costmap: True
 
   map_server:
