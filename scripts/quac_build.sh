@@ -5,6 +5,7 @@ cmd=(docker compose)
 
 cmd+=(
 build --pull=false \
+cam_streamer_front
 cam_streamer_gripper \
 cam_streamer_back \
 qrcode_detection_server \

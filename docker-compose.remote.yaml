@@ -1,22 +1,31 @@
 services:
 
-  realsense_streamer_front:
+  cam_streamer_front:
+    image: ghcr.io/wggrobotic/quac-depthai-streamer:stable
+
+  cam_streamer_gripper:
     image: ghcr.io/wggrobotic/quac-realsense-streamer:stable
 
-  realsense_streamer_back:
+  cam_streamer_back:
     image: ghcr.io/wggrobotic/quac-realsense-streamer:stable
+
+  landolt_c_detection_server:
+    image: ghcr.io/wggrobotic/quac-landolt-c-detection-server:stable
 
   qrcode_detection_server:
-    image: ghcr.io/wggrobotic/quac-qrcode-detection_server:stable
+    image: ghcr.io/wggrobotic/quac-qrcode-detection-server:stable
 
   hazmat_detection_server:
-    image: ghcr.io/wggrobotic/quac-yolo-detection_server:stable
+    image: ghcr.io/wggrobotic/quac-yolo-detection-server:stable
 
   paintroller_detection_server:
-    image: ghcr.io/wggrobotic/quac-yolo-detection_server:stable
+    image: ghcr.io/wggrobotic/quac-yolo-detection-server:stable
 
   control:
     image: ghcr.io/wggrobotic/quac-control:stable
+
+  ekf:
+    image: ghcr.io/wggrobotic/quac-ekf:stable
 
   arm_target_controller:
     image: ghcr.io/wggrobotic/quac-arm-target-controller:stable
