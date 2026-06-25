@@ -11,7 +11,7 @@
     <joint name="arm_segment_0_joint" type="continuous">
         <parent link="chassis"/>
         <child link="arm_segment_0"/>
-        <origin xyz="0.13 0 0.0445" rpy="${pi/2} 0 0"/>
+        <origin xyz="0.15 0 0.0445" rpy="${pi/2} 0 0"/>
         <axis xyz="0 0 1" />
     </joint>
 
@@ -44,7 +44,7 @@
             <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
         </inertial>
         <visual>
-            <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
+            <origin xyz="-0.02 0.05 0" rpy="${pi/2} 0 0"/>
             <geometry>
                 <mesh filename="package://quac/meshes/version_6/arm_v2/arm_segment_1_reduced.stl" scale="${mesh_scale} ${mesh_scale} ${mesh_scale}"/>
             </geometry>
@@ -55,7 +55,7 @@
     <joint name="arm_segment_2_joint" type="continuous">
         <parent link="arm_segment_1"/>
         <child link="arm_segment_2"/>
-        <origin xyz="0.02 0.05 0" rpy="0 0 0"/>
+        <origin xyz="-0.02 0.05 0" rpy="0 0 0"/>
         <axis xyz="0 0 1" />
     </joint>
 

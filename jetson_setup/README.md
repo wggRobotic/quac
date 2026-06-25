@@ -1,24 +1,7 @@
-# For more information, go to the [wiki](https://github.com/wggRobotic/Team-Docs/wiki/4.-Quac-%E2%80%93-All-Terrain-Crawler)
-
-# External code used
-https://github.com/htchr/waveshare_servos
-
-https://github.com/Geekgineer/YOLOs-CPP-TensorRT
-
-https://github.com/clubcapra/capra_landolt_ros
-
-https://github.com/dlbeer/quirc.git
-
 # System Setup
 
 ## Flashing OS and Jetpack
 Use the [NVIDIA SDK Manager](https://developer.nvidia.com/sdk-manager) to flash the latest version of linux for tegra and jetpack6 for the jetson orin nano dev kit onto the jetson.
-
-## Initial setup
-```
-sudo apt update && sudo apt upgrade
-sudo apt install -y nano git vim netplan.io
-```
 
 ## Change Hostname
 ```
@@ -35,6 +18,7 @@ with
 ```
 127.0.1.1   quac
 ```
+and reboot
 
 ## uart patch
 apply the patch from https://github.com/jetsonhacks/jetson-orin-uart

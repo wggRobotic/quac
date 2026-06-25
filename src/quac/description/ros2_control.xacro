@@ -89,9 +89,9 @@
         </xacro:if>
 
         <xacro:unless value="$(arg old_arm)">
-            <xacro:arm_joint name="arm_segment_0_joint"   id="1" inverted="false"  offset="${3*pi/2}"     pos_min="${-pi-pi/8}"   pos_max="0"/>
-            <xacro:arm_joint name="arm_segment_1_joint"   id="2" inverted="false"  offset="${pi/2}"   pos_min="0"        pos_max="${pi}"/>
-            <xacro:arm_joint name="arm_segment_2_joint"   id="3" inverted="true"   offset="${pi}" pos_min="${-pi/5}" pos_max="${pi/2}" />
+            <xacro:arm_joint name="arm_segment_0_joint"   id="1" inverted="false"  offset="${3*pi/2}"     pos_min="${-5*pi/4 - 0.1}"   pos_max="0"/>
+            <xacro:arm_joint name="arm_segment_1_joint"   id="2" inverted="false"  offset="${pi}"   pos_min="${-pi/4}"        pos_max="${pi/2}"/>
+            <xacro:arm_joint name="arm_segment_2_joint"   id="3" inverted="true"   offset="${3*pi/2}" pos_min="0" pos_max="${pi - 0.05}" />
         </xacro:unless>
 
     </ros2_control>     

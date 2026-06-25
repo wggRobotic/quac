@@ -1,0 +1,23 @@
+###################################################´#
+# ------------------ DISCLAIMER ------------------- #
+#                                                   #
+# I know that passwords definetly should NOT be put #
+# into a public repo in plain text, but these are   #
+# only the wifi passwords for our routers, so its   #
+# fine for now. Changes will be made in the future  #
+#####################################################
+
+network:
+  version: 2
+  renderer: NetworkManager
+  wifis:
+    wlP1p1s0:
+      dhcp4: true
+      access-points:
+        "Keenetic-3411":
+          password: "wgg#0815"
+        "Hotspot_von_Christopher":
+          password: "187187187"
+        "dd-wrt":
+          password: "freshcoconut253"
+        
