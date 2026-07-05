@@ -46,7 +46,7 @@ quac:
       frame_id: base_link            # Your robots base frame
       odom_frame_id: odom          # Output odom frame (fused later via EKF)
       publish_tf: True                 # Set to False if your EKF node publishes the odom->base_link TF
-      wait_for_transform: 0.2
+      wait_for_transform: 0.1
 
       queue_size: 30
       approx_sync: True
@@ -58,7 +58,7 @@ quac:
       Odom/Strategy: "0"               # 0=Frame-to-Map (More accurate), 1=Frame-to-Frame
       Vis/CorType: "0"                 # 0=Features Matching, 1=Optical Flow
       Vis/FeatureType: "8"             # 6=GFTT/ORB, 8=FAST/ORB (Very fast on Orin Nano)
-      Vis/MaxFeatures: "600"           # Balanced for tracking quality vs CPU usage
+      Vis/MaxFeatures: "400"           # Balanced for tracking quality vs CPU usage
       Vis/EstimationType: "0"          # 0=3D->3D (Requires depth), 1=3D->2D (PnP)
       
       # Filtering out erratic movements (Essential for uneven terrain)

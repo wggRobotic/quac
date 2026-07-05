@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CycloneDDS xmlns="https://cdds.io/config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+            xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+    <Domain Id="any">
+        <Tracing>
+            <!-- Verbosity levels: none, severe, warning, info, config, fine, finer, finest -->
+            <Verbosity>finest</Verbosity>
+            
+            <!-- Optional: Selectively isolate specific log types -->
+            <Category>discovery,traffic,data,config</Category>
+            
+            <AppendToFile>true</AppendToFile>
+        </Tracing>
+        <General>
+            <Interfaces>
+                <NetworkInterface name="eno1"/>
+            </Interfaces>
+        </General>
+    </Domain>
+</CycloneDDS>

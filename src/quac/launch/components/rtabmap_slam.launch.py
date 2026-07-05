@@ -10,7 +10,7 @@ def generate_launch_description():
     remappings = [
         ('/tf_static', 'tf_static'),
         ('/tf', 'tf'),
-        ('odom', 'odom_vo'),
+        ('odom', 'odom'),
         ('rgbd_image0', 'camera_back/rtabmap_rgbd'),
         ('rgbd_image1', 'camera_gripper/rtabmap_rgbd'),
     ]

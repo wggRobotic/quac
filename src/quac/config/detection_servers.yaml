@@ -2,17 +2,17 @@ quac:
   hazmat_detection_server:
     ros__parameters:
       object_name: "hazmat_sign"
-      camera_names: ["camera_gripper", "camera_back"]
+      camera_names: ["camera_gripper"]
       mapping: true
       publish_rate: 10
-      publish_images_period: 10
-      reference_frame: "map"
-      consideration_radius: 20.0
-      valid_distance_range: [0.00, 2.0]
+      publish_images_period: 5
+      reference_frame: "base_link"
+      consideration_radius: 200.0
+      valid_distance_range: [0.0, 2.0]
       max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
-      confidence_threshold: 0.5
-      min_times_detected: 10
+      confidence_threshold: 0.8
+      min_times_detected: 30
       yolo_task: "detect"
 
   paintroller_detection_server:
@@ -22,7 +22,7 @@ quac:
       mapping: false # true
       publish_rate: 10
       publish_images_period: 10
-      reference_frame: "map"
+      reference_frame: "base_link"
       consideration_radius: 0.05
       valid_distance_range: [0.08, 2.0]
       max_tf_stamp_difference: 0.5 
@@ -35,11 +35,11 @@ quac:
     ros__parameters:
       object_name: "qrcode"
       camera_names: ["camera_gripper", "camera_back"]
-      mapping: true
+      mapping: false
       publish_rate: 10
-      publish_images_period: 10
+      publish_images_period: 5
       reference_frame: "map"  
-      consideration_radius: 2.0
+      consideration_radius: 200.0
       valid_distance_range: [0.08, 2.0]
       max_tf_stamp_difference: 0.5 
       detection_weight: 0.01
@@ -48,12 +48,12 @@ quac:
   landolt_c_detection_server:
     ros__parameters:
       object_name: "landolt_c"
-      camera_names: ["camera_front", "camera_gripper"]
+      camera_names: ["camera_gripper"]
       mapping: true
       publish_rate: 10
-      publish_images_period: 1
+      publish_images_period: 5
       reference_frame: "base_link"  
-      consideration_radius: 2.0
+      consideration_radius: 200.0
       valid_distance_range: [0.08, 2.0]
       max_tf_stamp_difference: 0.5 
       detection_weight: 0.01

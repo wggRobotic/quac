@@ -1,7 +1,7 @@
 quac:
   amcl:
     ros__parameters:
-      use_sim_time: True
+
       alpha1: 0.2
       alpha2: 0.2
       alpha3: 0.2
@@ -42,7 +42,7 @@ quac:
 
   bt_navigator:
     ros__parameters:
-      use_sim_time: True
+
       global_frame: map
       robot_base_frame: base_link
       odom_topic: odom
@@ -104,15 +104,15 @@ quac:
 
   bt_navigator_navigate_through_poses_rclcpp_node:
     ros__parameters:
-      use_sim_time: True
+      use_sim_time: false
 
   bt_navigator_navigate_to_pose_rclcpp_node:
     ros__parameters:
-      use_sim_time: True
+      use_sim_time: false
 
   controller_server:
     ros__parameters:
-      use_sim_time: True
+
       footprint: "[[0.25, 0.12], [0.25, -0.12], [-0.18, -0.12], [-0.18, 0.12]]"
       controller_frequency: 20.0
       min_x_velocity_threshold: 0.001
@@ -144,13 +144,13 @@ quac:
         plugin: "dwb_core::DWBLocalPlanner"
         kinematics_model: "differential"
         debug_trajectory_details: True
-        min_vel_x: 0.0
+        min_vel_x: 0.05
         min_vel_y: 0.0
         max_vel_x: 0.26
         max_vel_y: 0.0
         min_vel_theta: 0.0
         max_vel_theta: 1.0
-        min_speed_xy: 0.0
+        min_speed_xy: 0.05
         max_speed_xy: 0.26
         min_speed_theta: 0.0
         # Add high threshold velocity for turtlebot 3 issue.
@@ -164,12 +164,12 @@ quac:
         vx_samples: 20
         vy_samples: 5
         vtheta_samples: 20
-        sim_time: 1.7
+        sim_time: 2.5
         linear_granularity: 0.05
         angular_granularity: 0.025
         transform_tolerance: 0.2
         xy_goal_tolerance: 0.25
-        trans_stopped_velocity: 0.25
+        trans_stopped_velocity: 0.05
         short_circuit_trajectory_evaluation: True
         stateful: True
         critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
@@ -191,7 +191,7 @@ quac:
         publish_frequency: 2.0
         global_frame: odom
         robot_base_frame: base_link
-        use_sim_time: True
+  
         rolling_window: true
         width: 3
         height: 3
@@ -201,8 +201,8 @@ quac:
         plugins: ["obstacle_layer", "inflation_layer"]
         inflation_layer:
           plugin: "nav2_costmap_2d::InflationLayer"
-          cost_scaling_factor: 5.0
-          inflation_radius: 0.08
+          cost_scaling_factor: 8.0
+          inflation_radius: 0.005
 
         obstacle_layer:
           plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -230,7 +230,7 @@ quac:
         publish_frequency: 1.0
         global_frame: map
         robot_base_frame: base_link
-        use_sim_time: True
+  
         #robot_radius: 0.22
         footprint: "[[0.25, 0.12], [0.25, -0.12], [-0.18, -0.12], [-0.18, 0.12]]"
         resolution: 0.01
@@ -255,20 +255,20 @@ quac:
           map_subscribe_transient_local: True
         inflation_layer:
           plugin: "nav2_costmap_2d::InflationLayer"
-          cost_scaling_factor: 5.0
-          inflation_radius: 0.08
+          cost_scaling_factor: 8.0
+          inflation_radius: 0.005
         always_send_full_costmap: True
 
   map_server:
     ros__parameters:
-      use_sim_time: True
+
       # Overridden in launch by the "map" launch configuration or provided default value.
       # To use in yaml, remove the default "map" value in the tb3_simulation_launch.py file & provide full path to map below.
       yaml_filename: ""
 
   map_saver:
     ros__parameters:
-      use_sim_time: True
+
       save_map_timeout: 5.0
       free_thresh_default: 0.25
       occupied_thresh_default: 0.65
@@ -277,7 +277,7 @@ quac:
   planner_server:
     ros__parameters:
       expected_planner_frequency: 20.0
-      use_sim_time: True
+
       planner_plugins: ["GridBased"]
       GridBased:
         plugin: "nav2_navfn_planner/NavfnPlanner"
@@ -288,7 +288,7 @@ quac:
 
   smoother_server:
     ros__parameters:
-      use_sim_time: True
+
       smoother_plugins: ["simple_smoother"]
       simple_smoother:
         plugin: "nav2_smoother::SimpleSmoother"
@@ -315,7 +315,7 @@ quac:
       global_frame: odom
       robot_base_frame: base_link
       transform_tolerance: 0.1
-      use_sim_time: true
+
       simulate_ahead_time: 2.0
       max_rotational_vel: 1.0
       min_rotational_vel: 0.0
@@ -323,11 +323,11 @@ quac:
 
   robot_state_publisher:
     ros__parameters:
-      use_sim_time: True
+      use_sim_time: false
 
   waypoint_follower:
     ros__parameters:
-      use_sim_time: True
+
       loop_rate: 20
       stop_on_failure: false
       waypoint_task_executor_plugin: "wait_at_waypoint"
@@ -338,7 +338,7 @@ quac:
 
   velocity_smoother:
     ros__parameters:
-      use_sim_time: True
+
       smoothing_frequency: 20.0
       scale_velocities: False
       feedback: "OPEN_LOOP"

@@ -20,7 +20,7 @@ def generate_launch_description():
                 ('/tf', 'tf'),
                 ('odom', 'odom_vo'),
                 ('rgbd_image0', 'camera_back/rtabmap_rgbd'),
-                ('rgbd_image1', 'camera_gripper/rtabmap_rgbd'),
+                ('rgbd_image', 'camera_gripper/rtabmap_rgbd'),
             ]
         )
     ])

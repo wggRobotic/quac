@@ -48,12 +48,12 @@ quac:
           bitrate: 5000
           key_int_max: 60
       pointcloud:
-        enable: true
+        enable: false
         interval: 10
         frame: camera_gripper_depth_optical_frame
       image:
         enable: true
-        interval: 2
+        interval: 5
         frame: camera_gripper_color_optical_frame
         
   camera_back:
@@ -74,10 +74,10 @@ quac:
           bitrate: 5000
           key_int_max: 60
       pointcloud:
-        enable: true
+        enable: false
         interval: 10
         frame: camera_back_depth_optical_frame
       image:
         enable: true
-        interval: 2
+        interval: 5
         frame: camera_back_color_optical_frame

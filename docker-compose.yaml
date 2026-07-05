@@ -9,6 +9,16 @@ x-defaults: &defaults
     - ./src/quac:/quac/src/quac:ro
     - ./docker_entrypoint.sh:/docker_entrypoint.sh:ro
   environment:
+    CYCLONEDDS_URI: >
+      <CycloneDDS xmlns="https://cdds.io/config">
+        <Domain>
+          <General>
+            <Interfaces>
+              <NetworkInterface name="eno1"/>
+            </Interfaces>
+          </General>
+        </Domain>
+      </CycloneDDS>
     ROS_DOMAIN_ID: 187
     RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
     DISABLE_WHEELS: ${DISABLE_WHEELS:-false}
@@ -168,12 +178,17 @@ services:
     image: quac_ohm_slam:dev
     command: "ros2 launch quac ohm_slam.launch.py sim_mode:=${SIM_MODE:-false}"
 
-  rtabmap:
+  rtabmap_odom:
     <<: *defaults
     build:
       dockerfile: dockerfiles/rtabmap.dockerfile
     image: quac_rtabmap:dev
-    command: "ros2 launch quac rtabmap.launch.py use_sim_time:=${SIM_MODE:-false}"
+    command: "ros2 launch quac rtabmap_odom.launch.py"
+
+  rtabmap_slam:
+    <<: *defaults
+    image: quac_rtabmap:dev
+    command: "ros2 launch quac rtabmap_slam.launch.py"
 
   gazebo:
     <<: *defaults
