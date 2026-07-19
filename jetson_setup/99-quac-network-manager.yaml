@@ -22,6 +22,8 @@ network:
           password: "freshcoconut253"
         "wgg-robotics-netgear-mobile":
           password: "wgg#0815"
+        "COMPUTER-CZ":
+          password: "187187187"
   ethernets:
     eno1:
       dhcp4: no
